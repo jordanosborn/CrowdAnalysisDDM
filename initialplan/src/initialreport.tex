@@ -10,7 +10,7 @@
 \usepackage{amsmath, mathrsfs}
 \usepackage{titling}
 \usepackage{hyperref}
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \addbibresource{initialreport.bib}
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
@@ -43,20 +43,20 @@ A camera may also be set up (utilising a raspberry pi) that would stream the con
 The algorithm could then be run on this streaming video and a test could be carried out to determine if the algorithm can be used to perform crowd analysis in realtime.
 Another extension that might be possible is the development of a GUI that highlights certain features (based on the information found using DDM) in the crowd motion video in real time.
 \\
-If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems at major public events.
+If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems in crowded environments public transportation, stadiums, city centers etc.
 
-\section{Project Description}
-"This project will build on multi-DDM, a recently developed analysis technique from our group,
-and apply it for the first time to the study of collective motion in crowds.
-Videos from a data-bank will be used (a set of benchmark videos used in computer vision).
-Ideally the code will be compiled on CUDA and optimised to run in realtime on dedicated hardware (NVIDIA Jetson boards).
-The objective is to be able to count people, density fluctuations, flows, *without* segmenting the images or searching for features."
+%\section{Project Description}
+%"This project will build on multi-DDM, a recently developed analysis technique from our group,
+%and apply it for the first time to the study of collective motion in crowds.
+%Videos from a data-bank will be used (a set of benchmark videos used in computer vision).
+%Ideally the code will be compiled on CUDA and optimised to run in realtime on dedicated hardware (NVIDIA Jetson boards).
+%The objective is to be able to count people, density fluctuations, flows, *without* segmenting the images or searching for features."
 
 \section{Tools}
 This project will make use of a wide variety of software and also hardware.
 First off the algorithm will be written in a mixture of standard C++ and cuda (for the GPU relevant parts).
 Python and PyCuda may also be used for less performance critical parts of the implementation.
-Various libraries will likely be made use of including openCV, mathematical/graphing and possibly Qt if a GUI is required at any point.
+Various libraries will likely be made use of including openCV, mathematical/graphing libraries and possibly Qt if a GUI is required at any point.
 As for hardware the project will initially be utilising a standard computer to carry out the analysis.
 But once there is a working implementation of the method it will be ported and optimisied to run on the Nvidia Jetson development board.
 This will be done in order to increase the speed at which the algorithm runs, the benefit of running the algorithm on the Jetson
@@ -68,21 +68,21 @@ This could be used to test the potential application of DDM to real time analysi
 LaTeX will be used extensively to write up the results of this project.
 
 \section{Background Physics and Mathematics}
-DDM or Differential Dynamic Microscopy is a method that analyses an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames),
+DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames),
 and then taking the 2D spatial fourier transform of this difference to obtain an image structure function.
 From this function many properties of the motion can be determined.\cite{ddm1}
 An outline of the mathematics is given below:
 \\
 \begin{equation}
-    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - (\mathbf{r}, t_0)
+    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)
 \end{equation}
-I encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
+The function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
 This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in greyscale.
 Colour information may provide extra information about motion but may also be an artifact produced by lighting effects.
-Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, if a colour change really indicated motion etc.)
-The fourier transform of this equation is then taken to produce D - the image structure function
+Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
+
 \begin{equation}
-    \mathscr{F} ( d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - (\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
+    \mathscr{F} ( d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
 \end{equation}
 
 The second equality results from the linearity of the fourier transform and reduces computational complexity as it allows you to cache fourier transforms at each time and then compute their difference.
@@ -100,28 +100,38 @@ At this stage we will not make these assumptions as they may limit the applicabi
 We will use the more general result in the ddm algorithm and perhaps make adjustments if needed.
 
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
-Information about the systems dynamics can be obtained by looking at how the amplitudes of the fourier modes for each q changes with the time differences between frames $\tau$.\cite{ddm2}
+Information about the system's dynamics can be obtained by looking at how the amplitudes of the fourier modes for each q changes with the time differences between frames $\tau$.\cite{ddm2}
 
 A related method called multi-scale DDM (which is what this project will predominantly be using) picks up temporal and spatial scales of synchronisation separately (normal DDM only picks up a combination).
 In multi-scale DDM you perform a normal DDM over a whole series of different tilings of the image.\cite{ddm1}
 These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced)\cite{ddm1}
-To reduce the number of tiles that need to be computed you can select the tiles showing the most activity, an equation that can determine if a tile exceeds a threshold activity is
+To reduce the number of tiles that need to be computed you can select only the tiles showing the most activity, an equation that can determine if a tile exceeds a threshold activity is
 \begin{equation}
     \Sigma_{\textbf{r} \in tile} \sigma(\textbf{r}) = \Sigma_{\textbf{r} \in tile} \sqrt{\frac{\Sigma_{[t_0, t_0 + \tau]} (I(\mathbf{r}, t) - <I(\mathbf{r}, t)>)^2}{N - 1}} > \sigma_{threshold}
 \end{equation}
 
 Which sums all of the standard deviations (computed over the time period $\tau$) of the intensities at each position in the tile and then checks if this sum is greater than some threshold standard deviation.
-If it is then that tile is said to be "active" otherwise it is "inactive".\cite{ddm2}
+If it is a valid inequality then that tile is said to be "active" otherwise it is "inactive".\cite{ddm2}
 This is a very rudimentary activity classifying function.
-There are other ways that a tiles activity can be classified which may need to be investigated.
+There are other ways that a tile's activity can be classified which may need to be investigated.
 
-In the cross comparisons between the synchronisation time
+In the cross comparisons between the tiles of different sizes the scale of the collective motion should emerge.\cite{ddm1}
+Other properties of the motion should emerge by studying how tau varies as a function of the wave-vector amplitude.\cite{ddm1}
+
+The information provided by the multi-scale ddm method can be used to compute a variety of spatial and temporal properties of both collective and individual motion.\cite{ddm1}\cite{ddm2}
+
+Benefits of this method include:
+\begin {enumerate}
+ \item does not require the segmentation of images (can study small objects).
+ \item no need to track features across frames (denser systems can be studied).
+ \item it requires no user defined parameters (can run autonomously).
+\end{enumerate}\cite{ddm1}
 
 \section{Project Plan}
 The project will effectively be split in to two stages, the implementation phase and the analysis phase.
 
 \subsection{Implementation}
-Over the Christmas vacation I plan to read a book I discovered that goes in to depth about cuda, openCV and image analysis in general.
+Over the Christmas vacation I plan to study from a book I discovered that goes in to depth about cuda, openCV and image analysis in general.\cite{cuda_book}
 I am going to read this so that I will be ready to start implementing the algorithms come January.
 Once I have finished this preliminary study, I will start implementing the DDM algorithm on a standard pc using C++.
 This should provide some initial data and insights in to how the DDM method should be implemented in cuda on the Jetson development board.
@@ -154,7 +164,7 @@ And finally a discussion about whether real time crowd analysis was achieved (if
 \section{Conclusion}
 The project will be an investigation about how a method originally developed in the field of microscopy might be utilised in other fields.
 It will investigate the potential application of this method to the analysis of crowd dynamics.
-An exploration in to what information can be extracted from crowd motion videos using DDM will be a significant part of this project.
+An exploration in to what information can be extracted from crowd motion videos using multi-scale DDM will be a significant part of this project.
 The DDM method will be compared to other existing motion analysis techniques and a discussion about whether it provides any benefits/drawbacks to existing techniques will be had.
 The ultimate aim of the project is to determine if real time analysis of crowd dynamics is possible using the DDM method on commercial hardware.
 
