@@ -28,15 +28,15 @@
 
 \section{Introduction}
 My part III project will be investigating the potential application of DDM (Differential Dynamic Microscopy) image processing techniques to videos of crowds in order to understand their dynamics.
-In particular I will be making use of a fairly recently developed technique called multi-scale DDM.
+In particular I will be making use of a fairly recently developed technique called multi-scale DDM .
 DDM analyses sequences of images and consists of a combination of difference and spatial fourier methods to discover information about the motion in the images.
 A more in depth discussion will be carried out below.
 These methods will first be developed on a standard PC to determine how best to apply them to the analysis of crowds.
 The algorithms will then be optimised to run on an Nvidia Jetson TX2 development board (which would allow calculations to be more highly parallelised), the ultimate aim is to determine if we can use DDM to analyse crowd dynamics in real time.
 By using this method we hope to be able to count people, density fluctuations, and discover other dynamical properties of crowds.
-There are a few high quality crowd videos that are freely available in online databases.
+There are a few high quality crowd videos that are freely available in online databases.\cite{crowdMotionDB}
 These will be used as the initial test data sets in the project.
-The results of the algorithm will be compared with information gleaned from visual inspection of the videos and also as extension possibly with the results of other video analysis techniques.
+The results of the algorithm will be compared with information gleaned from visual inspection of the videos and also as an extension possibly with the results of other video analysis techniques.
 \\
 Extensions to this project may include as mentioned previously implementations of other video analysis algorithms so that comparisons can be made with the results of the DDM method.
 A camera may also be set up (utilising a raspberry pi) that would stream the contents of the video captured by the camera to the Nvidia Jetson TX2 over WiFi.
@@ -54,7 +54,7 @@ The objective is to be able to count people, density fluctuations, flows, *witho
 
 \section{Tools}
 This project will make use of a wide variety of software and also hardware.
-First off the the algorithm will be written in a mixture of standard C++ and cuda (for the GPU relevant parts).
+First off the algorithm will be written in a mixture of standard C++ and cuda (for the GPU relevant parts).
 Python and PyCuda may also be used for less performance critical parts of the implementation.
 Various libraries will likely be made use of including openCV, mathematical/graphing and possibly Qt if a GUI is required at any point.
 As for hardware the project will initially be utilising a standard computer to carry out the analysis.
@@ -76,7 +76,7 @@ The project will effectively be split in to two stages, the implementation phase
 \subsection{Implementation}
 Over the Christmas vacation I plan to read a book I discovered that goes in to depth about cuda, openCV and image analysis in general.
 I am going to read this so that I will be ready to start implementing the algorithms come January.
-Once I have finished the preliminary study, I will start implementing a start implementing the DDM algorithm on a standard pc using C++.
+Once I have finished this preliminary study, I will start implementing the DDM algorithm on a standard pc using C++.
 This should provide some initial data and insights in to how the DDM method should be implemented in cuda on the Jetson development board.
 And where optimisations might need to be carried out in order to arrive at a method that can be used in real time.
 I will then start to alter the code so that it will run on and utilise the GPU of the Jetson development board.
@@ -102,7 +102,7 @@ Graphs over time of these features will be made and included in a report with di
 The data's claims will be compared with those inferred from visual inspection of the videos and also (time permitting) the results from other motion analysis algorithms.
 A final report will be produced containing the implementation details and the analysis of the conclusions drawn from the results provided by the algorithm.
 Pitfalls, benefits, improvements and potential applications will be discussed in the report.
-And finally a discussion about whether real time crowd analysis was achieved (if not whether it would be possible and what would be required if so) and if shortcuts were needed to achieve this (less precision etc.).
+And finally a discussion about whether real time crowd analysis was achieved (if not whether it would be possible and what would be required if so) and if shortcuts were needed to achieve this (lower precision etc.).
 
 \section{Conclusion}
 The project will be an investigation about how a method originally developed in the field of microscopy might be utilised in other fields.
