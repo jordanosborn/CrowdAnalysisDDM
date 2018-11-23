@@ -82,7 +82,7 @@ Colour information may provide extra information about motion but may also be an
 Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
 
 \begin{equation}
-    \mathscr{F} ( d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
+    \mathscr{F} (d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
 \end{equation}
 
 The second equality results from the linearity of the fourier transform and reduces computational complexity as it allows you to cache fourier transforms at each time and then compute their difference.
