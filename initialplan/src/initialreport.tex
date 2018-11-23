@@ -9,6 +9,7 @@
 % Packages
 \usepackage{amsmath}
 \usepackage{titling}
+\usepackage{hyperref}
 \usepackage{biblatex}
 \addbibresource{initialreport.bib}
 
@@ -64,11 +65,35 @@ Initially an online crowd motion database will be used as a test data set.\cite{
 This data set could be streamed to the Jetson to simulate a real time environment.
 But as an extension a raspberry pi with an attached battery and camera could be set up to stream live videos of crowds over Wifi to the Jetson.
 This could be used to test the potential application of DDM to real time analysis of crowd dynamics.
+LaTeX will be used extensively to write up the results of this project.
 
-Cuda, c++ nvidia jetson, qt, ffmpeg, opencv, neuralnets pycuda, rasppi camera to capture data online data sources
 \section{Background Physics and Mathematics}
 
 \section{Project Plan}
+The project will effectively be split in to two stages, the implementation phase and the analysis phase.
+
+\subsection{Implementation}
+Over the Christmas vacation I plan to read a book I discovered that goes in to depth about cuda, openCV and image analysis in general.
+I am going to read this so that I will be ready to start implementing the algorithms come January.
+Once I have finished the preliminary study, I will start implementing a start implementing the DDM algorithm on a standard pc using C++.
+This should provide some initial data and insights in to how the DDM method should be implemented in cuda on the Jetson development board.
+And where optimisations might need to be carried out in order to arrive at a method that can be used in real time.
+I will then start to alter the code so that it will run on and utilise the GPU of the Jetson development board.
+I will also perform further optimisations at this stage so that the ultimate aim of real time crowd analysis might be achieved.
+At each step videos from \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm}\cite{crowdMotionDB} and other online sources will be used to test the implementation.
+\\
+Once the main implementation has been completed further enhancements may be made (time permitting) including:
+\begin{enumerate}
+\item Further optimisations to the speed of the algorithm.
+\item Using real live crowd video from a camera attached to a raspberry pi (streamed via Wifi to the Jetson) as input.
+\item Comparisons to other motion analysis techniques.
+\item GUI that highlights/graphs features in the video streams in real time (person count, flow direction, density charts etc.)
+\end{enumerate}
+
+\subsection{Analysis and Write Up}
+Analysis will be carried out alongside and also after completion of the implementation phase.
+
+
 
 \printbibliography
 
