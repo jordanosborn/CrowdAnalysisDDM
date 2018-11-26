@@ -11,6 +11,7 @@
 \usepackage{titling}
 \usepackage{hyperref}
 \usepackage[sorting=none]{biblatex}
+\usepackage{graphicx}
 \addbibresource{initialreport.bib}
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
@@ -28,7 +29,7 @@
 
 \section{Introduction}
 My part III project will be investigating the potential application of DDM (Differential Dynamic Microscopy) image processing techniques to videos of crowds in order to understand their dynamics.
-DDM the method first appeared in a paper by R. Cerbino and V. Trappe in 2008.\cite{ddm0}
+DDM the method, first appeared in a paper written by R. Cerbino and V. Trappe in 2008.\cite{ddm0}
 This project will be utilising a method derived from the initial one outlined in this paper.
 In particular I will be making use of a fairly recently developed technique called multi-scale DDM.\cite{ddm1}
 The aim of this project is to determine various dynamical properties of crowds such as how people move as a function of crowd density etc.
@@ -129,6 +130,16 @@ Benefits of this method include:
  \item no need to track features across frames (denser systems can be studied).
  \item it requires no user defined parameters (can run autonomously).
 \end{enumerate}\cite{ddm1}
+
+\begin{figure}
+\includegraphics{ddmpic.png}
+\caption{Provides an overview of the ddm method as applied to the analysis of collective dynamics in ciliated cells.
+In (a) we see the video frames in an ordered sequence.
+In (b) the difference between frames separated by ($\tau=3 frames$) is shown.
+The modulus squared of the 2D spatial fourier transform is displayed in (c).
+(d) and (e) are less relevant to our use-case as we will not be assuming a stationary, ergodic and isotropic sample.
+So we will not be averaging over initial times or averaging azimuthally.\cite{ddm2}}
+\end{figure}
 
 \section{Project Plan}
 The project will effectively be split in to two stages, the implementation phase and the analysis phase.
