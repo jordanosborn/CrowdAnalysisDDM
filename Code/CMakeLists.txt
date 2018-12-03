@@ -6,7 +6,11 @@ find_package(OpenCV REQUIRED)
 
 if (${APPLE})
     link_directories(/usr/local/lib/)
+    set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/7.0.0_1/bin/clang")
+    set(CMAKE_CXX_COMPILER "//usr/local/Cellar/llvm/7.0.0_1/bin/clang++")
 elseif ($(UNIX))
+
+elseif(${WIN32})
 
 endif()
 
@@ -16,6 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Ofast -flto -fo
 include_directories(${GOBJECT_INCLUDE_DIR})
 
 file(GLOB_RECURSE source_files "src/*.cpp")
+
 
 set(CMAKE_CXX_STANDARD 17)
 add_executable(Code main.cpp ${source_files})
