@@ -2,12 +2,19 @@ import subprocess as sp
 from sys import argv
 from os import chdir
 
-def main():
-    chdir(__file__[:-len("build.py")])
+
+def build():
     sp.call(["cmake", "."])
     sp.call(["make"])
 
 
+def install():
+    pass
+
+
 if __name__ == "__main__":
-    print(__file__)
-    main()
+    directory = "/".join(__file__.split("/")[:-1])
+    chdir(directory)
+    if "--build" in argv: build()
+    if "--install" in argv: install()
+
