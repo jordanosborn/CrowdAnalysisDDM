@@ -1,14 +1,21 @@
 #include <iostream>
 #include "opencv2/opencv.hpp"
 #include <thread>
+#include <atomic>
 
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
     cv::VideoCapture stream1(0);   //0 is the id of video device.0 if you have only one camera.
 
     if (!stream1.isOpened()) { //check if video device has been initialised
         std::cout << "cannot open camera";
+    }
+
+    #pragma omp parallel
+    {
+    #pragma omp for
+        for (int i=0; i<10; i++)
+            std::cout << i;
     }
 
     while (true) {
