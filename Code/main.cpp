@@ -9,6 +9,7 @@ int main() {
 
     if (!stream1.isOpened()) { //check if video device has been initialised
         std::cout << "cannot open camera";
+        throw std::exception();
     }
 
     #pragma omp parallel
@@ -21,6 +22,8 @@ int main() {
     while (true) {
         cv::Mat cameraFrame;
         stream1.read(cameraFrame);
+        cv::flip(cameraFrame, cameraFrame, 1);
+
         cv::imshow("cam", cameraFrame);
         if (cv::waitKey(30) >= 0)
             break;
