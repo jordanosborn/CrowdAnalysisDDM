@@ -16,3 +16,11 @@ Code/CMakeCache.txt
 Code/Code.cbp
 Code/Makefile
 Code/Code
+*.bbl
+*.aux
+*.bcf
+*.blg
+*.dvi
+*.log
+*.out
+*.xml
