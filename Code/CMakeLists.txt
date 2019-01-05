@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.12)
-project(Code)
+project(Code LANGUAGES CXX CUDA)
+set(CMAKE_CUDA_HOST_COMPILER gcc-8)
+
 
 include_directories(./include)
 find_package(OpenCV REQUIRED)
 
+# Glog opencv openmp llvm gmp
+
 if (${APPLE})
     link_directories(/usr/local/lib/)
-    set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/7.0.0_1/bin/clang")
-    set(CMAKE_CXX_COMPILER "//usr/local/Cellar/llvm/7.0.0_1/bin/clang++")
+    #set(CMAKE_C_COMPILER "/usr/local/Cellar/llvm/7.0.0_1/bin/clang")
+    #set(CMAKE_CXX_COMPILER "//usr/local/Cellar/llvm/7.0.0_1/bin/clang++")
 elseif ($(UNIX))
 
 elseif(${WIN32})

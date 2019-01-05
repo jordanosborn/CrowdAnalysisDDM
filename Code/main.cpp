@@ -2,7 +2,6 @@
 #include "opencv2/opencv.hpp"
 #include <thread>
 
-
 using Pixel = cv::Point3_<uint8_t>;
 
 inline auto avg(std::vector<cv::Mat> &v) {
