@@ -26,50 +26,7 @@
 \maketitle
 
 \section{Introduction}
-My part III project will be investigating the potential application of DDM (Differential Dynamic Microscopy) image processing techniques to videos of crowds in order to understand their dynamics.
-In particular I will be making use of a fairly recently developed technique called multi-scale DDM.
-DDM analyses sequences of images and consists of a combination of difference and spatial fourier methods to discover information about the motion in the images.
-A more in depth discussion will be carried out below.
-These methods will first be developed on a standard PC to determine how best to apply them to the analysis of crowds.
-The algorithms will then be optimised to run on an Nvidia Jetson TX2 development board (which would allow calculations to be more highly parallelised), the ultimate aim is to determine if we can use DDM to analyse crowd dynamics in real time.
-By using this method we hope to be able to count people, density fluctuations, and discover other dynamical properties of crowds.
-There are a few high quality crowd videos that are freely available in online databases.
-These will be used as the initial test data sets in the project.
-The results of the algorithm will be compared with information gleaned from visual inspection of the videos and also as extension possibly with the results of other video analysis techniques.
-\\
-Extensions to this project may include as mentioned previously implementations of other video analysis algorithms so that comparisons can be made with the results of the DDM method.
-A camera may also be set up (utilising a raspberry pi) that would stream the contents of the video captured by the camera to the Nvidia Jetson TX2 over WiFi.
-The algorithm could then be run on this streaming video and a test could be carried out to determine if the algorithm can be used to perform crowd analysis in realtime.
-Another extension that might be possible is the development of a GUI that highlights certain features (based on the information found using DDM) in the crowd motion video in real time.
-\\
-If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems at major public events.
-
-\section{Project Description}
-"This project will build on multi-DDM, a recently developed analysis technique from our group,
-and apply it for the first time to the study of collective motion in crowds.
-Videos from a data-bank will be used (a set of benchmark videos used in computer vision).
-Ideally the code will be compiled on CUDA and optimised to run in realtime on dedicated hardware (NVIDIA Jetson boards).
-The objective is to be able to count people, density fluctuations, flows, *without* segmenting the images or searching for features."
-
-\section{Tools}
-This project will make use of a wide variety of software and also hardware.
-First off the the algorithm will be written in a mixture of standard C++ and cuda (for the GPU relevant parts).
-Python and PyCuda may also be used for less performance critical parts of the implementation.
-Various libraries will likely be made use of including openCV, mathematical/graphing and possibly Qt if a GUI is required at any point.
-As for hardware the project will initially be utilising a standard computer to carry out the analysis.
-But once there is a working implementation of the method it will be ported and optimisied to run on the Nvidia Jetson development board.
-This will be done in order to increase the speed at which the algorithm runs, the benefit of running the algorithm on the Jetson
-is that each frame may be stored on the GPU of the device and calculations can be carried out in parallel on that image.
-Initially an online crowd motion database will be used as a test data set.\cite{crowdMotionDB}
-This data set could be streamed to the Jetson to simulate a real time environment.
-But as an extension a raspberry pi with an attached battery and camera could be set up to stream live videos of crowds over Wifi to the Jetson.
-This could be used to test the potential application of DDM to real time analysis of crowd dynamics.
-
-Cuda, c++ nvidia jetson, qt, ffmpeg, opencv, neuralnets pycuda, rasppi camera to capture data online data sources
-\section{Background Physics and Mathematics}
-
-\section{Project Plan}
-
+Hello world
 
 \printbibliography
 
