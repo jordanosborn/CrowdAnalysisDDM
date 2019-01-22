@@ -24,3 +24,4 @@ Code/Code
 *.log
 *.out
 *.xml
+fft/target

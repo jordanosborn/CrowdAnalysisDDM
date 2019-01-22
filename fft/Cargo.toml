@@ -1,0 +1,13 @@
+[package]
+name = "fft"
+version = "0.1.0"
+authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rayon = "*"
+arrayfire = "3.6"
+rand = "*"
+maplit = "*"
+image = "*"
+
