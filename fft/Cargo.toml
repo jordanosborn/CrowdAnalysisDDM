@@ -10,4 +10,5 @@ arrayfire = "3.6"
 rand = "*"
 maplit = "*"
 image = "*"
+flame = "0.2.2"
 
