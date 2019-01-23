@@ -47,4 +47,4 @@ if __name__ == "__main__":
     if len(argv) == 2 and argv[1] in dispatch.keys():
         dispatch[argv[1]]
     else:
-        print("Supplied arguments are invalid")
+        print("Supplied arguments are invalid ")
