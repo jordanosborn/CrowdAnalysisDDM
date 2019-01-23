@@ -6,9 +6,13 @@ edition = "2018"
 
 [dependencies]
 rayon = "*"
-arrayfire = "3.6"
+arrayfire = "3.6.0"
 rand = "*"
 maplit = "*"
 image = "*"
 flame = "0.2.2"
 
+#[profile.dev]
+#rpath = true
+#[profile.release]
+#rpath = true
