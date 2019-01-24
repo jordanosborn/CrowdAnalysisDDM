@@ -3,6 +3,10 @@ name = "fft"
 version = "0.1.0"
 authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
 edition = "2018"
+build = "build.rs"
+
+[build-dependencies]
+cc = "1.0"
 
 [dependencies]
 rayon = "*"
@@ -11,11 +15,6 @@ rand = "*"
 maplit = "*"
 image = "*"
 flame = "0.2.2"
-
-#[profile.dev]
-#rpath = true
-#[profile.release]
-#rpath = true
-
 gstreamer = "0.12.2"
 indicatif = "0.11.0"
+libc = "0.2.0"
