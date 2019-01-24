@@ -1,11 +1,11 @@
 git:
-    depth: false
+  depth: false
 language: rust
 rust:
-    - nightly
+  - nightly
 before_script:
-    - rustup component add clippy rustfmt
-    - cd fft
+  - rustup component add clippy rustfmt
+  - cd fft
 script:
-    - cargo clippy --all-targets --all-features -- -D warnings
-    -cargo test
+  - cargo clippy --all-targets --all-features -- -D warnings
+  - cargo test
