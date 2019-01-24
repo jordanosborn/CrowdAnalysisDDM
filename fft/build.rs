@@ -2,7 +2,8 @@ fn main() {
     cc::Build::new()
         .file("lib/src/vidstream.cpp")
         .cpp(true)
-        .flag("-lopencv_core -lopencv_highgui -lopencv_imgproc")
+        .shared_flag(true)
+        // .flag("")
         .include("lib/include")
-        .compile("libvidstream");
+        .compile("libvidstream.so");
 }
