@@ -5,6 +5,6 @@ fn main() {
         .shared_flag(true)
         .flag("-L/usr/local/lib -lopencv_core")
         .include("lib/include")
-	.include("/usr/local/include/opencv4")
+        .include("/usr/local/include/opencv4")
         .compile("libvidstream.so");
 }

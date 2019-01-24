@@ -3,7 +3,6 @@ use arrayfire::print_gen;
 use flame as fl;
 pub mod image;
 
-
 fn main() {
     println!("{:?}", image::add_safe(1, 2));
     fl::span_of("name", || {
@@ -16,5 +15,4 @@ fn main() {
     });
     let spans = fl::spans();
     println!("{:?}", spans);
-    
 }
