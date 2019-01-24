@@ -3,7 +3,8 @@ fn main() {
         .file("lib/src/vidstream.cpp")
         .cpp(true)
         .shared_flag(true)
-        .flag("-I/usr/local/include/opencv4/ -lopencv_core")
+        .flag("-L/usr/local/lib -lopencv_core")
         .include("lib/include")
+	.include("/usr/local/include/opencv4")
         .compile("libvidstream.so");
 }
