@@ -11,18 +11,11 @@ rand = "*"
 maplit = "*"
 image = "*"
 flame = "0.2.2"
-<<<<<<< Updated upstream
 
 #[profile.dev]
 #rpath = true
 #[profile.release]
 #rpath = true
-<<<<<<< HEAD
+
 gstreamer = "0.12.2"
 indicatif = "0.11.0"
-=======
-=======
-gstreamer = "0.12.2"
-indicatif = "0.11.0"
->>>>>>> Stashed changes
->>>>>>> f8338513696775eea39f51d47f7b627d8438d7fb
