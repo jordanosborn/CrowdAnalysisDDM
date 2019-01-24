@@ -4,6 +4,7 @@
 
 using Pixel = cv::Point3_<uint8_t>;
 
+
 inline auto avg(std::vector<cv::Mat> &v) {
     bool defined = false;
     cv::Mat s;
