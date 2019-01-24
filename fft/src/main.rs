@@ -6,7 +6,7 @@ pub mod image;
 
 fn main() {
     unsafe {
-        println!("{:?}", image::add(1, 2));
+        println!("{:?}", image::add_safe(1, 2));
     }
     fl::span_of("name", || {
         let num_rows: u64 = 50;
