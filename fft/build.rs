@@ -1,6 +1,6 @@
 fn main() {
     cc::Build::new()
-        .file("lib/src/vidstream.cpp")
+        .files(&["lib/src/vidstream.cpp"])
         .cpp(true)
         .shared_flag(true)
         .flag("-L/usr/local/lib -lopencv_core")
