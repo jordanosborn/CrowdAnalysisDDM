@@ -13,3 +13,8 @@ Write a cpp helper file that streams video using opencv and can send frames in t
 
 https://doc.rust-lang.org/nomicon/ffi.html
 https://doc.rust-lang.org/cargo/reference/build-scripts.html
+
+Create set up script
+Auto builds opencv4
+Array fire 3.6
+Install other dependencies etc.
