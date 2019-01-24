@@ -13,7 +13,9 @@ Write a cpp helper file that streams video using opencv and can send frames in t
 
 https://doc.rust-lang.org/nomicon/ffi.html
 https://doc.rust-lang.org/cargo/reference/build-scripts.html
-
+wget https://github.com/opencv/opencv/archive/4.0.1.zip
+https://docs.opencv.org/4.0.1/d7/d9f/tutorial_linux_install.html
+https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-OSX
 Create set up script
 Auto builds opencv4
 Array fire 3.6
