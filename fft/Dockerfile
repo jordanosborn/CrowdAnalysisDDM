@@ -5,7 +5,7 @@ WORKDIR /home
 
 #Opencv4
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y apt-utils
+RUN apt-get install -y apt-utils sudo
 RUN apt-get install -y python3-pip libomp-dev libgmp-dev libboost-all-dev cmake make git wget curl gcc g++
 RUN pip3 install --upgrade pip
 RUN apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
@@ -30,6 +30,9 @@ RUN cmake .. -DCMAKE_BUILD_TYPE=Release
 RUN make -j8 
 RUN make install
 
+#Other programs
+RUN apt-get install -y nano
+
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 -p ubuntu ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu
@@ -40,9 +43,9 @@ RUN /home/ubuntu/.cargo/bin/rustup install nightly
 RUN /home/ubuntu/.cargo/bin/rustup default stable
 RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 
-COPY . "/home/ubuntu/code"
-
-CMD ["source", ".cargo/env"]
-CMD ["rustup", "self", "update"]
-CMD ["rustup", "update"]
-CMD ["bash"]
+COPY . "/home/ubuntu/"
+ENTRYPOINT ["bash", "./docker_startup.sh"]
+#CMD ["source", ".cargo/env"]
+#CMD ["rustup", "self", "update"]
+#CMD ["rustup", "update"]
+#CMD ["bash"]
