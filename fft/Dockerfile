@@ -5,7 +5,7 @@ WORKDIR /home
 
 #Opencv4
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install apt-utils
+RUN apt-get install -y apt-utils
 RUN apt-get install -y python3-pip libomp-dev libgmp-dev libboost-all-dev cmake make git wget curl gcc g++
 RUN pip3 install --upgrade pip
 RUN apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
