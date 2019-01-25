@@ -20,3 +20,7 @@ Create set up script
 Auto builds opencv4
 Array fire 3.6
 Install other dependencies etc.
+
+
+install nano set AF_PATH 
+startup script docker 
