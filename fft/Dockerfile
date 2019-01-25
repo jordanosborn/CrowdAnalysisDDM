@@ -23,6 +23,7 @@ RUN apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
 RUN cd ..
 RUN git clone --recursive https://github.com/arrayfire/arrayfire.git
 RUN cd arrayfire
+RUN git checkout v3.6
 RUN git submodule init && git submodule update
 RUN mkdir build && cd build
 RUN cmake .. -DCMAKE_BUILD_TYPE=Release
