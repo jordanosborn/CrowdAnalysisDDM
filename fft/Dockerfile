@@ -6,9 +6,9 @@ WORKDIR /home
 #Opencv4
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install apt-utils
-RUN apt-get install -y python3-pip llvm-7 libomp-dev libgmp-dev libboost-all-dev cmake make git wget curl gcc g++
+RUN apt-get install -y python3-pip libomp-dev libgmp-dev libboost-all-dev cmake make git wget curl gcc g++
 RUN pip3 install --upgrade pip
-RUN apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+RUN apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
 RUN apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 RUN git clone https://github.com/opencv/opencv.git
 RUN cd opencv
@@ -18,7 +18,7 @@ RUN make -j8
 RUN make install
 
 #Arrayfire
-RUN apt-get install -y build-essential git cmake libfreeimage-dev cmake-curses-gui
+RUN apt-get install -y libfreeimage-dev cmake-curses-gui
 RUN apt-get install -y libopenblas-dev libfftw3-dev liblapacke-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
 RUN apt-get install -y libglfw3-dev libfontconfig1-dev libglm-dev
 RUN cd ..
