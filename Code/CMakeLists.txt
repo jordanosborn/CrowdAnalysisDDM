@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 project(Code LANGUAGES CXX)#CUDA)
 
+macro(print_all_variables)
+    message(STATUS "print_all_variables------------------------------------------{")
+    get_cmake_property(_variableNames VARIABLES)
+    foreach (_variableName ${_variableNames})
+        message(STATUS "${_variableName}=${${_variableName}}")
+    endforeach ()
+    message(STATUS "print_all_variables------------------------------------------}")
+endmacro()
+
 
 include_directories(./include)
 find_package(OpenCV REQUIRED)
@@ -27,7 +36,7 @@ include_directories(${GOBJECT_INCLUDE_DIR})
 
 file(GLOB_RECURSE source_files "src/*.cpp")
 
-
+print_all_variables()
 set(CMAKE_CXX_STANDARD 17)
 add_executable(Code main.cpp ${source_files})
 target_link_libraries(Code ${OpenCV_LIBS})

@@ -1,7 +1,16 @@
 use arrayfire as af;
 use arrayfire::print_gen;
 use flame as fl;
+use rayon::prelude::*;
+
 pub mod image;
+
+
+fn times<'a>(spans: &'a Vec<fl::Span>) -> Vec<(&'a str, f64)> {
+    spans.par_iter().map(|x| {
+        (x.name.as_ref(), (x.delta as f64) / f64::powf(10.0, 6.0))
+    }).collect::<Vec<(&'a str, f64)>>()
+}
 
 fn main() {
     println!("{:?}", image::add_safe(1, 2));
@@ -14,5 +23,8 @@ fn main() {
         af::af_print!("Create a 5-by-3 matrix of random floats on the GPU", a);
     });
     let spans = fl::spans();
-    println!("{:?}", spans);
+    let ti = times(&spans);
+    ti.iter().for_each(|(x, y)| {
+        println!("{} {}s", x, y);
+    })
 }

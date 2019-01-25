@@ -3,7 +3,11 @@
 #include <thread>
 #include <iostream>
 
+#include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
+#include "opencv2/flann.hpp"
+
+
 using Pixel = cv::Point3_<uint8_t>;
 
 extern "C" int get_frame(int, int);
