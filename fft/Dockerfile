@@ -40,7 +40,7 @@ COPY "." "/hom/ubuntu/code/"
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN source ~/.cargo/env
 RUN rustup install nightly
-RUN rustup defauly nightly
+RUN rustup default nightly
 RUN rustup component add rls rustfmt clippy
 
 ENTRYPOINT [ "bash" ]
