@@ -32,8 +32,10 @@ RUN make install
 
 #Other programs
 RUN apt-get install -y nano
+RUN ldconfig
 
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 -p ubuntu ubuntu
+RUN echo ubuntu:ubuntu | chpasswd
 USER ubuntu
 WORKDIR /home/ubuntu
 
