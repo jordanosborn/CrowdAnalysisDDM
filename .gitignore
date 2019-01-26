@@ -26,3 +26,6 @@ Code/Code
 *.xml
 fft/target
 *.rar
+fft/opencv/opencv-4.0.1/3rdparty/libjpeg-turbo/src/jquant1.c
+fft/opencv/*
+fft/4.0.1.zip
