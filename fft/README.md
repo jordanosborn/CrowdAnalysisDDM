@@ -24,3 +24,4 @@ Install other dependencies etc.
 
 install nano set AF_PATH 
 startup script docker 
+setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder  
