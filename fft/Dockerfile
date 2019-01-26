@@ -38,15 +38,16 @@ RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 -p ubuntu u
 RUN echo ubuntu:ubuntu | chpasswd
 USER ubuntu
 WORKDIR /home/ubuntu
-
+#RUN git config --global url.”https://551d4240a72c764f0203f18f5661dcca19b1b934@github.com/".insteadOf “https://github.com/"
+RUN git clone https://551d4240a72c764f0203f18f5661dcca19b1b934@github.com/jordanosborn/MastersProject.git
+WORKDIR /home/ubuntu/MastersProject
 #rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN /home/ubuntu/.cargo/bin/rustup install nightly
 RUN /home/ubuntu/.cargo/bin/rustup default stable
 RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 
-COPY . "/home/ubuntu/"
-ENTRYPOINT ["bash", "./docker_startup.sh"]
+ENTRYPOINT ["bash", "./fft/docker_startup.sh"]
 #CMD ["source", ".cargo/env"]
 #CMD ["rustup", "self", "update"]
 #CMD ["rustup", "update"]
