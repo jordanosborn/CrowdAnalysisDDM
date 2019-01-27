@@ -21,7 +21,9 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp(true)
         .shared_flag(true)
         .flag("-L/usr/local/lib -lopencv_core")
+        .cpp_link_stdlib("stdc++")
         .include("lib/include")
+        .include("/opt/arrayfire/include")
         .include("/usr/local/include/opencv4")
         .compile(output);
 }
