@@ -1,12 +1,15 @@
 git:
   depth: false
 language: rust
+services:
+  - docker
 rust:
   - nightly
 before_script:
-  - rustup component add clippy rustfmt
-  - cd fft
-  - apt install libopencv-dev
+  - cd fft/docker
+  - docker build -t project .
+  - docker run -it project
 script:
+  - cd /home/ubuntu/MastersProject/fft
   - cargo clippy --all-targets --all-features -- -D warnings
   - cargo test
