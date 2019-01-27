@@ -61,4 +61,5 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 COPY ./docker_startup.sh .
 
+
 ENTRYPOINT ["/bin/bash", "./docker_startup.sh"]

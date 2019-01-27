@@ -20,7 +20,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .files(src_files)
         .cpp(true)
         .shared_flag(true)
-        .flag("-L/usr/local/lib -lopencv_core")
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib64 -lopencv_core")
         .cpp_link_stdlib("stdc++")
         .include("lib/include")
         .include("/opt/arrayfire/include")
