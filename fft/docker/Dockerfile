@@ -2,19 +2,22 @@ FROM ubuntu:latest
 ENV LANG C.UTF-8
 
 WORKDIR /home
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y apt-utils sudo nano
+RUN apt-get install -y make cmake git curl gcc g++ wget python3-pip
 
 #Opencv4
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y apt-utils sudo
-RUN apt-get install -y python3-pip libomp-dev libgmp-dev libboost-all-dev cmake make git wget curl gcc g++
-RUN pip3 install --upgrade pip
-RUN apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-RUN apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev
-RUN git clone https://github.com/opencv/opencv.git
-WORKDIR /home/opencv/build
-RUN cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
-RUN make -j8
-RUN make install
+RUN apt-get install -y libopencv-dev
+
+# RUN apt-get install -y libomp-dev libgmp-dev libboost-all-dev
+# RUN pip3 install --upgrade pip
+# RUN apt-get install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+# RUN apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev
+# RUN git clone https://github.com/opencv/opencv.git
+# WORKDIR /home/opencv/build
+# RUN cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local ..
+# RUN make -j8
+# RUN make install
 
 #Arrayfire
 RUN apt-get install -y libfreeimage-dev cmake-curses-gui
@@ -27,11 +30,10 @@ RUN git checkout v3.6
 RUN git submodule init && git submodule update
 WORKDIR /home/arrayfire/build
 RUN cmake .. -DCMAKE_BUILD_TYPE=Release
-RUN make -j8 
+RUN make -j8
 RUN make install
 
 #Other programs
-RUN apt-get install -y nano
 RUN ldconfig
 
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 -p ubuntu ubuntu
@@ -48,7 +50,3 @@ RUN /home/ubuntu/.cargo/bin/rustup default stable
 RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 
 ENTRYPOINT ["bash", "./fft/docker_startup.sh"]
-#CMD ["source", ".cargo/env"]
-#CMD ["rustup", "self", "update"]
-#CMD ["rustup", "update"]
-#CMD ["bash"]
