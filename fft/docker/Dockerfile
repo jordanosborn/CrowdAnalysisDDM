@@ -1,5 +1,8 @@
 FROM ubuntu:latest
 ENV LANG C.UTF-8
+ENV TZ=Europe/London
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /home
 RUN apt-get update && apt-get upgrade -y
