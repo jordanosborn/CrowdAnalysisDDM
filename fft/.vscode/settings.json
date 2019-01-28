@@ -4,6 +4,8 @@
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,
     "cSpell.words": [
+        "gp",
+        "mersenne",
         "vidstream"
     ]
 }
