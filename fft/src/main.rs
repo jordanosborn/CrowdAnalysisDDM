@@ -16,12 +16,12 @@ fn times<'a>(spans: &'a Vec<fl::Span>) -> Vec<(&'a str, f64)> {
 fn main() {
     fl::span_of("name", || {
         af::set_backend(af::Backend::OPENCL);
-        let num_rows: u64 = 5000;
-        let num_cols: u64 = 3000;
+        let num_rows: u64 = 5;
+        let num_cols: u64 = 3;
         let dims = af::Dim4::new(&[num_rows, num_cols, 1, 1]);
         let engine = af::RandomEngine::new(af::RandomEngineType::MERSENNE_GP11213, None);
         let a: af::Array<f32> = af::random_uniform(dims, &engine);
-        //af::af_print!("Create a 5-by-3 matrix of random floats on the GPU", a);
+        af::af_print!("Create a 5-by-3 matrix of random floats on the GPU", a);
     });
     let spans = fl::spans();
     let ti = times(&spans);
@@ -29,5 +29,5 @@ fn main() {
         println!("{} {}ms", x, y);
     });
     let id = image::start_camera_capture_safe();
-    
+
 }

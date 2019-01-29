@@ -2,4 +2,4 @@
 linker = "g++-8"
 
 [term]
-verbose = true
+# verbose = true
