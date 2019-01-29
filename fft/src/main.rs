@@ -28,6 +28,6 @@ fn main() {
     ti.iter().for_each(|(x, y)| {
         println!("{} {}ms", x, y);
     });
-    let id = image::start_camera_capture_safe();
+    let id = image::opencv::start_camera_capture_safe();
 
 }

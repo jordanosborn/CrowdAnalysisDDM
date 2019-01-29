@@ -4,6 +4,7 @@
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,
     "cSpell.words": [
+        "cmat",
         "gp",
         "highgui",
         "mersenne",
