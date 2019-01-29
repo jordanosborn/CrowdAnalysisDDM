@@ -5,7 +5,11 @@
     "python.unitTest.nosetestsEnabled": false,
     "cSpell.words": [
         "gp",
+        "highgui",
         "mersenne",
-        "vidstream"
+        "named",
+        "prin",
+        "vidstream",
+        "window"
     ]
 }

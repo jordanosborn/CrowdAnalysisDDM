@@ -11,12 +11,10 @@ cc = { version = "1.0.28", features = ["parallel"] }
 [dependencies]
 rayon = "1.0.3"
 arrayfire = "3.6.0"
-rand = "0.6.4"
 maplit = "1.0.1"
 image = "0.21.0"
 flame = "0.2.2"
 indicatif = "0.11.0"
-libc = "0.2.0"
-gnuplot = "0.0.26"
+libc = "0.2.48"
+gnuplot = "0.0.27"
 cute = "0.3.0"
-
