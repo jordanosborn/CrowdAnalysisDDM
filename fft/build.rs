@@ -23,7 +23,6 @@ mod unix {
     }
 }
 
-
 #[cfg(target_family = "unix")]
 fn build(src_files: Vec<&str>, output: &str) {
     cc::Build::new()

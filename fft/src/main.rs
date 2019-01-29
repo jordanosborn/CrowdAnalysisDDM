@@ -6,11 +6,11 @@ use rayon::prelude::*;
 
 pub mod image;
 
-
 fn times<'a>(spans: &'a Vec<fl::Span>) -> Vec<(&'a str, f64)> {
-    spans.par_iter().map(|x| {
-        (x.name.as_ref(), (x.delta as f64) / (10.0f64).powi(6))
-    }).collect::<Vec<(&'a str, f64)>>()
+    spans
+        .par_iter()
+        .map(|x| (x.name.as_ref(), (x.delta as f64) / (10.0f64).powi(6)))
+        .collect::<Vec<(&'a str, f64)>>()
 }
 
 fn main() {
@@ -28,6 +28,5 @@ fn main() {
     ti.iter().for_each(|(x, y)| {
         println!("{} {}ms", x, y);
     });
-    let id = image::opencv::start_camera_capture_safe();
-
+    let _id = image::opencv::start_camera_capture_safe();
 }

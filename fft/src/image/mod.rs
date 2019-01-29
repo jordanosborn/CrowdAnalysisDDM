@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 pub mod opencv {
-    use libc::{c_int, c_char, c_void, size_t};
+    use libc::{c_char, c_int, c_void, size_t};
 
     extern "C" {
         fn start_capture(s: *const c_char) -> size_t;
@@ -14,7 +14,6 @@ pub mod opencv {
         fn mat_drop(cmat: *mut CMat);
     }
 
-
     #[derive(Clone, Debug)]
     pub enum CMat {}
 
@@ -24,13 +23,21 @@ pub mod opencv {
         }
     }
 
-    impl Drop for CMat {
+    impl Drop for Mat {
         fn drop(&mut self) {
             unsafe {
-                mat_drop(self);
+                mat_drop(self.inner);
             }
         }
     }
+
+    unsafe impl Send for CMat {}
+    unsafe impl Send for Mat {}
+    // impl Into<CMat> for Mat {
+    //     fn into(self) -> CMat {
+    //         unsafe { *self.inner }
+    //     }
+    // }
 
     #[derive(Debug)]
     pub struct Mat {
@@ -50,6 +57,18 @@ pub mod opencv {
         pub channels: c_int,
     }
 
+    impl Mat {
+        #[inline]
+        pub(crate) fn from_raw(raw: *mut CMat) -> Mat {
+            Mat {
+                inner: raw,
+                rows: unsafe { mat_rows(raw) },
+                cols: unsafe { mat_cols(raw) },
+                depth: unsafe { mat_depth(raw) },
+                channels: unsafe { mat_channels(raw) },
+            }
+        }
+    }
 
     trait CString {
         fn c_string(&self) -> Vec<i8>;
@@ -57,39 +76,35 @@ pub mod opencv {
 
     impl CString for str {
         fn c_string(&self) -> Vec<i8> {
-            self.as_bytes().iter().map(|&x| {
-                x as i8
-            }).collect::<Vec<i8>>()
+            self.as_bytes()
+                .iter()
+                .map(|&x| x as i8)
+                .collect::<Vec<i8>>()
         }
     }
 
     pub fn start_capture_safe(s: &str) -> usize {
         let c_string = s.c_string();
-        unsafe {
-            start_capture(c_string.as_ptr())
-        }
+        unsafe { start_capture(c_string.as_ptr()) }
     }
 
     pub fn start_camera_capture_safe() -> usize {
-        unsafe {
-            start_camera_capture()
-        }
+        unsafe { start_camera_capture() }
     }
 
     pub fn get_frame_safe(stream_id: usize) -> Vec<(u8, u8, u8)> {
-        let ptr: *const c_void;
+        let _ptr: *const c_void;
         unsafe {
-            ptr = get_frame(stream_id);
+            _ptr = get_frame(stream_id);
         }
-        vec![(1u8,2u8,3u8)]
+        vec![(1u8, 2u8, 3u8)]
     }
 }
-
 
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
+    // use super::*;
 
     // #[test]
     // fn test_add() {
