@@ -21,17 +21,27 @@ size_t start_camera_capture() {
 }
 
 void *get_frame(size_t stream_id) {
-    cv::Mat *frame;
-    if (!streams[stream_id].read(*frame)) {
+    cv::Mat frame;
+    if (!streams[stream_id].read(frame)) {
         return NULL;
     }
-    cv::flip(*frame, *frame, 1);
-    cv::cvtColor(*frame, *frame, cv::COLOR_BGR2RGB);
-    return (void*)frame;
+    cv::flip(frame, frame, 1);
+    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+    auto frame_ptr = new cv::Mat(frame);
+    return (void*)frame_ptr;
 }
 
 void show(const cv::Mat& frame) {
     cv::imshow("cam", frame);
+}
+
+void show_next(size_t stream_id) {
+    cv::Mat frame;
+    cv::namedWindow("cam", cv::WINDOW_AUTOSIZE);
+    while (streams[stream_id].read(frame)) {
+        cv::imshow("cam", frame);
+        cv::waitKey(30);
+    }
 }
 
 void *mat_new() {
@@ -58,4 +68,29 @@ int mat_channels(const cv::Mat* matrix) {
 void mat_drop(cv::Mat *matrix) {
     delete matrix;
     matrix = nullptr;
+}
+
+
+int mat_type(const cv::Mat* const mat) {
+    return mat->type();
+}
+
+const uint8_t* mat_data(const cv::Mat* const mat) {
+    return mat->data;
+}
+
+size_t mat_total(const cv::Mat* const mat) {
+    return mat->total();
+}
+
+size_t mat_elem_size(const cv::Mat* const mat) {
+    return mat->elemSize();
+}
+
+size_t mat_elem_size1(const cv::Mat* const mat) {
+    return mat->elemSize1();
+}
+
+size_t mat_step1(const cv::Mat* const mat, int i) {
+    return mat->step1(i);
 }

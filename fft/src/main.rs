@@ -4,7 +4,7 @@ use arrayfire::print_gen;
 use flame as fl;
 use rayon::prelude::*;
 
-pub mod image;
+pub mod native;
 
 fn times(spans: &[fl::Span]) -> Vec<(&str, f64)> {
     spans
@@ -28,5 +28,9 @@ fn main() {
     ti.iter().for_each(|(x, y)| {
         println!("{} {}ms", x, y);
     });
-    let _id = image::opencv::start_camera_capture_safe();
+    let id = native::opencv::start_camera_capture_safe();
+    loop {
+        let frame = native::opencv::get_frame_safe(id);
+        println!("{:?}", frame.data()[0]);
+    }
 }

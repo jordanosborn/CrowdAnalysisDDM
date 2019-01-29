@@ -10,6 +10,7 @@
         "mersenne",
         "named",
         "prin",
+        "repr",
         "vidstream",
         "window"
     ]

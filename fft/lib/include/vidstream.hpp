@@ -13,7 +13,7 @@ static std::vector<cv::VideoCapture> streams;
 
 using Pixel = cv::Point3_<uint8_t>;
 
-extern "C" void* get_frame(size_t);
+extern "C" void *get_frame(size_t);
 
 extern "C" size_t start_capture(const char*);
 
@@ -36,5 +36,19 @@ extern "C" int mat_channels(const cv::Mat*);
 extern "C" const uint8_t *mat_data(const cv::Mat*);
 
 extern "C" void mat_drop(cv::Mat*);
+
+
+extern "C" int mat_type(const cv::Mat* const);
+
+extern "C" const uint8_t* mat_data(const cv::Mat* const);
+
+extern "C" size_t mat_total(const cv::Mat* const);
+
+extern "C" size_t mat_elem_size(const cv::Mat* const);
+
+extern "C" size_t mat_elem_size1(const cv::Mat* const);
+
+extern "C" size_t mat_step1(const cv::Mat* const, int);
+
 
 #endif

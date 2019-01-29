@@ -1,11 +1,20 @@
 #[cfg(unix)]
 mod unix {
     pub fn opencv_include() -> &'static str {
-        "/usr/local/include/opencv4"
+        if cfg!(linux) {
+            "/usr/local/include/opencv4"
+        } else {
+            "/usr/local/Cellar/opencv/4.0.1/include/opencv4"
+        }
     }
 
     pub fn opencv_link() {
-        println!("cargo:rustc-link-search=native=/usr/local/lib");
+        if cfg!(linux) {
+            println!("cargo:rustc-link-search=native=/usr/local/lib");
+        } else {
+            println!("cargo:rustc-link-search=native=/usr/local/Cellar/opencv/4.0.1/lib");
+        }
+
         println!("cargo:rustc-link-lib=opencv_core");
         println!("cargo:rustc-link-lib=opencv_features2d");
         println!("cargo:rustc-link-lib=opencv_xfeatures2d");
@@ -35,7 +44,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 -std=c++17 -lopencv_core -lopencv_highgui -fopenmp -march=native")
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_core -lopencv_highgui -fopenmp -march=native")
         .compile(output);
     unix::opencv_link();
 }
