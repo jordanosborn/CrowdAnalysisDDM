@@ -29,5 +29,5 @@ fn main() {
         println!("{} {}ms", x, y);
     });
     let id = image::start_camera_capture_safe();
-    image::show_next_safe(id);
+    
 }

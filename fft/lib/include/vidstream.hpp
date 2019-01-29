@@ -9,7 +9,7 @@
 #include <opencv2/highgui.hpp>
 
 
-static std::vector<cv::VideoCapture*> streams;
+static std::vector<cv::VideoCapture> streams;
 
 using Pixel = cv::Point3_<uint8_t>;
 

@@ -1,8 +1,7 @@
 extern "C" {
-    //fn _start_capture(s: *const libc::c_char) -> libc::size_t;
+    fn start_capture(s: *const libc::c_char) -> libc::size_t;
     fn start_camera_capture() -> libc::size_t;
-    fn show_next(stream_id: libc::size_t);
-    fn get_frame(stream_id: libc::size_t) -> *const libc::c_void;
+    // fn get_frame(stream_id: libc::size_t) -> *const libc::c_void;
 }
 
 trait CString {
@@ -17,12 +16,12 @@ impl CString for str {
     }
 }
 
-// pub fn start_capture(s: &str) -> usize {
-//     let c_string = s.c_string();
-//     unsafe {
-//         _start_capture(c_string.as_ptr())
-//     }
-// }
+pub fn start_capture_safe(s: &str) -> usize {
+    let c_string = s.c_string();
+    unsafe {
+        start_capture(c_string.as_ptr())
+    }
+}
 
 pub fn start_camera_capture_safe() -> usize {
     unsafe {
@@ -30,11 +29,6 @@ pub fn start_camera_capture_safe() -> usize {
     }
 }
 
-pub fn show_next_safe(stream_id: usize) {
-    unsafe {
-        show_next(stream_id);
-    }
-}
 
 
 
