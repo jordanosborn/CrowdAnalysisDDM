@@ -53,7 +53,8 @@ pub mod opencv {
         fn mat_elem_size(cmat: *const CMat) -> usize;
         fn mat_elem_size1(cmat: *const CMat) -> usize;
         fn mat_type(cmat: *const CMat) -> CvType;
-        pub fn show_next(stream_id: size_t);
+        pub fn write(filename: *const c_char, cmat: *const CMat);
+        //pub fn show_next(stream_id: size_t);
     }
 
     #[derive(Clone, Debug)]
@@ -152,7 +153,7 @@ pub mod opencv {
         }
     }
 
-    trait CString {
+    pub trait CString {
         fn c_string(&self) -> Vec<i8>;
     }
 

@@ -21,6 +21,8 @@ extern "C" size_t start_camera_capture();
 
 extern "C" void show(const cv::Mat&);
 
+extern "C" void write(const char*, const cv::Mat*);
+
 extern "C" void show_next(size_t stream_id);
 
 extern "C" void *mat_new();

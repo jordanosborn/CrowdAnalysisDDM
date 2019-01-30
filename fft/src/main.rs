@@ -3,6 +3,7 @@ use arrayfire as af;
 use arrayfire::print_gen;
 use flame as fl;
 use rayon::prelude::*;
+use native::opencv::CString;
 
 pub mod native;
 
@@ -29,8 +30,17 @@ fn main() {
         println!("{} {}ms", x, y);
     });
     let id = native::opencv::start_camera_capture_safe();
+    let mut i = 0;
     loop {
         let frame = native::opencv::get_frame_safe(id);
-        println!("{:?}", frame.data()[0]);
+        if i == 20 {
+            unsafe {
+                native::opencv::write("/Users/jordan/Code/MastersProject/fft/homout.png".c_string().as_ptr(), frame.inner);
+            }
+            // let arr = af::Array::new(frame.data(), af::Dim4::new(&[frame.rows as u64, frame.cols as u64, 1, 1]));
+            // af::save_image_native(String::from("test.png"), &arr);
+            break;
+        }
+        i += 1;
     }
 }

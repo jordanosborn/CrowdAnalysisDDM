@@ -25,14 +25,23 @@ void *get_frame(size_t stream_id) {
     if (!streams[stream_id].read(frame)) {
         return NULL;
     }
-    cv::flip(frame, frame, 1);
-    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+    //cv::flip(frame, frame, 1);
+    //cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     auto frame_ptr = new cv::Mat(frame);
     return (void*)frame_ptr;
 }
 
 void show(const cv::Mat& frame) {
     cv::imshow("cam", frame);
+}
+
+void write(const char* filename, const cv::Mat* frame) {
+    std::cout << "£43";
+    try {
+        cv::imwrite(filename, *frame);
+    } catch(std::exception e) {
+
+    }
 }
 
 void show_next(size_t stream_id) {

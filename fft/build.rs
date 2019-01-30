@@ -53,3 +53,13 @@ fn main() {
     let src_files = vec!["lib/src/vidstream.cpp"];
     build(src_files, "vidstream");
 }
+
+#[allow(dead_code)]
+fn get_files(path: &str) -> Vec<std::path::PathBuf> {
+    std::fs::read_dir(path)
+        .unwrap()
+        .into_iter()
+        .filter_map(|x| x.ok().map(|x| x.path()))
+        .filter(|x| x.extension().map(|e| e == "cpp").unwrap_or(false))
+        .collect::<Vec<_>>()
+}
