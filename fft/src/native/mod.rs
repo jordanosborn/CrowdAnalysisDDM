@@ -1,10 +1,10 @@
-#[allow(dead_code)]
+#[allow(dead_code, unused_variables)]
 pub mod opencv {
     use libc::{c_char, c_int, size_t};
 
     #[repr(C)]
     #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
-    pub enum CvType {
+    enum CvType {
         /// 8 bit unsigned, single channel (grey image)
         Cv8UC1 = 0,
         /// 8 bit signed, single channel (grey image)
@@ -53,7 +53,7 @@ pub mod opencv {
         fn mat_elem_size(cmat: *const CMat) -> usize;
         fn mat_elem_size1(cmat: *const CMat) -> usize;
         fn mat_type(cmat: *const CMat) -> CvType;
-        pub fn write(filename: *const c_char, cmat: *const CMat);
+        //pub fn write(filename: *const c_char, cmat: *const CMat);
         //pub fn show_next(stream_id: size_t);
     }
 
@@ -88,30 +88,68 @@ pub mod opencv {
         pub(crate) inner: *mut CMat,
 
         /// Number of columns
-        pub cols: c_int,
+        pub cols: u64,
 
         /// Number of rows
-        pub rows: c_int,
+        pub rows: u64,
 
         /// Depth of this mat (it should be the type).
-        pub depth: c_int,
+        pub depth: u64,
 
         /// Channels of this mat
-        pub channels: c_int,
+        pub channels: u64,
     }
+
+    pub struct Image {
+        pub data: arrayfire::Array<u8>,
+        pub channels: u64,
+        pub rows: u64,
+        pub cols: u64,
+        pub depth: u64
+    }
+
+    impl Image {
+        pub fn new_from_stream(stream_id: usize) -> Image {
+            let frame = get_frame_safe(stream_id);
+
+            //TODO: must convert to pixel array (rgb) not straight data do some perf tests
+            let data = arrayfire::Array::new(frame.data(), arrayfire::Dim4::new(&[frame.rows, frame.cols, 1, 1]));
+
+            Image {
+                data,
+                channels: frame.channels,
+                rows: frame.rows,
+                cols: frame.cols,
+                depth: frame.depth
+            }
+        }
+
+        pub fn new_from_frame(frame: &Mat) -> Image {
+            let data = frame.data();
+            Image {
+                data: arrayfire::Array::new(frame.data(), arrayfire::Dim4::new(&[frame.rows, frame.cols, 0, 0])),
+                channels: frame.channels,
+                rows: frame.rows,
+                cols: frame.cols,
+                depth: frame.depth
+            }
+        }
+    }
+
+
 
     impl Mat {
         #[inline]
         pub(crate) fn from_raw(raw: *mut CMat) -> Mat {
             Mat {
                 inner: raw,
-                rows: unsafe { mat_rows(raw) },
-                cols: unsafe { mat_cols(raw) },
-                depth: unsafe { mat_depth(raw) },
-                channels: unsafe { mat_channels(raw) },
+                rows: unsafe { mat_rows(raw) as u64},
+                cols: unsafe { mat_cols(raw) as u64 },
+                depth: unsafe { mat_depth(raw) as u64},
+                channels: unsafe { mat_channels(raw) as u64 },
             }
         }
-        /// Returns the raw data (as a `u8` pointer)
+        /// Returns the raw data (as a u8 array
         pub fn data(&self) -> &[u8] {
             let bytes = unsafe { mat_data(self.inner) };
             let len = self.total() * self.elem_size();

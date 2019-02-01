@@ -35,15 +35,6 @@ void show(const cv::Mat& frame) {
     cv::imshow("cam", frame);
 }
 
-void write(const char* filename, const cv::Mat* frame) {
-    std::cout << "£43";
-    try {
-        cv::imwrite(filename, *frame);
-    } catch(std::exception e) {
-
-    }
-}
-
 void show_next(size_t stream_id) {
     cv::Mat frame;
     cv::namedWindow("cam", cv::WINDOW_AUTOSIZE);
