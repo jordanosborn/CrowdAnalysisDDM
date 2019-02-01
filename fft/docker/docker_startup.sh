@@ -12,6 +12,15 @@ cd MastersProject
 git pull
 
 cd fft
-# cargo test
-# cargo clippy --all-targets --all-features -- -D warnings
-bash
+
+cargo test
+if [[ $? -ne 0 ]]
+then
+  exit $?
+fi
+
+cargo clippy --all-targets --all-features -- -D warnings
+if [[ $? -ne 0 ]]
+then
+  exit $?
+fi
