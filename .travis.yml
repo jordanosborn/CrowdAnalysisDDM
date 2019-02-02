@@ -1,10 +1,7 @@
 git:
   depth: false
-language: rust
 services:
   - docker
-rust:
-  - nightly
 before_script:
   - cd fft/docker
   - docker build -t project .
