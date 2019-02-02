@@ -34,18 +34,22 @@ mod unix {
 
 #[cfg(target_family = "unix")]
 fn build(src_files: Vec<&str>, output: &str) {
-    cc::Build::new()
+    let comp = cc::Build::new()
         .files(src_files)
         .cpp(true)
         .shared_flag(true)
-        .compiler("g++-8")
         .include("lib/include")
         .include("/usr/local/include")
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native")
-        .compile(output);
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native");
+        if cfg!(linux) {
+            comp.compiler("g++");
+        } else {
+            comp.compiler("g++-8");
+        }
+        comp.compile(output);
     unix::opencv_link();
 }
 
