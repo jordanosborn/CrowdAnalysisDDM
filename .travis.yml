@@ -8,8 +8,5 @@ rust:
 before_script:
   - cd fft/docker
   - docker build -t project .
-  - docker run -it project
 script:
-  - cd /home/ubuntu/MastersProject/fft
-  - cargo clippy --all-targets --all-features -- -D warnings
-  - cargo test
+  - docker run -it project
