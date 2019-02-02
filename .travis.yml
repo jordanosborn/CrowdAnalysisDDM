@@ -1,5 +1,6 @@
 git:
   depth: false
+language: bash
 services:
   - docker
 before_script:
