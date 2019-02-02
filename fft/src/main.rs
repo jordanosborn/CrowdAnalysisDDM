@@ -2,12 +2,11 @@ use arrayfire as af;
 
 use arrayfire::print_gen;
 use flame as fl;
-use rayon::prelude::*;
 use native::*;
+use rayon::prelude::*;
 
-
-pub mod utils;
 pub mod native;
+pub mod utils;
 
 fn times(spans: &[fl::Span]) -> Vec<(&str, f64)> {
     spans

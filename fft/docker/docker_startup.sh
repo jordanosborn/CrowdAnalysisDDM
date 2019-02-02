@@ -1,5 +1,11 @@
 #!/bin/bash
 
+exit_if_failed() {
+  if [[ $1 -ne 0 ]] then
+    exit $1
+  fi
+}
+
 cd $HOME
 source $HOME/.cargo/env
 rustup self update
@@ -14,13 +20,8 @@ git pull
 cd fft
 
 cargo test
-if [[ $? -ne 0 ]]
-then
-  exit $?
-fi
+exit_if_failed $?
 
 cargo clippy --all-targets --all-features -- -D warnings
-if [[ $? -ne 0 ]]
-then
-  exit $?
-fi
+exit_if_failed $?
+exit 0

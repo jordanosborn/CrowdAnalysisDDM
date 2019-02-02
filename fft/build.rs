@@ -32,9 +32,9 @@ mod unix {
     }
 }
 
-#[cfg(target_family = "unix")]
+#[cfg(target_os = "linux")]
 fn build(src_files: Vec<&str>, output: &str) {
-    let comp = cc::Build::new()
+    cc::Build::new()
         .files(src_files)
         .cpp(true)
         .shared_flag(true)
@@ -43,13 +43,26 @@ fn build(src_files: Vec<&str>, output: &str) {
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native");
-        if cfg!(linux) {
-            comp.compiler("g++");
-        } else {
-            comp.compiler("g++-8");
-        }
-        comp.compile(output);
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native")
+        .compiler("g++")
+        .compile(output);
+    unix::opencv_link();
+}
+
+#[cfg(target_os = "macos")]
+fn build(src_files: Vec<&str>, output: &str) {
+    cc::Build::new()
+        .files(src_files)
+        .cpp(true)
+        .shared_flag(true)
+        .include("lib/include")
+        .include("/usr/local/include")
+        .include("/opt/arrayfire/include")
+        .include(unix::opencv_include())
+        .cpp_link_stdlib("stdc++")
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native")
+        .compiler("g++-8")
+        .compile(output);
     unix::opencv_link();
 }
 

@@ -53,8 +53,8 @@ pub mod opencv {
         fn mat_elem_size(cmat: *const CMat) -> usize;
         fn mat_elem_size1(cmat: *const CMat) -> usize;
         fn mat_type(cmat: *const CMat) -> CvType;
-        //pub fn write(filename: *const c_char, cmat: *const CMat);
-        //pub fn show_next(stream_id: size_t);
+    //pub fn write(filename: *const c_char, cmat: *const CMat);
+    //pub fn show_next(stream_id: size_t);
     }
 
     #[derive(Clone, Debug)]
@@ -105,7 +105,7 @@ pub mod opencv {
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
-        pub depth: u64
+        pub depth: u64,
     }
 
     impl Image {
@@ -113,39 +113,43 @@ pub mod opencv {
             let frame = get_frame_safe(stream_id);
 
             //TODO: must convert to pixel array (rgb) not straight data do some perf tests
-            let data = arrayfire::Array::new(frame.data(), arrayfire::Dim4::new(&[frame.rows, frame.cols, 1, 1]));
+            let data = arrayfire::Array::new(
+                frame.data(),
+                arrayfire::Dim4::new(&[frame.rows, frame.cols, 1, 1]),
+            );
 
             Image {
                 data,
                 channels: frame.channels,
                 rows: frame.rows,
                 cols: frame.cols,
-                depth: frame.depth
+                depth: frame.depth,
             }
         }
 
         pub fn new_from_frame(frame: &Mat) -> Image {
             let data = frame.data();
             Image {
-                data: arrayfire::Array::new(frame.data(), arrayfire::Dim4::new(&[frame.rows, frame.cols, 0, 0])),
+                data: arrayfire::Array::new(
+                    frame.data(),
+                    arrayfire::Dim4::new(&[frame.rows, frame.cols, 0, 0]),
+                ),
                 channels: frame.channels,
                 rows: frame.rows,
                 cols: frame.cols,
-                depth: frame.depth
+                depth: frame.depth,
             }
         }
     }
-
-
 
     impl Mat {
         #[inline]
         pub(crate) fn from_raw(raw: *mut CMat) -> Mat {
             Mat {
                 inner: raw,
-                rows: unsafe { mat_rows(raw) as u64},
+                rows: unsafe { mat_rows(raw) as u64 },
                 cols: unsafe { mat_cols(raw) as u64 },
-                depth: unsafe { mat_depth(raw) as u64},
+                depth: unsafe { mat_depth(raw) as u64 },
                 channels: unsafe { mat_channels(raw) as u64 },
             }
         }
