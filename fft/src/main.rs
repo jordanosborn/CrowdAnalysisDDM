@@ -4,6 +4,7 @@ use arrayfire::print_gen;
 use flame as fl;
 use native::*;
 use rayon::prelude::*;
+use std::sync::mpsc;
 
 pub mod native;
 pub mod utils;
@@ -16,6 +17,8 @@ fn times(spans: &[fl::Span]) -> Vec<(&str, f64)> {
 }
 
 fn main() {
+    let (_tx, _rx) = mpsc::channel::<opencv::Mat>();
+
     fl::span_of("name", || {
         af::set_backend(af::Backend::OPENCL);
         let num_rows: u64 = 5;
