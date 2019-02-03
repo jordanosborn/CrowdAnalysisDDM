@@ -12,7 +12,7 @@ pub mod utils;
 fn main() {
     let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
     let id = opencv::start_camera_capture_safe();
-    let stream_thread = std::thread::spawn(move || loop {
+    let stream_thread = std::thread::spawn(move || for _ in 1..2 {
         let frame = opencv::get_frame_safe(id);
         match frame {
             None => {
@@ -59,9 +59,9 @@ fn main() {
     process_thread.join().unwrap();
     flame::span_of("test", || {
         let frame = opencv::get_frame_safe(id).unwrap();
-        let q = opencv::Image::new(&frame);
-        let q = opencv::Image::from(q.data * 5);
-        let img = q.to_rgb_array();
+        let q = opencv::GrayImage::new(&frame);
+        //let p = opencv::GrayImage::from(q.data * 5u8);
+        let img = q.to_grayscale_array();
         img.save("out.png").unwrap();
     });
     utils::print_times();
