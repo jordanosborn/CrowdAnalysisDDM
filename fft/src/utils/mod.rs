@@ -27,10 +27,11 @@ pub trait PixelInt {
     fn new_pixel(dat: [u8; 3]) -> Pixel;
     fn as_pixel(self) -> image::Rgb<u8>;
 }
-
+//TODO: add operations on pixels.
 impl PixelInt for Pixel {
     #[inline]
     fn new_pixel(dat: [u8; 3]) -> Pixel {
+        //Opencv gives a BGR image this converts to RGB
         ((dat[2] as u32) << 16) | ((dat[1] as u32) << 8) | (dat[0] as u32)
     }
     #[inline]

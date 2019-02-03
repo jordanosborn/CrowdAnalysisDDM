@@ -2,7 +2,6 @@
 pub mod opencv {
     use image;
     use libc::{c_char, c_int, size_t};
-    use rayon::prelude::*;
 
     use crate::utils::{Pixel, PixelInt};
 
@@ -113,10 +112,17 @@ pub mod opencv {
         pub depth: u64,
     }
 
+    pub struct GrayImage {
+        pub data: arrayfire::Array<u8>,
+        pub channels: u64,
+        pub rows: u64,
+        pub cols: u64,
+        pub depth: u64,
+    }
+
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
-            //TODO: IN HERE!
             let mut vector: Vec<u32> = Vec::with_capacity((frame.cols * frame.rows) as usize);
             for index in 0..vector.capacity() {
                 let mut arr: [u8; 3] = Default::default();
@@ -135,6 +141,17 @@ pub mod opencv {
             }
         }
 
+        pub fn from(arr: arrayfire::Array<Pixel>) -> Image {
+            let dims = arr.dims().get().to_vec();
+            Image {
+                data: arr,
+                channels: 3,
+                cols: dims[0],
+                rows: dims[1],
+                depth: 0,
+            }
+        }
+
         pub fn to_rgb_array(&self) -> image::RgbImage {
             let mut data: Vec<Pixel> = vec![0; (self.rows * self.cols) as usize];
             self.data.host(data.as_mut_slice());
@@ -145,6 +162,57 @@ pub mod opencv {
                         as u32,
                     (index as f64 / (self.cols as f64)) as u32,
                     Pixel::as_pixel(v),
+                );
+            });
+            buffer
+        }
+    }
+
+    impl GrayImage {
+        pub fn new(frame: &Mat) -> GrayImage {
+            let data = frame.data();
+            let mut vector: Vec<u8> = Vec::with_capacity((frame.cols * frame.rows) as usize);
+            for index in 0..vector.capacity() {
+                let (r, g, b) = match &data[3 * index..(3 * index + 3)] {
+                    [r, g, b] => (*r as f64 / 255.0, *g as f64 / 255.0, *b as f64 / 255.0),
+                    _ => (0.0, 0.0, 0.0),
+                };
+                let greyscale = (0.2126 * r + 0.7152 * g + 0.0722 * b) * (255.0);
+                vector.push(greyscale as u8);
+            }
+            GrayImage {
+                data: arrayfire::Array::new(
+                    vector.as_slice(),
+                    arrayfire::Dim4::new(&[frame.cols, frame.rows, 1, 1]),
+                ),
+                channels: frame.channels,
+                rows: frame.rows,
+                cols: frame.cols,
+                depth: frame.depth,
+            }
+        }
+
+        pub fn from(arr: arrayfire::Array<u8>) -> GrayImage {
+            let dims = arr.dims().get().to_vec();
+            GrayImage {
+                data: arr,
+                channels: 3,
+                cols: dims[0],
+                rows: dims[1],
+                depth: 0,
+            }
+        }
+
+        pub fn to_grayscale_array(&self) -> image::GrayImage {
+            let mut data: Vec<u8> = vec![0u8; (self.rows * self.cols) as usize];
+            self.data.host(data.as_mut_slice());
+            let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
+            data.iter().enumerate().for_each(|(index, &v)| {
+                buffer.put_pixel(
+                    ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
+                        as u32,
+                    (index as f64 / (self.cols as f64)) as u32,
+                    image::Luma { data: [v] },
                 );
             });
             buffer

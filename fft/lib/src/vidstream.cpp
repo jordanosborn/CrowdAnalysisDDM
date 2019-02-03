@@ -26,8 +26,8 @@ void *get_frame(size_t stream_id) {
     if (!streams[stream_id].read(frame)) {
         return NULL;
     }
-    //cv::flip(frame, frame, 1);
-    //cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+    cv::flip(frame, frame, 1);
+    //cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
     auto frame_ptr = new cv::Mat(frame);
     return (void*)frame_ptr;
 }
