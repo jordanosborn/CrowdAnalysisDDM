@@ -4,6 +4,7 @@ pub mod opencv {
 
     #[repr(C)]
     #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[allow(clippy::enum_variant_names)]
     enum CvType {
         /// 8 bit unsigned, single channel (grey image)
         Cv8UC1 = 0,
