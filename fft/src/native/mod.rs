@@ -110,25 +110,7 @@ pub mod opencv {
     }
 
     impl Image {
-        pub fn new_from_stream(stream_id: usize) -> Image {
-            let frame = get_frame_safe(stream_id);
-
-            //TODO: must convert to pixel array (rgb) not straight data do some perf tests
-            let data = arrayfire::Array::new(
-                frame.data(),
-                arrayfire::Dim4::new(&[frame.rows, frame.cols, 1, 1]),
-            );
-
-            Image {
-                data,
-                channels: frame.channels,
-                rows: frame.rows,
-                cols: frame.cols,
-                depth: frame.depth,
-            }
-        }
-
-        pub fn new_from_frame(frame: &Mat) -> Image {
+        pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
             Image {
                 data: arrayfire::Array::new(
@@ -218,8 +200,13 @@ pub mod opencv {
         unsafe { start_camera_capture() }
     }
     //not done
-    pub fn get_frame_safe(stream_id: usize) -> Mat {
-        unsafe { Mat::from_raw(get_frame(stream_id)) }
+    pub fn get_frame_safe(stream_id: usize) -> Option<Mat> {
+        let frame = unsafe { get_frame(stream_id) };
+        if frame.is_null() {
+            None
+        } else {
+            Some(Mat::from_raw(frame))
+        }
     }
 }
 

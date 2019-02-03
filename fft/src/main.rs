@@ -1,48 +1,66 @@
-use arrayfire as af;
+// use arrayfire as af;
 
-use arrayfire::print_gen;
-use flame as fl;
+// use arrayfire::print_gen;
+// use flame as fl;
 use native::*;
-use rayon::prelude::*;
+// use rayon::prelude::*;
 use std::sync::mpsc;
 
 pub mod native;
 pub mod utils;
 
-fn times(spans: &[fl::Span]) -> Vec<(&str, f64)> {
-    spans
-        .par_iter()
-        .map(|x| (x.name.as_ref(), (x.delta as f64) / (10.0f64).powi(6)))
-        .collect::<Vec<(&str, f64)>>()
-}
-
 fn main() {
-    let (_tx, _rx) = mpsc::channel::<opencv::Mat>();
-
-    fl::span_of("name", || {
-        af::set_backend(af::Backend::OPENCL);
-        let num_rows: u64 = 5;
-        let num_cols: u64 = 3;
-        let dims = af::Dim4::new(&[num_rows, num_cols, 1, 1]);
-        let engine = af::RandomEngine::new(af::RandomEngineType::MERSENNE_GP11213, None);
-        let a: af::Array<f32> = af::random_uniform(dims, &engine);
-        af::af_print!("Create a 5-by-3 matrix of random floats on the GPU", a);
-    });
-    let spans = fl::spans();
-    let ti = times(&spans);
-    ti.iter().for_each(|(x, y)| {
-        println!("{} {}ms", x, y);
-    });
+    let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
     let id = opencv::start_camera_capture_safe();
-    let mut i = 0;
-    loop {
-        let frame = opencv::get_frame_safe(id);
-        println!("{:?}", &frame.data()[1..20]);
-        if i == 20 {
-            // let arr = af::Array::new(frame.data(), af::Dim4::new(&[frame.rows as u64, frame.cols as u64, 1, 1]));
-            // af::save_image_native(String::from("test.png"), &arr);
-            break;
+    let stream_thread = std::thread::spawn(move || {
+        for _ in 1..100 {
+            //loop
+            let frame = opencv::get_frame_safe(id);
+            match frame {
+                None => {
+                    match tx.send(None) {
+                        _ => {
+                            break;
+                        }
+                    };
+                }
+                Some(value) => match tx.send(Some(value)) {
+                    Ok(_) => {
+                        continue;
+                    }
+                    Err(_) => {
+                        println!("Failed to send frame!");
+                    }
+                },
+            }
         }
-        i += 1;
-    }
+    });
+
+    let process_thread = std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::new(2, 0));
+        loop {
+            match rx.recv() {
+                Ok(value) => {
+                    if let Some(v) = value {
+                        let dat = v.data();
+                        println!("{:?}", &dat[0..5]);
+                    } else {
+                        println!("aa");
+                        break;
+                    }
+                }
+                Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
+                    std::sync::mpsc::TryRecvError::Disconnected => {
+                        break;
+                    }
+                    std::sync::mpsc::TryRecvError::Empty => {
+                        continue;
+                    }
+                },
+            }
+        }
+    });
+
+    stream_thread.join().unwrap();
+    process_thread.join().unwrap();
 }
