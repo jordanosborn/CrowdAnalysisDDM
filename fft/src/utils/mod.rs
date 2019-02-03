@@ -32,7 +32,7 @@ impl PixelInt for Pixel {
     #[inline]
     fn new_pixel(dat: [u8; 3]) -> Pixel {
         //Opencv gives a BGR image this converts to RGB
-        ((dat[2] as u32) << 16) | ((dat[1] as u32) << 8) | (dat[0] as u32)
+        (u32::from(dat[2]) << 16) | (u32::from(dat[1]) << 8) | u32::from(dat[0])
     }
     #[inline]
     fn as_pixel(self) -> image::Rgb<u8> {

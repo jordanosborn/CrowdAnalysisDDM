@@ -174,7 +174,7 @@ pub mod opencv {
             let mut vector: Vec<u8> = Vec::with_capacity((frame.cols * frame.rows) as usize);
             for index in 0..vector.capacity() {
                 let (r, g, b) = match &data[3 * index..(3 * index + 3)] {
-                    [r, g, b] => (*r as f64 / 255.0, *g as f64 / 255.0, *b as f64 / 255.0),
+                    [r, g, b] => (f64::from(*r) / 255.0, f64::from(*g) / 255.0, f64::from(*b) / 255.0),
                     _ => (0.0, 0.0, 0.0),
                 };
                 let greyscale = (0.2126 * r + 0.7152 * g + 0.0722 * b) * (255.0);
