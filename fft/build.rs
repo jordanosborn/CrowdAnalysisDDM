@@ -57,7 +57,7 @@ fn get_opencv_flags() -> String {
         .args(&["--cflags", "--libs", "opencv4"])
         .output()
         .expect("failed to execute process");
-    unsafe {String::from_utf8_unchecked(opencv.stdout)}
+    unsafe { String::from_utf8_unchecked(opencv.stdout) }
 }
 
 #[cfg(target_os = "macos")]
