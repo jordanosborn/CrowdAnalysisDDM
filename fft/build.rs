@@ -1,3 +1,5 @@
+use std::process::Command;
+
 #[cfg(unix)]
 mod unix {
     pub fn opencv_include() -> &'static str {
@@ -38,6 +40,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .files(src_files)
         .cpp(true)
         .shared_flag(true)
+        .flag(&get_opencv_flags())
         .include("lib/include")
         .include("/usr/local/include")
         .include("/opt/arrayfire/include")
@@ -49,12 +52,21 @@ fn build(src_files: Vec<&str>, output: &str) {
     unix::opencv_link();
 }
 
+fn get_opencv_flags() -> String {
+    let opencv = Command::new("pkg-config")
+        .args(&["--cflags", "--libs", "opencv4"])
+        .output()
+        .expect("failed to execute process");
+    unsafe {String::from_utf8_unchecked(opencv.stdout)}
+}
+
 #[cfg(target_os = "macos")]
 fn build(src_files: Vec<&str>, output: &str) {
     cc::Build::new()
         .files(src_files)
         .cpp(true)
         .shared_flag(true)
+        .flag(&get_opencv_flags())
         .include("lib/include")
         .include("/usr/local/include")
         .include("/opt/arrayfire/include")

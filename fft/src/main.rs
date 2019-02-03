@@ -13,7 +13,7 @@ fn main() {
     let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
     let id = opencv::start_camera_capture_safe();
     let stream_thread = std::thread::spawn(move || {
-        for _ in 1..100 {
+        loop {
             //loop
             let frame = opencv::get_frame_safe(id);
             match frame {

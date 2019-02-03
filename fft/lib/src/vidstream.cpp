@@ -1,7 +1,8 @@
 #include "../include/vidstream.hpp"
 
 size_t start_capture(const char* filename) {
-    auto stream = cv::VideoCapture(filename);
+    cv::String f(filename);
+    auto stream = cv::VideoCapture(f);
     if (!stream.isOpened()) {
         std::cout << "Failed to open stream - " << filename << "\n";
         exit(-1);
