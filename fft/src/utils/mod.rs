@@ -1,22 +1,6 @@
 use flame as fl;
 use rayon::prelude::*;
 
-#[derive(Debug, Copy, Clone)]
-pub struct Rgb {
-    data: (u8, u8, u8),
-}
-
-#[derive(Debug, Copy, Clone)]
-pub enum PIXEL {
-    RGB(Rgb),
-}
-
-impl<'a> PIXEL {
-    pub fn new_rgb(r: u8, g: u8, b: u8) -> PIXEL {
-        PIXEL::RGB(Rgb { data: (r, g, b) })
-    }
-}
-
 pub fn times() -> Vec<(String, f64)> {
     let spans = fl::spans();
     spans
@@ -35,4 +19,28 @@ pub fn print_times() {
     ti.iter().for_each(|(x, y)| {
         println!("{} {}ms", x, y);
     });
+}
+
+pub type Pixel = u32;
+
+pub trait PixelInt {
+    fn new_pixel(dat: [u8; 3]) -> Pixel;
+    fn as_pixel(self) -> image::Rgb<u8>;
+}
+
+impl PixelInt for Pixel {
+    #[inline]
+    fn new_pixel(dat: [u8; 3]) -> Pixel {
+        ((dat[0] as u32) << 16) | ((dat[1] as u32) << 8) | (dat[2] as u32)
+    }
+    #[inline]
+    fn as_pixel(self) -> image::Rgb<u8> {
+        image::Rgb {
+            data: [
+                (self >> 16) as u8,
+                ((self >> 8) & 0xff) as u8,
+                (self & 0xff) as u8,
+            ],
+        }
+    }
 }

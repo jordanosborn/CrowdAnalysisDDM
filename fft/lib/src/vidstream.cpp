@@ -55,6 +55,7 @@ int mat_rows(const cv::Mat* matrix) {
 }
 
 int mat_cols(const cv::Mat* matrix) {
+    std::cout << matrix->cols;
     return matrix->cols;
 }
 

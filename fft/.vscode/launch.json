@@ -5,7 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch",
+          "type": "gdb",
+          "request": "launch",
+          "name": "Launch Program",
+          "preLaunchTask": "cargo build",
+          "target": "./target/debug/fft",
+          "cwd": "${workspaceRoot}"
+        },
+      {
+        "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "cargo build",
@@ -14,8 +22,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
-            "MIMode": "lldb"
-        }
+        "MIMode": "lldb"
+      }
     ]
 }

@@ -1,6 +1,10 @@
 #[allow(dead_code, unused_variables)]
 pub mod opencv {
+    use image;
     use libc::{c_char, c_int, size_t};
+    use rayon::prelude::*;
+
+    use crate::utils::{Pixel, PixelInt};
 
     #[repr(C)]
     #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
@@ -102,7 +106,7 @@ pub mod opencv {
     }
 
     pub struct Image {
-        pub data: arrayfire::Array<u8>,
+        pub data: arrayfire::Array<u32>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
@@ -112,16 +116,39 @@ pub mod opencv {
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
+            //TODO: IN HERE!
+            let mut vector: Vec<u32> = Vec::with_capacity((frame.cols * frame.rows) as usize);
+            for index in 0..vector.capacity() {
+                let mut arr: [u8; 3] = Default::default();
+                arr.copy_from_slice(&data[3 * index..(3 * index + 3)]);
+                vector.push(u32::new_pixel(arr));
+            }
             Image {
                 data: arrayfire::Array::new(
-                    frame.data(),
-                    arrayfire::Dim4::new(&[frame.rows, frame.cols, 0, 0]),
+                    vector.as_slice(),
+                    arrayfire::Dim4::new(&[frame.cols, frame.rows, 1, 1]),
                 ),
                 channels: frame.channels,
                 rows: frame.rows,
                 cols: frame.cols,
                 depth: frame.depth,
             }
+        }
+
+        pub fn to_rgb_array(&self) -> image::RgbImage {
+            let mut data: Vec<Pixel> = vec![0; (self.rows * self.cols) as usize];
+            //            self.data.host(data.as_mut_slice());
+            let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
+            //TODO: out of bounds
+            data.iter().enumerate().for_each(|(index, &v)| {
+                buffer.put_pixel(
+                    (index as f64 / (self.cols as f64)) as u32,
+                    ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
+                        as u32,
+                    Pixel::as_pixel(0),
+                );
+            });
+            buffer
         }
     }
 
