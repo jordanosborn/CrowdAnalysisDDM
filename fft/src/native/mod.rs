@@ -137,15 +137,15 @@ pub mod opencv {
 
         pub fn to_rgb_array(&self) -> image::RgbImage {
             let mut data: Vec<Pixel> = vec![0; (self.rows * self.cols) as usize];
-            //            self.data.host(data.as_mut_slice());
+            self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
             //TODO: out of bounds
             data.iter().enumerate().for_each(|(index, &v)| {
                 buffer.put_pixel(
-                    (index as f64 / (self.cols as f64)) as u32,
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
-                    Pixel::as_pixel(0),
+                    (index as f64 / (self.cols as f64)) as u32,
+                    Pixel::as_pixel(v),
                 );
             });
             buffer
