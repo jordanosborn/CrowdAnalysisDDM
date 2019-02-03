@@ -31,7 +31,7 @@ pub trait PixelInt {
 impl PixelInt for Pixel {
     #[inline]
     fn new_pixel(dat: [u8; 3]) -> Pixel {
-        ((dat[0] as u32) << 16) | ((dat[1] as u32) << 8) | (dat[2] as u32)
+        ((dat[2] as u32) << 16) | ((dat[1] as u32) << 8) | (dat[0] as u32)
     }
     #[inline]
     fn as_pixel(self) -> image::Rgb<u8> {
