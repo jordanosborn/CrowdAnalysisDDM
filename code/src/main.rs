@@ -26,14 +26,14 @@ fn set_backend() {
 }
 
 fn main() {
-    let (tx, rx) = mpsc::channel::<Option<opencv::GrayImage>>();
+    let (tx, rx) = mpsc::channel::<Option<opencv::Image>>();
     //let id = opencv::start_capture_safe("./videos/colors.mp4");
     let id = opencv::start_camera_capture_safe();
     //For some reason this set_backend code needs to come after the start capture?
     set_backend();
     let stream_thread = std::thread::spawn(move || {
         for _ in 1..5 {
-            let frame = opencv::GrayImage::get_frame(id);
+            let frame = opencv::Image::get_frame(id);
             match frame {
                 None => {
                     match tx.send(None) {

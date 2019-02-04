@@ -125,14 +125,14 @@ pub mod opencv {
         pub depth: u64,
     }
 
-    //TODO: maybe store as Dim4(cols, rows,)
+    //TODO: maybe store as Dim4(cols, rows,) this does not work
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
             Image {
                 data: arrayfire::Array::new(
                     data,
-                    arrayfire::Dim4::new(&[frame.cols, frame.rows, 3, 1]),
+                    arrayfire::Dim4::new(&[frame.cols, frame.rows, frame.channels, 1]),
                 ),
                 channels: frame.channels,
                 rows: frame.rows,

@@ -13,6 +13,7 @@ size_t start_capture(const char* filename) {
 
 size_t start_camera_capture() {
     auto stream = cv::VideoCapture(0);
+    stream.set(cv::CAP_PROP_FORMAT, CV_8UC3);
     if (!stream.isOpened()) {
         std::cout << "Failed to open stream - " << 0 << "\n";
         exit(-1);
@@ -32,7 +33,7 @@ void *get_frame(size_t stream_id) {
         return NULL;
     }
     cv::flip(frame, frame, 1);
-    //cv::cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     auto frame_ptr = new cv::Mat(frame);
     return (void*)frame_ptr;
 }
