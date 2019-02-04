@@ -1,1 +1,3 @@
-Travis.yml does not work need to build OpenCV and arrayfire 
+# MASTERS PROJECT
+
+[![Build Status](https://travis-ci.com/jordanosborn/MastersProject.svg?token=2eJkyoJzDLeBMdiGDz2x&branch=master)](https://travis-ci.com/jordanosborn/MastersProject)
