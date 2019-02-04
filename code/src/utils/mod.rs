@@ -20,28 +20,3 @@ pub fn print_times() {
         println!("{} {}ms", x, y);
     });
 }
-
-pub type Pixel = u32;
-
-pub trait PixelInt {
-    fn new_pixel(dat: [u8; 3]) -> Pixel;
-    fn as_pixel(self) -> image::Rgb<u8>;
-}
-//TODO: add operations on pixels.
-impl PixelInt for Pixel {
-    #[inline]
-    fn new_pixel(dat: [u8; 3]) -> Pixel {
-        //Opencv gives a BGR image this converts to RGB
-        (u32::from(dat[2]) << 16) | (u32::from(dat[1]) << 8) | u32::from(dat[0])
-    }
-    #[inline]
-    fn as_pixel(self) -> image::Rgb<u8> {
-        image::Rgb {
-            data: [
-                (self >> 16) as u8,
-                ((self >> 8) & 0xff) as u8,
-                (self & 0xff) as u8,
-            ],
-        }
-    }
-}

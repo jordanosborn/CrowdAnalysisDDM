@@ -3,8 +3,6 @@ pub mod opencv {
     use image;
     use libc::{c_char, c_int, size_t};
 
-    use crate::utils::{Pixel, PixelInt};
-
     #[repr(C)]
     #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
     #[allow(clippy::enum_variant_names)]
@@ -112,7 +110,7 @@ pub mod opencv {
     }
 
     pub struct Image {
-        pub data: arrayfire::Array<u32>,
+        pub data: arrayfire::Array<u8>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
@@ -127,20 +125,14 @@ pub mod opencv {
         pub depth: u64,
     }
 
-    //maybe store as Dim4(cols, rows,)
+    //TODO: maybe store as Dim4(cols, rows,)
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
-            let mut vector: Vec<u32> = Vec::with_capacity((frame.cols * frame.rows) as usize);
-            for index in 0..vector.capacity() {
-                let mut arr: [u8; 3] = Default::default();
-                arr.copy_from_slice(&data[3 * index..(3 * index + 3)]);
-                vector.push(u32::new_pixel(arr));
-            }
             Image {
                 data: arrayfire::Array::new(
-                    vector.as_slice(),
-                    arrayfire::Dim4::new(&[frame.cols, frame.rows, 1, 1]),
+                    data,
+                    arrayfire::Dim4::new(&[frame.cols, frame.rows, 3, 1]),
                 ),
                 channels: frame.channels,
                 rows: frame.rows,
@@ -149,11 +141,11 @@ pub mod opencv {
             }
         }
 
-        pub fn from(arr: arrayfire::Array<Pixel>) -> Image {
+        pub fn from(arr: arrayfire::Array<u8>) -> Image {
             let dims = arr.dims().get().to_vec();
             Image {
                 data: arr,
-                channels: 3,
+                channels: dims[2],
                 cols: dims[0],
                 rows: dims[1],
                 depth: 0,
@@ -163,28 +155,26 @@ pub mod opencv {
         pub fn get_frame(stream_id: usize) -> Option<Image> {
             let frame = get_frame_safe(stream_id);
             match frame {
-                Some(f) => {
-                    Some(Image::new(&f))
-                }
-                None => {
-                    None
-                }
+                Some(f) => Some(Image::new(&f)),
+                None => None,
             }
         }
 
-        pub fn to_buffer(&self) -> image::RgbImage {
-            let mut data: Vec<Pixel> = vec![0; (self.rows * self.cols) as usize];
+        pub fn to_buffer(&self) -> image::DynamicImage {
+            let mut data: Vec<u8> = vec![0; (self.rows * self.cols * self.channels) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
-            data.iter().enumerate().for_each(|(index, &v)| {
+            (0..(self.cols * self.rows)).for_each(|index| {
+                let mut arr: [u8; 3] = Default::default();
+                arr.copy_from_slice(&data[((3 * index) as usize)..((3 * index + 3) as usize)]);
                 buffer.put_pixel(
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
                     (index as f64 / (self.cols as f64)) as u32,
-                    Pixel::as_pixel(v),
+                    image::Rgb { data: arr },
                 );
             });
-            buffer
+            image::DynamicImage::ImageRgb8(buffer)
         }
     }
 
@@ -219,12 +209,8 @@ pub mod opencv {
         pub fn get_frame(stream_id: usize) -> Option<GrayImage> {
             let frame = get_frame_safe(stream_id);
             match frame {
-                Some(f) => {
-                    Some(GrayImage::new(&f))
-                }
-                None => {
-                    None
-                }
+                Some(f) => Some(GrayImage::new(&f)),
+                None => None,
             }
         }
 
@@ -239,7 +225,7 @@ pub mod opencv {
             }
         }
 
-        pub fn to_buffer(&self) -> image::GrayImage {
+        pub fn to_buffer(&self) -> image::DynamicImage {
             let mut data: Vec<u8> = vec![0u8; (self.rows * self.cols) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
@@ -251,7 +237,7 @@ pub mod opencv {
                     image::Luma { data: [v] },
                 );
             });
-            buffer
+            image::DynamicImage::ImageLuma8(buffer)
         }
     }
 

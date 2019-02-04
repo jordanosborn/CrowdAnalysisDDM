@@ -12,8 +12,11 @@ pub mod utils;
 fn set_backend() {
     let backends = af::get_available_backends();
     let cuda_available = backends.iter().filter(|&x| *x == af::Backend::CUDA).count();
-    let opencl_available = backends.iter().filter(|&x| *x == af::Backend::OPENCL).count();
-    if cuda_available == 1{
+    let opencl_available = backends
+        .iter()
+        .filter(|&x| *x == af::Backend::OPENCL)
+        .count();
+    if cuda_available == 1 {
         af::set_backend(af::Backend::CUDA);
     } else if opencl_available == 1 {
         af::set_backend(af::Backend::OPENCL);
@@ -55,8 +58,6 @@ fn main() {
             Ok(value) => {
                 if let Some(v) = value {
                     af::save_image_native("img.png".to_string(), &v.data);
-                    // let img = v.to_buffer();
-                    // img.save("out.jpg").expect("file_not_saved");
                 } else {
                     break;
                 }
