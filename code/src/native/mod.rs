@@ -57,8 +57,15 @@ pub mod opencv {
         fn mat_elem_size(cmat: *const CMat) -> usize;
         fn mat_elem_size1(cmat: *const CMat) -> usize;
         fn mat_type(cmat: *const CMat) -> CvType;
+        fn close_stream(stream_id: usize);
     //pub fn write(filename: *const c_char, cmat: *const CMat);
     //pub fn show_next(stream_id: size_t);
+    }
+
+    pub fn close_stream_safe(stream_id: usize) {
+        unsafe {
+            close_stream(stream_id);
+        }
     }
 
     #[derive(Clone, Debug)]
@@ -120,6 +127,7 @@ pub mod opencv {
         pub depth: u64,
     }
 
+    //maybe store as Dim4(cols, rows,)
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
@@ -152,7 +160,19 @@ pub mod opencv {
             }
         }
 
-        pub fn to_rgb_array(&self) -> image::RgbImage {
+        pub fn get_frame(stream_id: usize) -> Option<Image> {
+            let frame = get_frame_safe(stream_id);
+            match frame {
+                Some(f) => {
+                    Some(Image::new(&f))
+                }
+                None => {
+                    None
+                }
+            }
+        }
+
+        pub fn to_buffer(&self) -> image::RgbImage {
             let mut data: Vec<Pixel> = vec![0; (self.rows * self.cols) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
@@ -196,6 +216,18 @@ pub mod opencv {
             }
         }
 
+        pub fn get_frame(stream_id: usize) -> Option<GrayImage> {
+            let frame = get_frame_safe(stream_id);
+            match frame {
+                Some(f) => {
+                    Some(GrayImage::new(&f))
+                }
+                None => {
+                    None
+                }
+            }
+        }
+
         pub fn from(arr: arrayfire::Array<u8>) -> GrayImage {
             let dims = arr.dims().get().to_vec();
             GrayImage {
@@ -207,7 +239,7 @@ pub mod opencv {
             }
         }
 
-        pub fn to_grayscale_array(&self) -> image::GrayImage {
+        pub fn to_buffer(&self) -> image::GrayImage {
             let mut data: Vec<u8> = vec![0u8; (self.rows * self.cols) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);

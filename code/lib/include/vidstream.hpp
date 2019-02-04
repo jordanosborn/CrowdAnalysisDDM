@@ -52,5 +52,7 @@ extern "C" {
 
     size_t mat_step1(const cv::Mat* const, int);
 
+    void close_stream(size_t);
+
 }
 #endif

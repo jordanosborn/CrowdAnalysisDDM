@@ -21,6 +21,11 @@ size_t start_camera_capture() {
     return streams.size() - 1;
 }
 
+void close_stream(size_t stream_id) {
+    if (streams.size() > stream_id && streams[stream_id].isOpened())
+        streams[stream_id].release();
+}
+
 void *get_frame(size_t stream_id) {
     cv::Mat frame;
     if (!streams[stream_id].read(frame)) {
