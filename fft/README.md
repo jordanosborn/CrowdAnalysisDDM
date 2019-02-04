@@ -25,3 +25,13 @@ Install other dependencies etc.
 install nano set AF_PATH 
 startup script docker 
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder  
+
+## On mac
+brew install g++ gcc
+(version 8)
+
+compile opencv
+https://docs.opencv.org/4.0.1/d7/d9f/tutorial_linux_install.html
+
+install arrayfire using osx package
+https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg

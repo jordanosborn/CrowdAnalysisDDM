@@ -11,25 +11,27 @@ pub mod utils;
 
 fn main() {
     let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
-    let id = opencv::start_camera_capture_safe();
-    let stream_thread = std::thread::spawn(move || for _ in 1..2 {
-        let frame = opencv::get_frame_safe(id);
-        match frame {
-            None => {
-                match tx.send(None) {
-                    _ => {
-                        break;
+    let id = opencv::start_capture_safe("video.mp4");
+    let stream_thread = std::thread::spawn(move || {
+        for _ in 1..2 {
+            let frame = opencv::get_frame_safe(id);
+            match frame {
+                None => {
+                    match tx.send(None) {
+                        _ => {
+                            break;
+                        }
+                    };
+                }
+                Some(value) => match tx.send(Some(value)) {
+                    Ok(_) => {
+                        continue;
                     }
-                };
+                    Err(_) => {
+                        println!("Failed to send frame!");
+                    }
+                },
             }
-            Some(value) => match tx.send(Some(value)) {
-                Ok(_) => {
-                    continue;
-                }
-                Err(_) => {
-                    println!("Failed to send frame!");
-                }
-            },
         }
     });
 
