@@ -27,10 +27,7 @@ startup script docker
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder
 
 ## On mac
-brew install g++ gcc
-(version 8)
-
-brew install opencv llvm
+brew install opencv llvm (need clang-7)
 
 use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 to fix stdlib errors on mac
