@@ -1,0 +1,8 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "cmd+r",
+        "command": "runInTerminal.run",
+        "args": {"cmd": "cd ${workspaceRoot}/code && cargo run --release", "match": ".*"},
+    },
+]
