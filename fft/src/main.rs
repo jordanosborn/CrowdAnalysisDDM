@@ -11,7 +11,7 @@ pub mod utils;
 
 fn main() {
     let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
-    let id = opencv::start_capture_safe("video.mp4");
+    let id = opencv::start_capture_safe("./videos/colors.mp4");
     let stream_thread = std::thread::spawn(move || {
         for _ in 1..2 {
             let frame = opencv::get_frame_safe(id);

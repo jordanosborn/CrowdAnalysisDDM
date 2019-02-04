@@ -46,7 +46,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native")
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -fopenmp -march=native")
         .compiler("g++")
         .compile(output);
     unix::opencv_link();
@@ -72,8 +72,12 @@ fn build(src_files: Vec<&str>, output: &str) {
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -lopencv_imgcodecs -lopencv_core -lopencv_highgui -fopenmp -march=native")
-        .compiler("g++-8")
+        .cpp_link_stdlib("c++")
+        .cpp_set_stdlib("c++")
+        .flag("-std=c++14")
+        .flag("-fopenmp")
+        //.flag("-march=native") //Makes Slower....
+        .compiler("clang++")
         .compile(output);
     unix::opencv_link();
 }

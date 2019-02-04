@@ -30,14 +30,12 @@ setup ssh  then git pull on start cd in to directory remove copying move docker 
 brew install g++ gcc
 (version 8)
 
-compile opencv
+brew install opencv llvm
 
-with
-export CC=/usr/local/bin/gcc-8
-export CXX=/usr/local/bin/g++-8
-
-
-https://docs.opencv.org/4.0.1/d7/d9f/tutorial_linux_install.html
+use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+to fix stdlib errors on mac
 
 install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
+
+#
