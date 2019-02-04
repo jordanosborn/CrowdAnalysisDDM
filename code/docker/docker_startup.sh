@@ -17,7 +17,7 @@ source $HOME/.bashrc
 cd MastersProject
 git pull
 
-cd fft
+cd code
 
 cargo test
 exit_if_failed $?

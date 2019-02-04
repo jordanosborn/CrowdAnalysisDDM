@@ -9,7 +9,7 @@
           "request": "launch",
           "name": "Launch Program",
           "preLaunchTask": "cargo build",
-          "target": "./target/debug/fft",
+          "target": "./target/debug/code",
           "cwd": "${workspaceRoot}"
         },
       {
@@ -17,7 +17,7 @@
             "type": "cppdbg",
             "request": "launch",
             "preLaunchTask": "cargo build",
-            "program": "${workspaceFolder}/target/debug/fft",
+            "program": "${workspaceFolder}/target/debug/code",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

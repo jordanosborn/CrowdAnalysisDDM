@@ -41,7 +41,7 @@ fn main() {
                 if let Some(v) = value {
                     let q = opencv::GrayImage::new(&v);
                     let img = q.to_grayscale_array();
-                    img.save("out.jpg").expect("filenotsaved");
+                    img.save("out.jpg").expect("file_not_saved");
                 } else {
                     break;
                 }

@@ -24,9 +24,8 @@ Code/Code
 *.log
 *.out
 *.xml
-fft/target
+code/target/*
+code/*.png
+code/*.jpg
 *.rar
 fft/opencv/*
-fft/4.0.1.zip
-fft/*.png
-fft/*.jpg
