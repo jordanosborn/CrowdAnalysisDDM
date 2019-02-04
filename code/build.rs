@@ -65,7 +65,6 @@ fn build(src_files: Vec<&str>, output: &str) {
     cc::Build::new()
         .files(src_files)
         .cpp(true)
-        .shared_flag(true)
         .flag(&get_opencv_flags())
         .include("lib/include")
         .include("/usr/local/include")
