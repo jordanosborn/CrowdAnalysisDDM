@@ -1,7 +1,7 @@
 // use rayon::prelude::*;
 use std::sync::mpsc;
 
-// use arrayfire as af;
+use arrayfire as af;
 // use arrayfire::print_gen;
 // use flame as fl;
 use native::*;
@@ -9,12 +9,31 @@ use native::*;
 pub mod native;
 pub mod utils;
 
+fn set_backend() {
+    let backends = af::get_available_backends();
+    let cuda_available = backends.iter().filter(|&x| *x == af::Backend::CUDA).count();
+    let opencl_available = backends
+        .iter()
+        .filter(|&x| *x == af::Backend::OPENCL)
+        .count();
+    if cuda_available == 1 {
+        af::set_backend(af::Backend::CUDA);
+    } else if opencl_available == 1 {
+        af::set_backend(af::Backend::OPENCL);
+    } else {
+        af::set_backend(af::Backend::CPU);
+    }
+}
+
 fn main() {
-    let (tx, rx) = mpsc::channel::<Option<opencv::Mat>>();
-    let id = opencv::start_capture_safe("./videos/colors.mp4");
+    let (tx, rx) = mpsc::channel::<Option<opencv::Image>>();
+    //let id = opencv::start_capture_safe("./videos/colors.mp4");
+    let id = opencv::start_camera_capture_safe();
+    //For some reason this set_backend code needs to come after the start capture?
+    set_backend();
     let stream_thread = std::thread::spawn(move || {
-        for _ in 1..2 {
-            let frame = opencv::get_frame_safe(id);
+        for _ in 1..5 {
+            let frame = opencv::Image::get_frame(id);
             match frame {
                 None => {
                     match tx.send(None) {
@@ -34,14 +53,11 @@ fn main() {
             }
         }
     });
-
     let process_thread = std::thread::spawn(move || loop {
         match rx.recv() {
             Ok(value) => {
                 if let Some(v) = value {
-                    let q = opencv::GrayImage::new(&v);
-                    let img = q.to_grayscale_array();
-                    img.save("out.jpg").expect("file_not_saved");
+                    af::save_image_native("img.png".to_string(), &v.data);
                 } else {
                     break;
                 }
@@ -59,12 +75,6 @@ fn main() {
 
     stream_thread.join().unwrap();
     process_thread.join().unwrap();
-    flame::span_of("test", || {
-        let frame = opencv::get_frame_safe(id).unwrap();
-        let q = opencv::GrayImage::new(&frame);
-        //let p = opencv::GrayImage::from(q.data * 5u8);
-        let img = q.to_grayscale_array();
-        img.save("out.png").unwrap();
-    });
+    opencv::close_stream_safe(id);
     utils::print_times();
 }
