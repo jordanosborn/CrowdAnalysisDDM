@@ -69,7 +69,7 @@ fn main() {
     let mut win = Window::new(512, 512, "Crowd Analysis".to_string());
     let mut prev = opencv::GrayImage::empty();
     let mut output: Array<u8>;
-
+    //TODO: processing code goes in here in separate thread possibly 
     while !win.is_closed() {
         match rx.recv() {
             Ok(value) => {
@@ -90,7 +90,7 @@ fn main() {
             },
         }
         win.draw_image(&output, None);
-        win.show()
+        win.show();
     }
 
     stx.send(Signal::KILL).unwrap();
