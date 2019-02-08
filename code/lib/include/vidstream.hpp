@@ -36,8 +36,6 @@ extern "C" {
 
     int mat_channels(const cv::Mat*);
 
-    const uint8_t *mat_data(const cv::Mat*);
-
     void mat_drop(cv::Mat*);
 
     int mat_type(const cv::Mat* const);

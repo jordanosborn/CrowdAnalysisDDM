@@ -32,7 +32,9 @@ void *get_frame(size_t stream_id) {
     if (!streams[stream_id].read(frame)) {
         return NULL;
     }
+    // Flips image so that it is in correct orientation
     cv::flip(frame, frame, 1);
+    cv::transpose(frame, frame);
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
     auto frame_ptr = new cv::Mat(frame);
     return (void*)frame_ptr;

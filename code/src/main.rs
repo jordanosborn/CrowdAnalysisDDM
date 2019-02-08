@@ -2,12 +2,16 @@
 use std::sync::mpsc;
 
 use arrayfire as af;
+use arrayfire::*;
 // use arrayfire::print_gen;
 // use flame as fl;
 use native::*;
 
 pub mod native;
+pub mod operations;
 pub mod utils;
+
+type RawType = u8;
 
 fn set_backend() {
     let backends = af::get_available_backends();
@@ -25,39 +29,53 @@ fn set_backend() {
     }
 }
 
+enum Signal {
+    KILL,
+}
+
 fn main() {
-    let (tx, rx) = mpsc::channel::<Option<opencv::Image>>();
+    let (tx, rx) = mpsc::channel::<Option<opencv::GrayImage>>();
+    let (stx, srx) = mpsc::channel::<Signal>();
     //let id = opencv::start_capture_safe("./videos/colors.mp4");
     let id = opencv::start_camera_capture_safe();
     //For some reason this set_backend code needs to come after the start capture?
     set_backend();
-    let stream_thread = std::thread::spawn(move || {
-        for _ in 1..5 {
-            let frame = opencv::Image::get_frame(id);
-            match frame {
-                None => {
-                    match tx.send(None) {
-                        _ => {
-                            break;
-                        }
-                    };
-                }
-                Some(value) => match tx.send(Some(value)) {
-                    Ok(_) => {
-                        continue;
+    let stream_thread = std::thread::spawn(move || loop {
+        let frame = opencv::GrayImage::get_frame(id);
+        match frame {
+            None => {
+                match tx.send(None) {
+                    _ => {
+                        break;
                     }
-                    Err(_) => {
-                        println!("Failed to send frame!");
-                    }
-                },
+                };
             }
+            Some(value) => match tx.send(Some(value)) {
+                Ok(_) => {}
+                Err(_) => {
+                    println!("Failed to send frame!");
+                }
+            },
+        }
+        match srx.try_recv() {
+            Ok(Signal::KILL) => {
+                break;
+            }
+            Err(_) => {}
         }
     });
-    let process_thread = std::thread::spawn(move || loop {
+
+    //UI code must run in main thread on Mac
+    let mut win = Window::new(512, 512, "Crowd Analysis".to_string());
+    let mut prev = opencv::GrayImage::empty();
+    let mut output: Array<u8>;
+
+    while !win.is_closed() {
         match rx.recv() {
             Ok(value) => {
                 if let Some(v) = value {
-                    af::save_image_native("img.png".to_string(), &v.data);
+                    output = operations::difference(&v.data, &prev.data);
+                    prev = opencv::GrayImage::from(v.data);
                 } else {
                     break;
                 }
@@ -71,10 +89,12 @@ fn main() {
                 }
             },
         }
-    });
+        win.draw_image(&output, None);
+        win.show()
+    }
 
+    stx.send(Signal::KILL).unwrap();
     stream_thread.join().unwrap();
-    process_thread.join().unwrap();
     opencv::close_stream_safe(id);
     utils::print_times();
 }

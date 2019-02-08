@@ -49,7 +49,7 @@ pub mod opencv {
         fn mat_depth(cmat: *const CMat) -> c_int;
         fn mat_channels(cmat: *const CMat) -> c_int;
         fn mat_drop(cmat: *mut CMat);
-        fn mat_data(cmat: *const CMat) -> *const u8;
+        fn mat_data(cmat: *const CMat) -> *const crate::RawType;
         fn mat_total(cmat: *const CMat) -> usize;
         fn mat_step1(cmat: *const CMat, i: c_int) -> usize;
         fn mat_elem_size(cmat: *const CMat) -> usize;
@@ -110,15 +110,15 @@ pub mod opencv {
     }
 
     pub struct Image {
-        pub data: arrayfire::Array<u8>,
+        pub data: arrayfire::Array<crate::RawType>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
         pub depth: u64,
     }
-
+    #[derive(Clone)]
     pub struct GrayImage {
-        pub data: arrayfire::Array<u8>,
+        pub data: arrayfire::Array<crate::RawType>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
@@ -141,7 +141,7 @@ pub mod opencv {
             }
         }
 
-        pub fn from(arr: arrayfire::Array<u8>) -> Image {
+        pub fn from(arr: arrayfire::Array<crate::RawType>) -> Image {
             let dims = arr.dims().get().to_vec();
             Image {
                 data: arr,
@@ -161,12 +161,19 @@ pub mod opencv {
         }
 
         pub fn to_buffer(&self) -> image::DynamicImage {
-            let mut data: Vec<u8> = vec![0; (self.rows * self.cols * self.channels) as usize];
+            let mut data: Vec<crate::RawType> =
+                vec![0; (self.rows * self.cols * self.channels) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
             (0..(self.cols * self.rows)).for_each(|index| {
                 let mut arr: [u8; 3] = Default::default();
-                arr.copy_from_slice(&data[((3 * index) as usize)..((3 * index + 3) as usize)]);
+
+                arr.copy_from_slice(
+                    &data[((3 * index) as usize)..((3 * index + 3) as usize)]
+                        .iter()
+                        .map(|&x| x as u8)
+                        .collect::<Vec<u8>>(),
+                );
                 buffer.put_pixel(
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
@@ -181,7 +188,8 @@ pub mod opencv {
     impl GrayImage {
         pub fn new(frame: &Mat) -> GrayImage {
             let data = frame.data();
-            let mut vector: Vec<u8> = Vec::with_capacity((frame.cols * frame.rows) as usize);
+            let mut vector: Vec<crate::RawType> =
+                Vec::with_capacity((frame.cols * frame.rows) as usize);
             for index in 0..vector.capacity() {
                 let (r, g, b) = match &data[3 * index..(3 * index + 3)] {
                     [r, g, b] => (
@@ -192,7 +200,7 @@ pub mod opencv {
                     _ => (0.0, 0.0, 0.0),
                 };
                 let greyscale = (0.2126 * r + 0.7152 * g + 0.0722 * b) * (255.0);
-                vector.push(greyscale as u8);
+                vector.push(greyscale as crate::RawType);
             }
             GrayImage {
                 data: arrayfire::Array::new(
@@ -206,6 +214,19 @@ pub mod opencv {
             }
         }
 
+        pub fn empty() -> GrayImage {
+            GrayImage {
+                data: arrayfire::Array::new(
+                    vec![0u8].as_slice(),
+                    arrayfire::Dim4::new(&[1, 1, 1, 1]),
+                ),
+                channels: 0,
+                rows: 0,
+                cols: 0,
+                depth: 0,
+            }
+        }
+
         pub fn get_frame(stream_id: usize) -> Option<GrayImage> {
             let frame = get_frame_safe(stream_id);
             match frame {
@@ -214,7 +235,7 @@ pub mod opencv {
             }
         }
 
-        pub fn from(arr: arrayfire::Array<u8>) -> GrayImage {
+        pub fn from(arr: arrayfire::Array<crate::RawType>) -> GrayImage {
             let dims = arr.dims().get().to_vec();
             GrayImage {
                 data: arr,
@@ -226,7 +247,7 @@ pub mod opencv {
         }
 
         pub fn to_buffer(&self) -> image::DynamicImage {
-            let mut data: Vec<u8> = vec![0u8; (self.rows * self.cols) as usize];
+            let mut data: Vec<crate::RawType> = vec![0; (self.rows * self.cols) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
             data.iter().enumerate().for_each(|(index, &v)| {
@@ -234,7 +255,7 @@ pub mod opencv {
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
                     (index as f64 / (self.cols as f64)) as u32,
-                    image::Luma { data: [v] },
+                    image::Luma { data: [v as u8] },
                 );
             });
             image::DynamicImage::ImageLuma8(buffer)
@@ -252,8 +273,8 @@ pub mod opencv {
                 channels: unsafe { mat_channels(raw) as u64 },
             }
         }
-        /// Returns the raw data (as a u8 array
-        pub fn data(&self) -> &[u8] {
+        /// Returns the raw data (as a crate::RawType array
+        pub fn data(&self) -> &[crate::RawType] {
             let bytes = unsafe { mat_data(self.inner) };
             let len = self.total() * self.elem_size();
             unsafe { std::slice::from_raw_parts(bytes, len) }
