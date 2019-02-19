@@ -74,7 +74,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp_link_stdlib("c++")
         .cpp_set_stdlib("c++")
         .flag("-std=c++14")
-        .flag("-fopenmp")
+        //.flag("-fopenmp")
         //.flag("-march=native") //Makes Slower....
         .compiler("clang++")
         .compile(output);
