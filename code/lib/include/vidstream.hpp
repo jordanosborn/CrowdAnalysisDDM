@@ -50,6 +50,8 @@ extern "C" {
 
     size_t mat_step1(const cv::Mat* const, int);
 
+    size_t get_fps(size_t);
+
     void close_stream(size_t);
 
 }

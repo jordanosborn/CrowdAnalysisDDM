@@ -1,6 +1,5 @@
 // use rayon::prelude::*;
 use std::sync::mpsc;
-
 use arrayfire as af;
 use arrayfire::*;
 // use arrayfire::print_gen;
@@ -15,7 +14,10 @@ type RawType = u8;
 
 fn set_backend() {
     let backends = af::get_available_backends();
-    let cuda_available = backends.iter().filter(|&x| *x == af::Backend::CUDA).count();
+    let cuda_available = backends
+        .iter()
+        .filter(|&x| *x == af::Backend::CUDA)
+        .count();
     let opencl_available = backends
         .iter()
         .filter(|&x| *x == af::Backend::OPENCL)
@@ -36,65 +38,72 @@ enum Signal {
 fn main() {
     let (tx, rx) = mpsc::channel::<Option<opencv::GrayImage>>();
     let (stx, srx) = mpsc::channel::<Signal>();
-    //let id = opencv::start_capture_safe("./videos/colors.mp4");
-    let id = opencv::start_camera_capture_safe();
-    //For some reason this set_backend code needs to come after the start capture?
-    set_backend();
-    let stream_thread = std::thread::spawn(move || loop {
-        let frame = opencv::GrayImage::get_frame(id);
-        match frame {
-            None => {
-                match tx.send(None) {
-                    _ => {
-                        break;
-                    }
-                };
-            }
-            Some(value) => match tx.send(Some(value)) {
-                Ok(_) => {}
-                Err(_) => {
-                    println!("Failed to send frame!");
-                }
-            },
+    let args = std::env::args().collect::<Vec<String>>();
+    let args_slice = args.as_slice();
+    let id = match args_slice {
+        [_] => None,
+        [_, command, path] if command == "video" => {
+            Some(opencv::start_capture_safe(path))
         }
-        match srx.try_recv() {
-            Ok(Signal::KILL) => {
+        [_, command] if command == "camera" => {
+            Some(opencv::start_camera_capture_safe())
+        }
+        _ => None,
+    };
+
+    if let Some(id) = id {
+        let fps = opencv::fps(id);
+        set_backend();
+        let stream_thread = std::thread::spawn(move || loop {
+            let frame = opencv::GrayImage::get_frame(id);
+            match frame {
+                None => {
+                    match tx.send(None) {
+                        _ => {
+                            break;
+                        }
+                    };
+                }
+                Some(value) => match tx.send(Some(value)) {
+                    Ok(_) => {}
+                    Err(_) => {
+                        println!("Failed to send frame!");
+                    }
+                },
+            }
+            if let Ok(Signal::KILL) = srx.try_recv() {
                 break;
             }
-            Err(_) => {}
-        }
-    });
+        });
 
-    //UI code must run in main thread on Mac
-    let mut win = Window::new(512, 512, "Crowd Analysis".to_string());
-    let mut prev = opencv::GrayImage::empty();
-    let mut output: Array<u8>;
-    //TODO: processing code goes in here in separate thread possibly 
-    while !win.is_closed() {
-        match rx.recv() {
-            Ok(value) => {
-                if let Some(v) = value {
-                    output = operations::difference(&v.data, &prev.data);
-                    prev = opencv::GrayImage::from(v.data);
-                } else {
-                    break;
+        let mut output: Array<RawType>;
+        loop {
+            match rx.recv() {
+                Ok(value) => {
+                    if let Some(v) = value {
+                        output = v.data;
+                    } else {
+                        break;
+                    }
                 }
+                Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
+                    std::sync::mpsc::TryRecvError::Disconnected => {
+                        break;
+                    }
+                    std::sync::mpsc::TryRecvError::Empty => {
+                        continue;
+                    }
+                },
             }
-            Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
-                std::sync::mpsc::TryRecvError::Disconnected => {
-                    break;
-                }
-                std::sync::mpsc::TryRecvError::Empty => {
-                    continue;
-                }
-            },
+            println!("{}", output.dims());
         }
-        win.draw_image(&output, None);
-        win.show();
-    }
 
-    stx.send(Signal::KILL).unwrap();
-    stream_thread.join().unwrap();
-    opencv::close_stream_safe(id);
-    utils::print_times();
+        match stx.send(Signal::KILL) {
+            Ok(_) | Err(_) => {
+                stream_thread.join().unwrap();
+                opencv::close_stream_safe(id);
+                utils::print_times();
+            }
+        };
+    }
 }

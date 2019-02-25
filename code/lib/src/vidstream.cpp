@@ -103,3 +103,11 @@ size_t mat_elem_size1(const cv::Mat* const mat) {
 size_t mat_step1(const cv::Mat* const mat, int i) {
     return mat->step1(i);
 }
+
+size_t get_fps(size_t stream_id) {
+    if (streams.size() > stream_id && streams[stream_id].isOpened()) {
+        return streams[stream_id].get(cv::CAP_PROP_FPS);
+    } else {
+        return 0;
+    }
+}
