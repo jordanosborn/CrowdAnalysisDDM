@@ -1,10 +1,9 @@
 // use rayon::prelude::*;
 use std::sync::mpsc;
 use arrayfire as af;
-use arrayfire::*;
-// use arrayfire::print_gen;
-// use flame as fl;
+
 use native::*;
+use operations::Data;
 
 pub mod native;
 pub mod operations;
@@ -76,12 +75,12 @@ fn main() {
             }
         });
 
-        let mut output: Array<RawType>;
+        let mut data = Data::new(fps, None);
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        output = v.data;
+                        data.push(v.data)
                     } else {
                         break;
                     }
@@ -95,7 +94,8 @@ fn main() {
                     }
                 },
             }
-            println!("{}", output.dims());
+            //TODO: processing after each new frame
+
         }
 
         match stx.send(Signal::KILL) {
