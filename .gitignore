@@ -9,13 +9,7 @@ out
 gen
 
 .DS_Store
-Code/cmake-build-debug/
-Code/CMakeFiles/
-Code/cmake_install.cmake
-Code/CMakeCache.txt
-Code/Code.cbp
-Code/Makefile
-Code/Code
+
 *.bbl
 *.aux
 *.bcf
@@ -28,4 +22,4 @@ code/target/*
 code/*.png
 code/*.jpg
 *.rar
-fft/opencv/*
+code/videos/collectivemotiondatabase/*
