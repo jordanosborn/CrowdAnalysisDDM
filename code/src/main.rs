@@ -1,5 +1,6 @@
 // use rayon::prelude::*;
 use std::sync::mpsc;
+
 use arrayfire as af;
 
 use native::*;
@@ -111,5 +112,7 @@ fn main() {
                 utils::print_times();
             }
         };
+    } else {
+        println!("No arguments supplied!");
     }
 }
