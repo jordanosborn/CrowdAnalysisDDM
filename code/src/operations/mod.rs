@@ -1,24 +1,23 @@
 use arrayfire::Array;
 use std::collections::VecDeque;
 
-//TODO: needs to be an absolute difference
 pub fn difference(
-    arr1: &arrayfire::Array<crate::RawType>,
-    arr2: &arrayfire::Array<crate::RawType>,
+    arr1: &arrayfire::Array<crate::RawFtType>,
+    arr2: &arrayfire::Array<crate::RawFtType>,
 ) -> arrayfire::Array<crate::RawType> {
-    arr1 - arr2
+    arrayfire::abs(&(arr1 - arr2))
 }
 
 
 
-pub struct Data {
+pub struct Data<T: arrayfire::HasAfEnum> {
     pub time_delta: f64,
-    pub data: VecDeque<Array<crate::RawFtType>>,
+    pub data: VecDeque<Array<T>>,
     pub capacity: Option<usize>
 }
 
-impl Data {
-    pub fn new(fps: usize, capacity: Option<usize>) -> Data {
+impl<T: arrayfire::HasAfEnum> Data<T> {
+    pub fn new(fps: usize, capacity: Option<usize>) -> Data<T> {
         if let Some(size) = capacity {
             Data {
                 time_delta: 1f64 / (fps as f64),
@@ -33,7 +32,7 @@ impl Data {
             }
         }
     }
-    pub fn push(&mut self, array: Array<crate::RawFtType>) {
+    pub fn push(&mut self, array: Array<T>) {
         if let Some(capacity) = self.capacity {
             if self.data.len() == capacity {
                 self.data.pop_front();

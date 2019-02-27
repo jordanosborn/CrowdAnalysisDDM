@@ -54,6 +54,7 @@ fn main() {
     };
 
     if let Some(id) = id {
+        println!("Analysis started!");
         let fps = opencv::fps(id);
         set_backend();
         let stream_thread = std::thread::spawn(move || loop {
@@ -78,14 +79,15 @@ fn main() {
             }
         });
 
-        let mut data = Data::new(fps, None);
+        let mut data: Data<crate::RawType> = Data::new(fps, None);
         let mut counter = 0;
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        let ft = af::fft2(&v.data, 1.0, v.rows as i64, v.cols as i64);
-                        data.push(ft);
+                        //af::print_gen(String::from("Hi"), &v.data, Some(10));
+                        let ft = af::fft2(&v.data, 1.0, v.data. as i64, v.rows as i64);
+                        // data.push(ft);
                         println!("ft {} - complete!", counter);
                         counter += 1;
                     } else {

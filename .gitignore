@@ -25,3 +25,4 @@ code/*.jpg
 code/videos/collectivemotiondatabase/*
 *.mp4
 *.avi
+code/venv/*
