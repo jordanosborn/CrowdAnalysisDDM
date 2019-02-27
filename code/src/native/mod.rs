@@ -169,7 +169,7 @@ pub mod opencv {
 
         pub fn to_buffer(&self) -> image::DynamicImage {
             let mut data: Vec<crate::RawType> =
-                vec![0; (self.rows * self.cols * self.channels) as usize];
+                vec![0 as crate::RawType; (self.rows * self.cols * self.channels) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
             (0..(self.cols * self.rows)).for_each(|index| {
@@ -224,7 +224,7 @@ pub mod opencv {
         pub fn empty() -> GrayImage {
             GrayImage {
                 data: arrayfire::Array::new(
-                    vec![0u8].as_slice(),
+                    vec![0 as crate::RawType].as_slice(),
                     arrayfire::Dim4::new(&[1, 1, 1, 1]),
                 ),
                 channels: 0,
@@ -253,20 +253,20 @@ pub mod opencv {
             }
         }
 
-        pub fn to_buffer(&self) -> image::DynamicImage {
-            let mut data: Vec<crate::RawType> = vec![0; (self.rows * self.cols) as usize];
-            self.data.host(data.as_mut_slice());
-            let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
-            data.iter().enumerate().for_each(|(index, &v)| {
-                buffer.put_pixel(
-                    ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
-                        as u32,
-                    (index as f64 / (self.cols as f64)) as u32,
-                    image::Luma { data: [v as u8] },
-                );
-            });
-            image::DynamicImage::ImageLuma8(buffer)
-        }
+        // pub fn to_buffer(&self) -> image::DynamicImage {
+        //     let mut data: Vec<crate::RawType> = vec![0 as crate::RawType; (self.rows * self.cols) as usize];
+        //     self.data.host(data.as_mut_slice());
+        //     let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
+        //     data.iter().enumerate().for_each(|(index, &v)| {
+        //         buffer.put_pixel(
+        //             ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
+        //                 as u32,
+        //             (index as f64 / (self.cols as f64)) as u32,
+        //             image::Luma { data: [v as crate::RawType] },
+        //         );
+        //     });
+        //     image::DynamicImage::ImageLuma8(buffer)
+        // }
     }
 
     impl Mat {

@@ -10,7 +10,8 @@
           "name": "Launch Program",
           "preLaunchTask": "cargo build",
           "target": "./target/debug/code",
-          "cwd": "${workspaceRoot}"
+          "cwd": "${workspaceRoot}",
+          "arguments": "video videos/output/againstWalker1.avi"
         },
       {
         "name": "(lldb) Launch",
@@ -18,7 +19,7 @@
             "request": "launch",
             "preLaunchTask": "cargo build",
             "program": "${workspaceFolder}/target/debug/code",
-            "args": [],
+            "args": ["video", "videos/output/againstWalker1.avi"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

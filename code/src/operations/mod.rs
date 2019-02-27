@@ -5,7 +5,7 @@ use std::collections::VecDeque;
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawType>,
     arr2: &arrayfire::Array<crate::RawType>,
-) -> arrayfire::Array<u8> {
+) -> arrayfire::Array<crate::RawType> {
     arr1 - arr2
 }
 
@@ -13,7 +13,7 @@ pub fn difference(
 
 pub struct Data {
     pub time_delta: f64,
-    pub data: VecDeque<Array<crate::RawType>>,
+    pub data: VecDeque<Array<crate::RawFtType>>,
     pub capacity: Option<usize>
 }
 
@@ -33,7 +33,7 @@ impl Data {
             }
         }
     }
-    pub fn push(&mut self, array: Array<crate::RawType>) {
+    pub fn push(&mut self, array: Array<crate::RawFtType>) {
         if let Some(capacity) = self.capacity {
             if self.data.len() == capacity {
                 self.data.pop_front();

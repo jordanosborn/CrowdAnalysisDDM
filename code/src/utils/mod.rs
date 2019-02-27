@@ -27,7 +27,7 @@ use crate::opencv;
 #[allow(dead_code)]
 fn show_frames(rx: &std::sync::mpsc::Receiver<Option<opencv::GrayImage>>) {
     let mut win = Window::new(512, 512, "Crowd Analysis".to_string());
-    let mut output: Array<u8>;
+    let mut output: Array<crate::RawType>;
     while !win.is_closed() {
         match rx.recv() {
             Ok(value) => {

@@ -9,7 +9,9 @@ pub mod native;
 pub mod operations;
 pub mod utils;
 
-type RawType = u8;
+
+type RawType = f32;
+type RawFtType = num_complex::Complex32;
 
 fn set_backend() {
     let backends = af::get_available_backends();
@@ -76,12 +78,15 @@ fn main() {
         });
 
         let mut data = Data::new(fps, None);
+        let mut counter = 0;
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        let ft = af::
-                        data.push(v.data)
+                        let ft = af::fft2(&v.data, 1.0, v.rows as i64, v.cols as i64);
+                        data.push(ft);
+                        println!("ft {} - complete!", counter);
+                        counter += 1;
                     } else {
                         break;
                     }
