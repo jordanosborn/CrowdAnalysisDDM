@@ -80,6 +80,7 @@ fn main() {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
+                        let ft = af::
                         data.push(v.data)
                     } else {
                         break;
