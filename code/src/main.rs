@@ -38,6 +38,7 @@ enum Signal {
 }
 
 fn main() {
+    set_backend();
     let (tx, rx) = mpsc::channel::<Option<opencv::GrayImage>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let args = std::env::args().collect::<Vec<String>>();
@@ -56,7 +57,6 @@ fn main() {
     if let Some(id) = id {
         println!("Analysis started!");
         let fps = opencv::fps(id);
-        set_backend();
         let stream_thread = std::thread::spawn(move || loop {
             let frame = opencv::GrayImage::get_frame(id);
             match frame {
@@ -79,15 +79,16 @@ fn main() {
             }
         });
 
-        let mut data: Data<crate::RawType> = Data::new(fps, None);
+        let mut data: Data<crate::RawFtType> = Data::new(fps, None);
         let mut counter = 0;
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        //af::print_gen(String::from("Hi"), &v.data, Some(10));
-                        let ft = af::fft2(&v.data, 1.0, v.data. as i64, v.rows as i64);
-                        // data.push(ft);
+                        let ndim0 = 2.0f64.powf(f64::log2(v.cols as f64).ceil()) as i64;
+                        let ndim1 = 2.0f64.powf(f64::log2(v.rows as f64).ceil()) as i64;
+                        let ft = af::fft2(&v.data, 1.0, ndim0, ndim1);
+                        data.push(ft);
                         println!("ft {} - complete!", counter);
                         counter += 1;
                     } else {
