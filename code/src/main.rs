@@ -85,9 +85,12 @@ fn main() {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        let ndim0 = 2.0f64.powf(f64::log2(v.cols as f64).ceil()) as i64;
-                        let ndim1 = 2.0f64.powf(f64::log2(v.rows as f64).ceil()) as i64;
-                        let ft = af::fft2(&v.data, 1.0, ndim0, ndim1);
+                        let ft = af::fft2(
+                            &v.data,
+                            1.0,
+                            2.0f64.powf(f64::log2(v.cols as f64).ceil()) as i64,
+                            2.0f64.powf(f64::log2(v.rows as f64).ceil()) as i64,
+                        );
                         data.push(ft);
                         println!("ft {} - complete!", counter);
                         counter += 1;
