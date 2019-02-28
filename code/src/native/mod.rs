@@ -206,7 +206,7 @@ pub mod opencv {
                     ),
                     _ => (0.0, 0.0, 0.0),
                 };
-                let greyscale = (0.2126 * r + 0.7152 * g + 0.0722 * b) * (255.0);
+                let greyscale = 0.2126 * r + 0.7152 * g + 0.0722 * b;
                 vector.push(crate::RawType::from(greyscale));
             }
             GrayImage {

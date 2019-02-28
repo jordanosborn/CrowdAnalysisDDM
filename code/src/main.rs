@@ -6,6 +6,7 @@ use std::sync::mpsc;
 
 use arrayfire as af;
 use gnuplot;
+use itertools::Itertools;
 
 use native::*;
 use operations::Data;
@@ -17,6 +18,22 @@ pub mod utils;
 
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
+
+fn get_closest_power(x: i64) -> i64 {
+    let xf64 = x as f64;
+    let power2 = f64::log2(xf64).ceil() as i64;
+    let power3 = f64::log(xf64, 3.0f64).ceil() as i64;
+    let power5 = f64::log(xf64, 5.0f64).ceil() as i64;
+    let numbers = (0..=power2).cartesian_product((0..=power3).cartesian_product(0..=power5)).map(|(a, (b, c))| {
+        (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as i64
+    }).filter(|&value| {
+        value >= x
+    }).collect::<Vec<i64>>();
+    match numbers.iter().min() {
+        Some(n) => *n,
+        None => panic!("No suitable dimension!")
+    }
+}
 
 fn set_backend() {
     let backends = af::get_available_backends();
@@ -92,8 +109,8 @@ fn main() {
                         let ft = af::fft2(
                             &v.data,
                             1.0,
-                            2.0f64.powf(f64::log2(v.cols as f64).ceil()) as i64,
-                            2.0f64.powf(f64::log2(v.rows as f64).ceil()) as i64,
+                            get_closest_power(v.cols as i64),
+                            get_closest_power(v.rows as i64),
                         );
                         data.push(ft);
                         println!("ft {} - complete!", counter);
@@ -112,14 +129,6 @@ fn main() {
                 },
             }
             //TODO: processing after each new frame use rayon
-            if data.data.len() >= 2 {
-                let l = data.data.len() - 1;
-                let l0 = l - 1;
-                af::print_gen("HI".to_string(), &(af::sub(&data.data[l], &data.data[l0], false)), Some(4));
-                let _: i32 = read!();
-            }
-
-
         }
 
         match stx.send(Signal::KILL) {
