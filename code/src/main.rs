@@ -1,7 +1,11 @@
+#[macro_use]
+extern crate text_io;
+
 // use rayon::prelude::*;
 use std::sync::mpsc;
 
 use arrayfire as af;
+use gnuplot;
 
 use native::*;
 use operations::Data;
@@ -107,7 +111,14 @@ fn main() {
                     }
                 },
             }
-            //TODO: processing after each new frame
+            //TODO: processing after each new frame use rayon
+            if data.data.len() >= 2 {
+                let l = data.data.len() - 1;
+                let l0 = l - 1;
+                af::print_gen("HI".to_string(), &(af::sub(&data.data[l], &data.data[l0], false)), Some(4));
+                let _: i32 = read!();
+            }
+
 
         }
 
