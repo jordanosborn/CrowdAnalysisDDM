@@ -24,13 +24,13 @@ fn get_closest_power(x: i64) -> i64 {
     let power2 = f64::log2(xf64).ceil() as i64;
     let power3 = f64::log(xf64, 3.0f64).ceil() as i64;
     let power5 = f64::log(xf64, 5.0f64).ceil() as i64;
-    let numbers = (0..=power2).cartesian_product((0..=power3).cartesian_product(0..=power5)).map(|(a, (b, c))| {
+    let minima = (0..=power2).cartesian_product((0..=power3).cartesian_product(0..=power5)).map(|(a, (b, c))| {
         (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as i64
     }).filter(|&value| {
         value >= x
-    }).collect::<Vec<i64>>();
-    match numbers.iter().min() {
-        Some(n) => *n,
+    }).min();
+    match minima {
+        Some(n) => n,
         None => panic!("No suitable dimension!")
     }
 }
