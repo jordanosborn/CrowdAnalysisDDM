@@ -56,7 +56,7 @@ enum Signal {
 
 fn main() {
     set_backend();
-    let (tx, rx) = mpsc::channel::<Option<opencv::GrayImage>>();
+    let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let args = std::env::args().collect::<Vec<String>>();
     let args_slice = args.as_slice();
@@ -70,6 +70,7 @@ fn main() {
     if let Some(id) = id {
         println!("Analysis started!");
         let fps = opencv::fps(id);
+        let mut counter = 0;
         let stream_thread = std::thread::spawn(move || loop {
             let frame = opencv::GrayImage::get_frame(id);
             match frame {
@@ -80,10 +81,20 @@ fn main() {
                         }
                     };
                 }
-                Some(value) => match tx.send(Some(value)) {
-                    Ok(_) => {}
-                    Err(_) => {
-                        println!("Failed to send frame!");
+                Some(value) => {
+                    let ft = af::fft2(
+                        &value.data,
+                        1.0,
+                        get_closest_power(value.cols as i64),
+                        get_closest_power(value.rows as i64),
+                    );
+                    println!("ft {} - complete!", counter);
+                    counter += 1;
+                    match tx.send(Some(ft)) {
+                        Ok(_) => {}
+                        Err(_) => {
+                            println!("Failed to send frame!");
+                        }
                     }
                 },
             }
@@ -92,21 +103,12 @@ fn main() {
             }
         });
 
-        let mut data: Data<crate::RawFtType> = Data::new(fps, None);
-        let mut counter = 0;
+        let mut data: Data<crate::RawFtType> = Data::new(fps, Some(fps * 10));
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        let ft = af::fft2(
-                            &v.data,
-                            1.0,
-                            get_closest_power(v.cols as i64),
-                            get_closest_power(v.rows as i64),
-                        );
-                        data.push(ft);
-                        println!("ft {} - complete!", counter);
-                        counter += 1;
+                        data.push(v);
                     } else {
                         break;
                     }
@@ -120,6 +122,7 @@ fn main() {
                     }
                 },
             }
+
             //TODO: processing after each new frame use rayon
         }
 

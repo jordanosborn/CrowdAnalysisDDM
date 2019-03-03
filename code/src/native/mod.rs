@@ -130,7 +130,6 @@ pub mod opencv {
         pub depth: u64,
     }
 
-    //TODO: maybe store as Dim4(cols, rows,) this does not work
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
@@ -286,6 +285,7 @@ pub mod opencv {
             output
         }
 
+        #[inline]
         pub fn total(&self) -> usize {
             unsafe { mat_total(self.inner) }
         }
@@ -294,6 +294,7 @@ pub mod opencv {
         ///
         /// The method returns the matrix element size in bytes. For example, if the
         /// matrix type is CV_16SC3 , the method returns 3*sizeof(short) or 6.
+        #[inline]
         pub fn elem_size(&self) -> usize {
             unsafe { mat_elem_size(self.inner) }
         }
@@ -303,6 +304,8 @@ pub mod opencv {
         /// The method returns the matrix element channel size in bytes, that
         /// is, it ignores the number of channels. For example, if the matrix
         /// type is CV_16SC3 , the method returns sizeof(short) or 2.
+        ///
+        #[inline]
         pub fn elem_size1(&self) -> usize {
             unsafe { mat_elem_size1(self.inner) }
         }
@@ -311,11 +314,13 @@ pub mod opencv {
         ///
         /// The method returns a matrix step divided by Mat::elemSize1() . It can be
         /// useful to quickly access an arbitrary matrix element
+        #[inline]
         pub fn step1(&self, i: c_int) -> usize {
             unsafe { mat_step1(self.inner, i) }
         }
 
         /// Returns the size of this matrix.
+        #[inline]
         pub fn size(&self) -> (usize, usize) {
             (self.rows as usize, self.cols as usize)
         }
@@ -339,6 +344,7 @@ pub mod opencv {
         unsafe { start_capture(c_string.as_ptr()) }
     }
 
+    #[inline]
     pub fn start_camera_capture_safe() -> usize {
         unsafe { start_camera_capture() }
     }
