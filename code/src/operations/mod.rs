@@ -2,6 +2,8 @@ use std::collections::VecDeque;
 
 use arrayfire::Array;
 
+use crate::RawType;
+
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
     arr2: &arrayfire::Array<crate::RawFtType>,
@@ -40,5 +42,22 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
         } else {
             self.data.push_back(array);
         }
+    }
+}
+
+
+pub fn mean_image(arr: &VecDeque<arrayfire::Array<crate::RawType>>) -> Option<arrayfire::Array<crate::RawType>> {
+    let mut sum: Option<Array<crate::RawType>> = None;
+    for a in arr {
+        if let Some(v) = sum {
+            sum = Some(v + a);
+        } else {
+            sum = Some(a.clone());
+        }
+    }
+    if let Some(s) = sum {
+        Some(s / (arr.len() as f32))
+    } else {
+        None
     }
 }
