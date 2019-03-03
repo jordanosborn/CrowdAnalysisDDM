@@ -52,6 +52,8 @@ extern "C" {
 
     size_t get_fps(size_t);
 
+size_t get_frame_count(size_t);
+
     void close_stream(size_t);
 
 }

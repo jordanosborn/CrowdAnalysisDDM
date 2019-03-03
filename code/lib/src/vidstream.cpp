@@ -111,3 +111,14 @@ size_t get_fps(size_t stream_id) {
         return 0;
     }
 }
+
+
+size_t get_frame_count(size_t stream_id) {
+    if (streams.size() > stream_id && streams[stream_id].isOpened()) {
+        return streams[stream_id].get(cv::CAP_PROP_FRAME_COUNT);
+    } else {
+        return 0;
+    }
+}
+
+

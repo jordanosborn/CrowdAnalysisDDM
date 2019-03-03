@@ -86,6 +86,8 @@ fn main() {
     if let Some(id) = id {
         println!("Analysis started!");
         let fps = opencv::fps(id);
+        let frame_count = opencv::frame_count(id);
+        println!("Video is about {} seconds long!", (frame_count as f64) / (fps as f64));
         let mut counter = 0;
         let stream_thread = if let Some(average_over) = average_over {
             let mut frames_to_average: VecDeque<af::Array<RawType>> =

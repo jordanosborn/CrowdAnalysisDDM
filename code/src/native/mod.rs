@@ -57,12 +57,17 @@ pub mod opencv {
         fn mat_type(cmat: *const CMat) -> CvType;
         fn close_stream(stream_id: usize);
         fn get_fps(stream_id: usize) -> usize;
+        fn get_frame_count(stream_id: usize) -> usize;
     //pub fn write(filename: *const c_char, cmat: *const CMat);
     //pub fn show_next(stream_id: size_t);
     }
 
     pub fn fps(stream_id: usize) -> usize {
         unsafe { get_fps(stream_id) }
+    }
+
+    pub fn frame_count(stream_id: usize) -> usize {
+        unsafe { get_frame_count(stream_id) }
     }
 
     pub fn close_stream_safe(stream_id: usize) {
