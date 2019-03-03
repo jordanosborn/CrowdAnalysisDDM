@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-from multiprocessing import pool
-
-import cv2
 import os
 import sys
 import time
+from multiprocessing import pool
+
+import cv2
 
 
 def save(data):
@@ -31,5 +31,5 @@ if __name__ == "__main__":
         p = pool.Pool(int(sys.argv[2]) if len(sys.argv) == 3 else 1)
         t0 = time.time()
         p.map(save_pool, directories)
-        print(f"Generated {len(directories) - 1} video files in {time.time() - t0}s!")
+        print(f"Generated {len(list(directories)) - 1} video files in {time.time() - t0}s!")
     else: print("No directory supplied!")
