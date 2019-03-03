@@ -1,12 +1,17 @@
+#[allow(unused_imports)]
+#[macro_use]
+extern crate text_io;
+
 use std::collections::VecDeque;
 use std::str::FromStr;
-// use rayon::prelude::*;
 use std::sync::mpsc;
 
 use arrayfire as af;
 #[allow(unused_imports)]
 use gnuplot;
 use itertools::Itertools;
+#[allow(unused_imports)]
+use rayon::prelude::*;
 
 use native::*;
 use operations::Data;
@@ -71,7 +76,7 @@ fn main() {
             } else {
                 (None, None)
             }
-        },
+        }
         [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None),
         _ => (None, None),
     };
@@ -82,87 +87,77 @@ fn main() {
         println!("Analysis started!");
         let fps = opencv::fps(id);
         let mut counter = 0;
-        let stream_thread =
-            if let Some(average_over) = average_over {
-                let mut frames_to_average: VecDeque<af::Array<RawType>> = VecDeque::with_capacity(average_over);
-                std::thread::spawn(move || loop {
-                    let frame = opencv::GrayImage::get_frame(id);
-                    match frame {
-                        None => {
-                            match tx.send(None) {
-                                _ => {
-                                    break;
-                                }
-                            };
-                        }
-                        Some(value) => {
-                            if odim0 == None || odim1 == None {
-                                odim0 = Some(get_closest_power(value.cols as i64));
-                                odim1 = Some(get_closest_power(value.rows as i64));
+        let stream_thread = if let Some(average_over) = average_over {
+            let mut frames_to_average: VecDeque<af::Array<RawType>> =
+                VecDeque::with_capacity(average_over);
+            std::thread::spawn(move || loop {
+                let frame = opencv::GrayImage::get_frame(id);
+                match frame {
+                    None => {
+                        match tx.send(None) {
+                            _ => {
+                                break;
                             }
-                            frames_to_average.push_back(value.data);
-                            if frames_to_average.len() == average_over + 1 {
-                                frames_to_average.pop_front();
-                                if let Some(value) = operations::mean_image(&frames_to_average) {
-                                    let ft = af::fft2(
-                                        &value,
-                                        1.0,
-                                        odim0.unwrap(),
-                                        odim1.unwrap(),
-                                    );
-                                    println!("ft {} - complete!", counter);
-                                    counter += 1;
-                                    match tx.send(Some(ft)) {
-                                        Ok(_) => {}
-                                        Err(_) => {
-                                            println!("Failed to send frame!");
-                                        }
+                        };
+                    }
+                    Some(value) => {
+                        if odim0 == None || odim1 == None {
+                            odim0 = Some(get_closest_power(value.cols as i64));
+                            odim1 = Some(get_closest_power(value.rows as i64));
+                        }
+                        frames_to_average.push_back(value.data);
+                        if frames_to_average.len() == average_over + 1 {
+                            frames_to_average.pop_front();
+                            if let Some(value) = operations::mean_image(&frames_to_average) {
+                                let ft = af::fft2(&value, 1.0, odim0.unwrap(), odim1.unwrap());
+                                println!("ft {} - complete!", counter);
+                                counter += 1;
+                                match tx.send(Some(ft)) {
+                                    Ok(_) => {}
+                                    Err(_) => {
+                                        println!("Failed to send frame!");
                                     }
                                 }
-                            };
-                        },
+                            }
+                        };
                     }
-                    if let Ok(Signal::KILL) = srx.try_recv() {
-                        break;
+                }
+                if let Ok(Signal::KILL) = srx.try_recv() {
+                    break;
+                }
+            })
+        } else {
+            std::thread::spawn(move || loop {
+                let frame = opencv::GrayImage::get_frame(id);
+                match frame {
+                    None => {
+                        match tx.send(None) {
+                            _ => {
+                                break;
+                            }
+                        };
                     }
-                })
-            } else {
-                std::thread::spawn(move || loop {
-                    let frame = opencv::GrayImage::get_frame(id);
-                    match frame {
-                        None => {
-                            match tx.send(None) {
-                                _ => {
-                                    break;
-                                }
-                            };
+                    Some(value) => {
+                        if odim0 == None || odim1 == None {
+                            odim0 = Some(get_closest_power(value.cols as i64));
+                            odim1 = Some(get_closest_power(value.rows as i64));
                         }
-                        Some(value) => {
-                            if odim0 == None || odim1 == None {
-                                odim0 = Some(get_closest_power(value.cols as i64));
-                                odim1 = Some(get_closest_power(value.rows as i64));
+                        let ft = af::fft2(&value.data, 1.0, odim0.unwrap(), odim1.unwrap());
+                        println!("ft {} - complete!", counter);
+                        counter += 1;
+                        match tx.send(Some(ft)) {
+                            Ok(_) => {}
+                            Err(_) => {
+                                println!("Failed to send frame!");
                             }
-                            let ft = af::fft2(
-                                &value.data,
-                                1.0,
-                                odim0.unwrap(),
-                                odim1.unwrap(),
-                            );
-                            println!("ft {} - complete!", counter);
-                            counter += 1;
-                            match tx.send(Some(ft)) {
-                                Ok(_) => {}
-                                Err(_) => {
-                                    println!("Failed to send frame!");
-                                }
-                            }
-                        },
+                        }
                     }
-                    if let Ok(Signal::KILL) = srx.try_recv() {
-                        break;
-                    }
-                })
-            };
+                }
+                if let Ok(Signal::KILL) = srx.try_recv() {
+                    break;
+                }
+            })
+        };
 
         let mut data: Data<crate::RawFtType> = Data::new(fps, Some(fps * 10));
         loop {
