@@ -1,5 +1,6 @@
-use arrayfire::Array;
 use std::collections::VecDeque;
+
+use arrayfire::Array;
 
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
@@ -8,12 +9,10 @@ pub fn difference(
     arrayfire::abs(&(arr1 - arr2))
 }
 
-
-
 pub struct Data<T: arrayfire::HasAfEnum> {
     pub time_delta: f64,
     pub data: VecDeque<Array<T>>,
-    pub capacity: Option<usize>
+    pub capacity: Option<usize>,
 }
 
 impl<T: arrayfire::HasAfEnum> Data<T> {
@@ -22,13 +21,13 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
             Data {
                 time_delta: 1f64 / (fps as f64),
                 data: VecDeque::with_capacity(size),
-                capacity: Some(size)
+                capacity: Some(size),
             }
         } else {
             Data {
                 time_delta: 1f64 / (fps as f64),
                 data: VecDeque::new(),
-                capacity: None
+                capacity: None,
             }
         }
     }

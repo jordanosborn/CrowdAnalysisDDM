@@ -1,10 +1,8 @@
-#[macro_use]
-extern crate text_io;
-
 // use rayon::prelude::*;
 use std::sync::mpsc;
 
 use arrayfire as af;
+#[allow(unused_imports)]
 use gnuplot;
 use itertools::Itertools;
 
@@ -15,7 +13,6 @@ pub mod native;
 pub mod operations;
 pub mod utils;
 
-
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
 
@@ -24,23 +21,22 @@ fn get_closest_power(x: i64) -> i64 {
     let power2 = f64::log2(xf64).ceil() as i64;
     let power3 = f64::log(xf64, 3.0f64).ceil() as i64;
     let power5 = f64::log(xf64, 5.0f64).ceil() as i64;
-    let minima = (0..=power2).cartesian_product((0..=power3).cartesian_product(0..=power5)).map(|(a, (b, c))| {
-        (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as i64
-    }).filter(|&value| {
-        value >= x
-    }).min();
+    let minima = (0..=power2)
+        .cartesian_product((0..=power3).cartesian_product(0..=power5))
+        .map(|(a, (b, c))| {
+            (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as i64
+        })
+        .filter(|&value| value >= x)
+        .min();
     match minima {
         Some(n) => n,
-        None => panic!("No suitable dimension!")
+        None => panic!("No suitable dimension!"),
     }
 }
 
 fn set_backend() {
     let backends = af::get_available_backends();
-    let cuda_available = backends
-        .iter()
-        .filter(|&x| *x == af::Backend::CUDA)
-        .count();
+    let cuda_available = backends.iter().filter(|&x| *x == af::Backend::CUDA).count();
     let opencl_available = backends
         .iter()
         .filter(|&x| *x == af::Backend::OPENCL)
@@ -66,12 +62,8 @@ fn main() {
     let args_slice = args.as_slice();
     let id = match args_slice {
         [_] => None,
-        [_, command, path] if command == "video" => {
-            Some(opencv::start_capture_safe(path))
-        }
-        [_, command] if command == "camera" => {
-            Some(opencv::start_camera_capture_safe())
-        }
+        [_, command, path] if command == "video" => Some(opencv::start_capture_safe(path)),
+        [_, command] if command == "camera" => Some(opencv::start_camera_capture_safe()),
         _ => None,
     };
 

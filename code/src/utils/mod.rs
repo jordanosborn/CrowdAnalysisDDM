@@ -1,5 +1,8 @@
+use arrayfire::{Array, Window};
 use flame as fl;
 use rayon::prelude::*;
+
+use crate::opencv;
 
 pub fn times() -> Vec<(String, f64)> {
     let spans = fl::spans();
@@ -20,9 +23,6 @@ pub fn print_times() {
         println!("{} {}ms", x, y);
     });
 }
-
-use arrayfire::{Array, Window};
-use crate::opencv;
 
 #[allow(dead_code)]
 fn show_frames(rx: &std::sync::mpsc::Receiver<Option<opencv::GrayImage>>) {

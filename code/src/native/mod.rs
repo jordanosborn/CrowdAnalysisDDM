@@ -62,9 +62,7 @@ pub mod opencv {
     }
 
     pub fn fps(stream_id: usize) -> usize {
-        unsafe {
-            get_fps(stream_id)
-        }
+        unsafe { get_fps(stream_id) }
     }
 
     pub fn close_stream_safe(stream_id: usize) {
@@ -199,15 +197,11 @@ pub mod opencv {
                 Vec::with_capacity((frame.cols * frame.rows) as usize);
             for index in 0..vector.capacity() {
                 let (r, g, b) = match &data[3 * index..(3 * index + 3)] {
-                    [r, g, b] => (
-                        f32::from(*r) / 255.0,
-                        f32::from(*g) / 255.0,
-                        f32::from(*b) / 255.0,
-                    ),
+                    [r, g, b] => (*r / 255.0, *g / 255.0, *b / 255.0),
                     _ => (0.0, 0.0, 0.0),
                 };
                 let greyscale = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-                vector.push(crate::RawType::from(greyscale));
+                vector.push(greyscale);
             }
             GrayImage {
                 data: arrayfire::Array::new(
@@ -284,9 +278,7 @@ pub mod opencv {
         pub fn data(&self) -> Vec<crate::RawType> {
             let bytes = unsafe { mat_data(self.inner) };
             let len = self.total() * self.elem_size();
-            let slice = unsafe {
-                std::slice::from_raw_parts(bytes, len).to_vec()
-            };
+            let slice = unsafe { std::slice::from_raw_parts(bytes, len).to_vec() };
             let mut output = Vec::with_capacity(len);
             for s in slice.iter() {
                 output.push(crate::RawType::from(*s));
