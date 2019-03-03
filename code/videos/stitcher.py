@@ -1,6 +1,10 @@
-#!/usr/local/bin/python3
-import cv2, sys, os, time
+#!/usr/bin/env python3
 from multiprocessing import pool
+
+import cv2
+import os
+import sys
+import time
 
 
 def save(data):
