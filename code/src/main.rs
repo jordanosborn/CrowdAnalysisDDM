@@ -196,8 +196,6 @@ fn main() {
                 Ok(value) => {
                     if let Some(v) = value {
                         data.push(v);
-                    } else {
-                        break;
                     }
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
@@ -224,13 +222,12 @@ fn main() {
             }
             //produce some absolute differences and plot peaks
             if collected_all_frames {
-                acc = if let Some(a) = acc {
-                    Some(a.par_iter().map(|x| {
+                if let Some(a) = acc {
+                    let acc = a.par_iter().map(|x| {
                         x / (counter_t0 as f32)
-                    }).collect::<VecDeque<af::Array<RawType>>>())
-                } else {
-                    None
-                };
+                    }).collect::<VecDeque<af::Array<RawType>>>();
+                    af::print(&acc[0]);
+                }
                 break;
             }
 

@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use arrayfire::print_gen;
 use rayon::prelude::*;
 
 use crate::operations;
@@ -21,13 +20,13 @@ pub fn ddm(accumulator: VecDeque<arrayfire::Array<crate::RawType>>, data: &VecDe
         *i != 0usize
     }).map(|(_, x)| {
         operations::difference(x, ft0)
-    }).collect::<VecDeque<arrayfire::Array<crate::RawType>>>();
+    }).collect::<Vec<arrayfire::Array<crate::RawType>>>();
     intensities.par_iter().zip(accumulator.par_iter()).map(|(intensity, acc)| {
         // What on earth is going on?????!!!
-        // Why does it now not crash when the print statement is inserted below
+        // Why does it now not crash when the imin_all statement is inserted below
         // Something to do with optimisation???
-        println!("{:?}, {:?}", arrayfire::imin_all(intensity), arrayfire::imin_all(acc));
-        arrayfire::add(intensity, acc, true)
+        arrayfire::imin_all(acc);
+        intensity + acc
     }).collect::<VecDeque<arrayfire::Array<crate::RawType>>>()
 }
 

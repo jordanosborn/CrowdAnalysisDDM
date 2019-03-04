@@ -6,7 +6,8 @@ pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
     arr2: &arrayfire::Array<crate::RawFtType>,
 ) -> arrayfire::Array<crate::RawType> {
-    arrayfire::pow2(&arrayfire::abs(&(arr1 - arr2)))
+    let abs = arrayfire::abs(&(arr1 - arr2));
+    arrayfire::mul(&abs, &abs, true)
 }
 
 pub struct Data<T: arrayfire::HasAfEnum> {
