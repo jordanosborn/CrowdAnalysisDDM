@@ -16,8 +16,6 @@ use rayon::prelude::*;
 use native::*;
 use operations::Data;
 
-use crate::ddm::ddm_0;
-
 pub mod ddm;
 pub mod native;
 pub mod operations;
@@ -25,6 +23,13 @@ pub mod utils;
 
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
+
+macro_rules! print_wait {
+    ($item:expr) => {
+        af::print_gen("".to_string(), &$item, Some(2));
+        let _: u32 = read!("{}");
+    };
+}
 
 fn get_closest_power(x: i64) -> i64 {
     let xf64 = x as f64;
@@ -205,13 +210,12 @@ fn main() {
             }
 
             //TODO: processing after each new frame use rayon
-            println!("data len {}", data.data.len());
             if data.data.len() == capacity {
                 acc = Some(
                     if let Some(a) = acc {
                         ddm::ddm(a, &data.data)
                     } else {
-                        ddm_0(&data.data)
+                        ddm::ddm_0(&data.data)
                     }
                 );
                 counter_t0 += 1;

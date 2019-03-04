@@ -20,9 +20,10 @@ pub fn ddm(acc: VecDeque<arrayfire::Array<crate::RawType>>, data: &VecDeque<arra
         *i != 0usize
     }).map(|(_, x)| {
         operations::difference(x, ft0)
-    }).collect::<Vec<arrayfire::Array<crate::RawType>>>();
-    intensities.iter().zip(acc.iter()).map(|(intensity, acc)| {
-        acc + intensity
-    }).collect::<VecDeque<arrayfire::Array<crate::RawType>>>()
+    }).collect::<VecDeque<arrayfire::Array<crate::RawType>>>();
+    intensities
+//    intensities.iter().zip(acc.iter()).map(|(intensity, acc)| {
+//        acc + intensity
+//    }).collect::<VecDeque<arrayfire::Array<crate::RawType>>>()
 }
 
