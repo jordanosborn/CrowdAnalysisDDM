@@ -235,7 +235,7 @@ fn main() {
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
-            //produce some absolute differences and plot peaks
+
             if collected_all_frames {
                 if let Some(a) = acc {
                     let acc = a
