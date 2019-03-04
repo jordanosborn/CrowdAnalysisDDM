@@ -10,6 +10,13 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+pub fn radial_average(
+    arr: VecDeque<arrayfire::Array<crate::RawType>>,
+) -> VecDeque<arrayfire::Array<crate::RawType>> {
+    //TODO: Finish this function!
+    arr
+}
+
 pub struct Data<T: arrayfire::HasAfEnum> {
     pub time_delta: f64,
     pub data: VecDeque<Array<T>>,
@@ -47,9 +54,12 @@ pub fn mean_image(
 ) -> Option<arrayfire::Array<crate::RawType>> {
     if arr.is_empty() {
         let dims = arr[0].dims();
-        Some(arr.iter().fold(arrayfire::Array::new_empty(dims), |acc: Array<crate::RawType>, x| {
-            acc + x
-        }) / arr.len() as f32)
+        Some(
+            arr.iter().fold(
+                arrayfire::Array::new_empty(dims),
+                |acc: Array<crate::RawType>, x| acc + x,
+            ) / arr.len() as f32,
+        )
     } else {
         None
     }

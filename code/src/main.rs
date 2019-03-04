@@ -79,29 +79,47 @@ fn main() {
 
     // Args processing should extract!
     let (id, average_over, filename) = match args_slice {
-        [_, command, path] if command == "video" => (Some(opencv::start_capture_safe(path)), None, std::path::Path::new(path).file_stem()),
+        [_, command, path] if command == "video" => (
+            Some(opencv::start_capture_safe(path)),
+            None,
+            std::path::Path::new(path).file_stem(),
+        ),
         [_, command, path, avg] if command == "video" => {
             if let Ok(avg) = usize::from_str(avg) {
-                (Some(opencv::start_capture_safe(path)), Some(avg), std::path::Path::new(path).file_name())
+                (
+                    Some(opencv::start_capture_safe(path)),
+                    Some(avg),
+                    std::path::Path::new(path).file_name(),
+                )
             } else {
                 (None, None, std::path::Path::new(path).file_name())
             }
         }
-        [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None, None),
+        [_, command] if command == "camera" => {
+            (Some(opencv::start_camera_capture_safe()), None, None)
+        }
         _ => (None, None, None),
     };
-
 
     let mut odim0: Option<i64> = None;
     let mut odim1: Option<i64> = None;
 
     if let Some(id) = id {
-        println!("Analysis of {} started!", if let Some(filename) = filename {
-            filename.to_str().unwrap()
-        } else { "camera stream" });
+        println!(
+            "Analysis of {} started!",
+            if let Some(filename) = filename {
+                filename.to_str().unwrap()
+            } else {
+                "camera stream"
+            }
+        );
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
-        println!("Video is about {} seconds long, containing {} frames!", (frame_count as f64) / (fps as f64), frame_count);
+        println!(
+            "Video is about {} seconds long, containing {} frames!",
+            (frame_count as f64) / (fps as f64),
+            frame_count
+        );
         let mut counter = 1u32;
         let stream_thread = if let Some(average_over) = average_over {
             let mut frames_to_average: VecDeque<af::Array<RawType>> =
@@ -176,7 +194,7 @@ fn main() {
             })
         };
 
-        let capacity = fps;//* 1;
+        let capacity = fps; //* 1;
         let output_dir = if let Some(filename) = filename {
             format!("results/{}", filename.to_str().unwrap_or(""))
         } else {
@@ -208,33 +226,37 @@ fn main() {
                 },
             }
 
-            //TODO: processing after each new frame use rayon
             if data.data.len() == capacity {
-                acc = Some(
-                    if let Some(a) = acc {
-                        ddm::ddm(a, &data.data)
-                    } else {
-                        ddm::ddm_0(&data.data)
-                    }
-                );
+                acc = Some(if let Some(a) = acc {
+                    ddm::ddm(a, &data.data)
+                } else {
+                    ddm::ddm_0(&data.data)
+                });
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
             //produce some absolute differences and plot peaks
             if collected_all_frames {
                 if let Some(a) = acc {
-                    let acc = a.par_iter().map(|x| {
-                        x / (counter_t0 as f32)
-                    }).collect::<VecDeque<af::Array<RawType>>>();
+                    let acc = a
+                        .par_iter()
+                        .map(|x| x / (counter_t0 as f32))
+                        .collect::<VecDeque<af::Array<RawType>>>();
+                    let acc = operations::radial_average(acc);
+                    //TODO: Create some graphs after radial averaging! I vs q^2 for various tau
                     af::print(&acc[0]);
                 }
                 break;
             }
-
         }
-        println!("Analysis of {} complete!", if let Some(filename) = filename {
-            filename.to_str().unwrap()
-        } else { "camera stream" });
+        println!(
+            "Analysis of {} complete!",
+            if let Some(filename) = filename {
+                filename.to_str().unwrap()
+            } else {
+                "camera stream"
+            }
+        );
         match stx.send(Signal::KILL) {
             Ok(_) | Err(_) => {
                 stream_thread.join().unwrap();
