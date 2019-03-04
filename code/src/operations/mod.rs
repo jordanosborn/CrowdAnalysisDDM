@@ -36,10 +36,8 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
             if self.data.len() == capacity {
                 self.data.pop_front();
             }
-            self.data.push_back(array);
-        } else {
-            self.data.push_back(array);
         }
+        self.data.push_back(array);
     }
 }
 

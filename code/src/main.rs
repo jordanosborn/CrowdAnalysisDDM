@@ -16,6 +16,9 @@ use rayon::prelude::*;
 use native::*;
 use operations::Data;
 
+use crate::ddm::ddm_0;
+
+pub mod ddm;
 pub mod native;
 pub mod operations;
 pub mod utils;
@@ -67,28 +70,33 @@ fn main() {
     let (stx, srx) = mpsc::channel::<Signal>();
     let args = std::env::args().collect::<Vec<String>>();
     let args_slice = args.as_slice();
-    let (id, average_over) = match args_slice {
-        [_] => (None, None),
-        [_, command, path] if command == "video" => (Some(opencv::start_capture_safe(path)), None),
+
+    // Args processing should extract!
+    let (id, average_over, filename) = match args_slice {
+        [_, command, path] if command == "video" => (Some(opencv::start_capture_safe(path)), None, std::path::Path::new(path).file_stem()),
         [_, command, path, avg] if command == "video" => {
             if let Ok(avg) = usize::from_str(avg) {
-                (Some(opencv::start_capture_safe(path)), Some(avg))
+                (Some(opencv::start_capture_safe(path)), Some(avg), std::path::Path::new(path).file_name())
             } else {
-                (None, None)
+                (None, None, std::path::Path::new(path).file_name())
             }
         }
-        [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None),
-        _ => (None, None),
+        [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None, None),
+        _ => (None, None, None),
     };
+
+
     let mut odim0: Option<i64> = None;
     let mut odim1: Option<i64> = None;
 
     if let Some(id) = id {
-        println!("Analysis started!");
+        println!("Analysis of {} started!", if let Some(filename) = filename {
+            filename.to_str().unwrap()
+        } else { "camera stream" });
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
         println!("Video is about {} seconds long!", (frame_count as f64) / (fps as f64));
-        let mut counter = 0;
+        let mut counter = 1u32;
         let stream_thread = if let Some(average_over) = average_over {
             let mut frames_to_average: VecDeque<af::Array<RawType>> =
                 VecDeque::with_capacity(average_over);
@@ -145,14 +153,15 @@ fn main() {
                             odim1 = Some(get_closest_power(value.rows as i64));
                         }
                         let ft = af::fft2(&value.data, 1.0, odim0.unwrap(), odim1.unwrap());
-                        println!("ft {} - complete!", counter);
-                        counter += 1;
                         match tx.send(Some(ft)) {
-                            Ok(_) => {}
+                            Ok(_) => {
+                                println!("ft {} - complete!", counter);
+                            }
                             Err(_) => {
                                 println!("Failed to send frame!");
                             }
                         }
+                        counter += 1;
                     }
                 }
                 if let Ok(Signal::KILL) = srx.try_recv() {
@@ -161,7 +170,21 @@ fn main() {
             })
         };
 
-        let mut data: Data<crate::RawFtType> = Data::new(fps, Some(fps * 10));
+        let capacity = fps;//* 1;
+        let output_dir = if let Some(filename) = filename {
+            format!("results/{}", filename.to_str().unwrap_or(""))
+        } else {
+            "results".to_string()
+        };
+        if !std::path::Path::new(&output_dir).exists() {
+            std::fs::create_dir(&output_dir).expect("Can't create output directory!");
+        }
+
+        let mut counter_t0 = 0;
+        let mut data: Data<crate::RawFtType> = Data::new(fps, Some(capacity));
+        let mut collected_all_frames = false;
+
+        let mut acc: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -173,7 +196,7 @@ fn main() {
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
                     std::sync::mpsc::TryRecvError::Disconnected => {
-                        break;
+                        collected_all_frames = true;
                     }
                     std::sync::mpsc::TryRecvError::Empty => {
                         continue;
@@ -182,8 +205,34 @@ fn main() {
             }
 
             //TODO: processing after each new frame use rayon
-        }
+            println!("data len {}", data.data.len());
+            if data.data.len() == capacity {
+                acc = Some(
+                    if let Some(a) = acc {
+                        ddm::ddm(a, &data.data)
+                    } else {
+                        ddm_0(&data.data)
+                    }
+                );
+                counter_t0 += 1;
+                println!("Analysis of t0 = {} done!", counter_t0);
+            }
+            //produce some absolute differences and plot peaks
+            if collected_all_frames {
+                acc = if let Some(a) = acc {
+                    Some(a.par_iter().map(|x| {
+                        x / (counter_t0 as f32)
+                    }).collect::<VecDeque<af::Array<RawType>>>())
+                } else {
+                    None
+                };
+                break;
+            }
 
+        }
+        println!("Analysis of {} complete!", if let Some(filename) = filename {
+            filename.to_str().unwrap()
+        } else { "camera stream" });
         match stx.send(Signal::KILL) {
             Ok(_) | Err(_) => {
                 stream_thread.join().unwrap();

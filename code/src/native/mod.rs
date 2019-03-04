@@ -345,7 +345,10 @@ pub mod opencv {
     }
 
     pub fn start_capture_safe(s: &str) -> usize {
-        let c_string = s.c_string();
+        let mut c_string = s.c_string();
+        //FIX: Bizarrely this sometimes breaks and string is not null terminated causing an exception when video file is attempted to be read
+        // string reads in to non-owned memory giving garbage??? explicitly appending a null seems to fix this
+        c_string.push(0);
         unsafe { start_capture(c_string.as_ptr()) }
     }
 
