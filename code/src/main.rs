@@ -24,6 +24,7 @@ pub mod utils;
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
 
+#[allow(unused_macros)]
 macro_rules! print_wait {
     ($item:expr) => {
         af::print_gen("".to_string(), &$item, Some(2));
@@ -100,7 +101,7 @@ fn main() {
         } else { "camera stream" });
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
-        println!("Video is about {} seconds long!", (frame_count as f64) / (fps as f64));
+        println!("Video is about {} seconds long, containing {} frames!", (frame_count as f64) / (fps as f64), frame_count);
         let mut counter = 1u32;
         let stream_thread = if let Some(average_over) = average_over {
             let mut frames_to_average: VecDeque<af::Array<RawType>> =
