@@ -9,7 +9,7 @@ import cv2
 
 def save(data):
     dirpath, _, files = data
-    files = list(sorted(filter(lambda s: s.find('.jpg') != -1, files)))
+    files = list(sorted(filter(lambda s: s.find('.jpg') != -1 or s.find('.png') != -1, files)))
     name = f"output/{dirpath.split('/')[-1]}.avi"
     if name != ".avi" and len(files) != 0:
         frame = cv2.imread(os.path.join(os.getcwd(), dirpath, files[0]))

@@ -227,11 +227,11 @@ fn main() {
             }
 
             if data.data.len() == capacity {
-                acc = Some(if let Some(a) = acc {
-                    ddm::ddm(a, &data.data)
+                if let Some(a) = acc {
+                    acc = Some(ddm::ddm(a, &data.data));
                 } else {
-                    ddm::ddm_0(&data.data)
-                });
+                    acc = Some(ddm::ddm_0(&data.data));
+                };
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
@@ -244,7 +244,19 @@ fn main() {
                         .collect::<VecDeque<af::Array<RawType>>>();
                     let acc = operations::radial_average(acc);
                     //TODO: Create some graphs after radial averaging! I vs q^2 for various tau
-                    af::print(&acc[0]);
+                    let size = acc.len().to_string().chars().count();
+                    let filename  = filename.unwrap().to_str().unwrap();
+                    println!("Saving images to results/{}", filename);
+                    acc.iter().enumerate().for_each(|(i, x)| {
+                        let it = (i+1).to_string();
+                        let mut s = String::from("");
+                        for _ in 0..(size-it.chars().count()) {
+                            s.push('0');
+                        }
+                        s.push_str(&it);
+                        let a = s.chars().join(".");
+                        af::save_image_native(format!("results/{}/{}.png", filename, a), x);
+                    })
                 }
                 break;
             }

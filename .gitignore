@@ -19,10 +19,11 @@ gen
 *.out
 *.xml
 code/target/*
-code/*.png
+*.png
 code/*.jpg
 *.rar
 code/videos/collectivemotiondatabase/*
 *.mp4
 *.avi
 code/venv/*
+code/results/presentation_video/9.0.png
