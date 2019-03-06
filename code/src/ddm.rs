@@ -8,13 +8,12 @@ pub fn ddm_0(
     data: &VecDeque<arrayfire::Array<crate::RawFtType>>,
 ) -> VecDeque<arrayfire::Array<crate::RawType>> {
     let ft0 = &data[0];
-    let intensities = data
+    data
         .par_iter()
         .enumerate()
         .filter(|(i, _)| *i != 0usize)
         .map(|(_, x)| operations::difference(x, ft0))
-        .collect::<VecDeque<arrayfire::Array<crate::RawType>>>();
-    intensities
+        .collect::<VecDeque<arrayfire::Array<crate::RawType>>>()
 }
 
 pub fn ddm(
@@ -26,7 +25,7 @@ pub fn ddm(
     //Vec deque slice problem
     let mut data_slice = data.clone();
     data_slice.pop_front();
-    let intensities = data_slice
+    data_slice
         .par_iter()
         .zip(accumulator.par_iter())
         .map(|(i, a)| {
@@ -34,6 +33,5 @@ pub fn ddm(
             arrayfire::imin_all(a);
             a + operations::difference(i, ft0)
         })
-        .collect::<VecDeque<arrayfire::Array<crate::RawType>>>();
-    intensities
+        .collect::<VecDeque<arrayfire::Array<crate::RawType>>>()
 }
