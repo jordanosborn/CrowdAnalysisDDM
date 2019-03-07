@@ -57,6 +57,22 @@ fn get_closest_power(x: i64) -> i64 {
     }
 }
 
+#[allow(dead_code)]
+fn save_images(acc: &Vec<af::Array<RawType>>, filename: String) {
+    let size = acc.len().to_string().chars().count();
+    println!("Saving images to results/{}", filename);
+    acc.iter().enumerate().for_each(|(i, x)| {
+        let it = (i+1).to_string();
+        let mut s = String::from("");
+        for _ in 0..(size-it.chars().count()) {
+            s.push('0');
+        }
+        s.push_str(&it);
+        let a = s.chars().join(".");
+        af::save_image_native(format!("results/{}/{}.png", filename, a), x);
+    });
+}
+
 fn set_backend() {
     let backends = af::get_available_backends();
     let cuda_available = backends.iter().filter(|&x| *x == af::Backend::CUDA).count();
@@ -269,20 +285,10 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&acc, &annuli);
-                    //TODO: Create some graphs after radial averaging! I vs q^2 for various tau
-                    let size = acc.len().to_string().chars().count();
-                    let filename  = filename.unwrap().to_str().unwrap();
-                    println!("Saving images to results/{}", filename);
-                    acc.iter().enumerate().for_each(|(i, x)| {
-                        let it = (i+1).to_string();
-                        let mut s = String::from("");
-                        for _ in 0..(size-it.chars().count()) {
-                            s.push('0');
-                        }
-                        s.push_str(&it);
-                        let a = s.chars().join(".");
-                        af::save_image_native(format!("results/{}/{}.png", filename, a), x);
-                    })
+                    //TODO: Create some graphs after radial averaging! I vs q for various tau
+                    //create plots here
+                    save_images(&acc, String::from(filename.unwrap().to_str().unwrap()));
+
                 }
                 break;
             }
