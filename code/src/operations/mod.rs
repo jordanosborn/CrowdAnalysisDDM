@@ -11,10 +11,21 @@ pub fn difference(
 }
 
 pub fn radial_average(
-    arr: Vec<arrayfire::Array<crate::RawType>>,
-) -> Vec<arrayfire::Array<crate::RawType>> {
+    arr: &Vec<arrayfire::Array<crate::RawType>>,
+    annuli: &Vec<(f32, arrayfire::Array<crate::RawType>)>
+) -> Vec<Vec<(f32, f32)>> {
     //TODO: Finish this function! should return 1D array I(q) for each tau
-    arr
+    let mut vector = Vec::with_capacity(arr.len());
+    arr.iter().for_each(|a| {
+        let average = annuli.par_iter().map(|(q, annulus)| {
+                (*q, arrayfire::sum_all(&(annulus * a)).0 as f32)
+            }).collect::<Vec<(f32, f32)>>();
+        vector.push(
+            average
+        );
+    });
+    println!("Radial averaged all time steps!");
+    vector
 }
 
 pub struct Data<T: arrayfire::HasAfEnum> {
@@ -83,11 +94,11 @@ fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Arr
     arr / divisor
 }
 
-pub fn generate_annuli(dimension: Option<i64>, spacing: u64) -> Vec<arrayfire::Array<crate::RawType>> {
+pub fn generate_annuli(dimension: Option<i64>, spacing: u64) -> Vec<(f32, arrayfire::Array<crate::RawType>)> {
     let dimension = dimension.unwrap() as u64;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
     it.par_iter().map(|&r| {
-        create_annulus(dimension, r as u64, spacing)
-    }).collect::<Vec<arrayfire::Array<crate::RawType>>>()
+        ((2 * r + spacing as usize) as f32 / 2.0f32, create_annulus(dimension, r as u64, spacing))
+    }).collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>()
 }

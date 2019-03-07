@@ -81,6 +81,7 @@ fn main() {
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
+    let (annuli_tx, annuli_rx) = mpsc::channel::<Vec<(f32, arrayfire::Array<crate::RawType>)>>();
     let args = std::env::args().collect::<Vec<String>>();
     let args_slice = args.as_slice();
 
@@ -109,7 +110,6 @@ fn main() {
     };
 
     let mut odim: Option<i64> = None;
-    let mut annuli: Option<Vec<af::Array<crate::RawType>>> = None;
     let annuli_spacing = 5;
 
     if let Some(id) = id {
@@ -146,8 +146,12 @@ fn main() {
                         if odim == None {
                             let n = std::cmp::max(value.cols, value.rows);
                             odim = Some(get_closest_power(n as i64));
-                            annuli = Some(operations::generate_annuli(odim, annuli_spacing));
-                            println!("Generated annuli!");
+                            match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
+                                Ok(_) => println!("Generated annuli!"),
+                                Err(e) => {
+                                    panic!("Failed to generate annuli - {}!", e);
+                                }
+                            }
                         }
                         frames_to_average.push_back(value.data);
                         if frames_to_average.len() == average_over + 1 {
@@ -185,8 +189,12 @@ fn main() {
                         if odim == None {
                             let n = std::cmp::max(value.cols, value.rows);
                             odim = Some(get_closest_power(n as i64));
-                            annuli = Some(operations::generate_annuli(odim, annuli_spacing));
-                            println!("Generated annuli!");
+                            match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
+                                Ok(_) => println!("Generated annuli!"),
+                                Err(e) => {
+                                    panic!("Failed to generate annuli - {}!", e);
+                                }
+                            }
                         }
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
                         match tx.send(Some(ft)) {
@@ -254,7 +262,13 @@ fn main() {
                         .par_iter()
                         .map(|x| x / (counter_t0 as f32))
                         .collect::<Vec<af::Array<RawType>>>();
-                    let acc = operations::radial_average(acc);
+                    let annuli = match annuli_rx.recv() {
+                        Ok(v) => v,
+                        Err(e) => {
+                            panic!("Failed to receive annuli - {}!", e);
+                        }
+                    };
+                    let radial_averaged = operations::radial_average(&acc, &annuli);
                     //TODO: Create some graphs after radial averaging! I vs q^2 for various tau
                     let size = acc.len().to_string().chars().count();
                     let filename  = filename.unwrap().to_str().unwrap();
