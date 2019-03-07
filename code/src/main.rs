@@ -34,7 +34,8 @@ macro_rules! print_wait {
 
 macro_rules! fft_shift {
     ($item:expr) => {
-        arrayfire::shift(&$item, &[($item.dims()[0] / 2) as i32, ($item.dims()[1] / 2) as i32, 0, 0]);
+        // Why do I have to shift by a third?
+        arrayfire::shift(&$item, &[($item.dims()[0] / 2) as i32, ($item.dims()[1] / 3) as i32, 1, 1]);
     }
 }
 
@@ -107,8 +108,7 @@ fn main() {
         _ => (None, None, None),
     };
 
-    let mut odim0: Option<i64> = None;
-    let mut odim1: Option<i64> = None;
+    let mut odim: Option<i64> = None;
 
     if let Some(id) = id {
         println!(
@@ -141,15 +141,15 @@ fn main() {
                         };
                     }
                     Some(value) => {
-                        if odim0 == None || odim1 == None {
-                            odim0 = Some(get_closest_power(value.cols as i64));
-                            odim1 = Some(get_closest_power(value.rows as i64));
+                        if odim == None {
+                            let n = std::cmp::max(value.cols, value.rows);
+                            odim = Some(get_closest_power(n as i64));
                         }
                         frames_to_average.push_back(value.data);
                         if frames_to_average.len() == average_over + 1 {
                             frames_to_average.pop_front();
                             if let Some(value) = operations::mean_image(&frames_to_average) {
-                                let ft = af::fft2(&value, 1.0, odim0.unwrap(), odim1.unwrap());
+                                let ft = af::fft2(&value, 1.0, odim.unwrap(), odim.unwrap());
                                 println!("ft {} - complete!", counter);
                                 counter += 1;
                                 match tx.send(Some(ft)) {
@@ -178,11 +178,11 @@ fn main() {
                         };
                     }
                     Some(value) => {
-                        if odim0 == None || odim1 == None {
-                            odim0 = Some(get_closest_power(value.cols as i64));
-                            odim1 = Some(get_closest_power(value.rows as i64));
+                        if odim == None {
+                            let n = std::cmp::max(value.cols, value.rows);
+                            odim = Some(get_closest_power(n as i64));
                         }
-                        let ft = fft_shift!(af::fft2(&value.data, 1.0, odim0.unwrap(), odim1.unwrap()));
+                        let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
                         match tx.send(Some(ft)) {
                             Ok(_) => {
                                 println!("ft {} - complete!", counter);
