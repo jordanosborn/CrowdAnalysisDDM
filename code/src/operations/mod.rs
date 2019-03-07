@@ -1,5 +1,5 @@
 use std::collections::VecDeque;
-
+use rayon::prelude::*;
 use arrayfire::Array;
 
 pub fn difference(
@@ -11,8 +11,8 @@ pub fn difference(
 }
 
 pub fn radial_average(
-    arr: VecDeque<arrayfire::Array<crate::RawType>>,
-) -> VecDeque<arrayfire::Array<crate::RawType>> {
+    arr: Vec<arrayfire::Array<crate::RawType>>,
+) -> Vec<arrayfire::Array<crate::RawType>> {
     //TODO: Finish this function! should return 1D array I(q) for each tau
     arr
 }
@@ -65,8 +65,8 @@ pub fn mean_image(
     }
 }
 
-
-pub fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Array<crate::RawType> {
+//Algorithm tested in python!
+fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Array<crate::RawType> {
     let mut annulus = vec![0f32;(dimension * dimension) as usize];
     let radius2 = radius * radius;
     let radius_plus_dr2 = (radius + thickness) * (radius + thickness);
@@ -81,4 +81,13 @@ pub fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire:
     let arr = Array::new(annulus.as_slice(), arrayfire::Dim4::new(&[dimension, dimension, 1, 1]));
     let divisor = arrayfire::sum_all(&arr).0 as f32;
     arr / divisor
+}
+
+pub fn generate_annuli(dimension: Option<i64>, spacing: u64) -> Vec<arrayfire::Array<crate::RawType>> {
+    let dimension = dimension.unwrap() as u64;
+    let max = (dimension / 2) as usize;
+    let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
+    it.par_iter().map(|&r| {
+        create_annulus(dimension, r as u64, spacing)
+    }).collect::<Vec<arrayfire::Array<crate::RawType>>>()
 }

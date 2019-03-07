@@ -69,5 +69,7 @@
         "cinttypes": "cpp",
         "complex": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/local/opt/python/bin/python3.7",
+    "python.linting.pylintEnabled": true
 }
