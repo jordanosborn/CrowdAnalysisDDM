@@ -69,16 +69,15 @@ pub fn mean_image(
 pub fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Array<crate::RawType> {
     let mut annulus = vec![0f32;(dimension * dimension) as usize];
     let radius2 = radius * radius;
-    let Radius2 = (radius + thickness) * (radius + thickness);
+    let radius_plus_dr2 = (radius + thickness) * (radius + thickness);
     for i in 0..(dimension * dimension) {
         let x = i % dimension;
         let y = i / dimension;
         let r2 = (x - dimension / 2) * (x - dimension / 2) + (y - dimension / 2) * (y - dimension / 2);
-        if  radius2 <= r2 && r2 <= Radius2 {
+        if  radius2 <= r2 && r2 <= radius_plus_dr2 {
             annulus[i as usize] = 1.0;
         }
     }
-    // TODO: annulus generating function
     let arr = Array::new(annulus.as_slice(), arrayfire::Dim4::new(&[dimension, dimension, 1, 1]));
     let divisor = arrayfire::sum_all(&arr).0 as f32;
     arr / divisor
