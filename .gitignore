@@ -27,3 +27,4 @@ code/videos/collectivemotiondatabase/*
 *.avi
 code/venv/*
 *.m4v
+*.gplt

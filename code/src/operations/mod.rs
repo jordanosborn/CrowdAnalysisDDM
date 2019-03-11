@@ -11,18 +11,19 @@ pub fn difference(
 }
 
 pub fn radial_average(
-    arr: &Vec<arrayfire::Array<crate::RawType>>,
-    annuli: &Vec<(f32, arrayfire::Array<crate::RawType>)>
+    arr: &[arrayfire::Array<crate::RawType>],
+    annuli: &[(f32, arrayfire::Array<crate::RawType>)]
 ) -> Vec<Vec<(f32, f32)>> {
     //TODO: Finish this function! should return 1D array I(q) for each tau
     let mut vector = Vec::with_capacity(arr.len());
-    arr.iter().for_each(|a| {
+    arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli.par_iter().map(|(q, annulus)| {
                 (*q, arrayfire::sum_all(&(annulus * a)).0 as f32)
             }).collect::<Vec<(f32, f32)>>();
         vector.push(
             average
         );
+        println!("Radial averaged tau = {}!", i+1);
     });
     println!("Radial averaged all time steps!");
     vector

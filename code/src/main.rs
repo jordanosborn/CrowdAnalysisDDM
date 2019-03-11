@@ -58,7 +58,7 @@ fn get_closest_power(x: i64) -> i64 {
 }
 
 #[allow(dead_code)]
-fn save_images(acc: &Vec<af::Array<RawType>>, filename: String) {
+fn save_images(acc: &[af::Array<RawType>], filename: String) {
     let size = acc.len().to_string().chars().count();
     println!("Saving images to results/{}", filename);
     acc.iter().enumerate().for_each(|(i, x)| {
@@ -285,9 +285,23 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&acc, &annuli);
-                    //TODO: Create some graphs after radial averaging! I vs q for various tau
+                    let filename = String::from(filename.unwrap().to_str().unwrap());
+                    //TODO: I vs q for various tau
                     //create plots here
-                    save_images(&acc, String::from(filename.unwrap().to_str().unwrap()));
+                    for (tau, graph) in radial_averaged.iter().enumerate() {
+                        let mut x = Vec::with_capacity(graph.len());
+                        let mut y = Vec::with_capacity(graph.len());
+                        graph.iter().for_each(|(q, i)| {
+                            x.push(q);
+                            y.push(i);
+                        });
+                        let mut fg = gnuplot::Figure::new();
+                        fg.axes2d()
+                        .lines(x, y, &[gnuplot::Caption(&format!("Tau = {}.", tau + 1)), gnuplot::Color("black")]);
+                        fg.echo_to_file(&format!("results/{}/tau{}.gplt", filename, tau + 1));
+                        println!("Gplt for tau = {} saved!", tau + 1);
+                    }
+                    //save_images(&acc, filename);
 
                 }
                 break;
