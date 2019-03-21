@@ -1,8 +1,6 @@
 use arrayfire as af;
 use rayon::prelude::*;
 use std::collections::VecDeque;
-use crate::utils::save_images;
-use crate::wait;
 
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
@@ -32,7 +30,7 @@ pub fn radial_average(
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
             .par_iter()
-            .map(|(q, annulus)| (*q, arrayfire::sum_all(&(annulus * a)).0 as f32))
+            .map(|(q, annulus)| (*q, (arrayfire::sum_all(&(annulus * a)).0 as f32) / (arrayfire::sum_all(annulus).0 as f32)))
             .collect::<Vec<(f32, f32)>>();
         vector.push(average);
         println!("Radial averaged tau = {}!", i + 1);
@@ -107,12 +105,10 @@ fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Arr
             }
         })
         .collect();
-    let arr = af::Array::new(
+    af::Array::new(
         annulus.as_slice(),
         arrayfire::Dim4::new(&[dimension, dimension, 1, 1]),
-    );
-    let divisor = arrayfire::sum_all(&arr).0 as f32;
-    arr / divisor
+    )
 }
 
 pub fn generate_annuli(
@@ -122,16 +118,26 @@ pub fn generate_annuli(
     let dimension = dimension.unwrap() as u64;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
-    let annuli = it.par_iter()
+    it.par_iter()
         .map(|&r| {
             (
                 (2 * r + spacing as usize) as f32 / 2.0f32,
                 create_annulus(dimension, r as u64, spacing),
             )
         })
-        .collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>();
-    let a = annuli.iter().map(|(_, val)| {val.clone()}).collect::<Vec<af::Array<crate::RawType>>>();
-    save_images(&a, String::from("presentation_video"));
-    wait!();
-    annuli
+        .collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_annuli() {
+        crate::set_backend();
+        let annuli = generate_annuli(Some(500), 10);
+        let a = annuli.iter().map(|(_, val)| {val.clone()}).collect::<Vec<af::Array<crate::RawType>>>();
+        save_images(&a, String::from("presentation_video"));
+        wait!();
+    }
 }

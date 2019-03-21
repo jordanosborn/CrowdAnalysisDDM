@@ -11,7 +11,14 @@ use crate::opencv;
 #[macro_export]
 macro_rules! wait {
     () => {
-        let _: u32 = read!("{}");
+        loop {
+            println!("Continue? y/n");
+            let o: char = read!("{}");
+            if o == 'y' {
+                break;
+            }
+        }
+
     };
 }
 

@@ -111,7 +111,7 @@ fn main() {
     let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
-    let annuli_spacing = 20;
+    let annuli_spacing = 1;
 
     if let Some(id) = id {
         let output_dir = if let Some(v) = filename {
@@ -213,7 +213,6 @@ fn main() {
                             panic!("Failed to receive annuli - {}!", e);
                         }
                     };
-                    let a = annuli.iter().map(|(_, a)| {a.clone()}).collect::<Vec<af::Array<RawType>>>();
                     let radial_averaged = operations::radial_average(&acc, &annuli);
                     let radial_average_transposed =
                         operations::transpose_2d_array(&radial_averaged);
