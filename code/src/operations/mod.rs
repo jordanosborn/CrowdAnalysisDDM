@@ -1,6 +1,7 @@
 use arrayfire as af;
 use rayon::prelude::*;
 use std::collections::VecDeque;
+use crate::RawType;
 
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
@@ -22,16 +23,16 @@ pub fn transpose_2d_array<T: Clone>(arr: &Vec<Vec<T>>) -> Vec<Vec<T>> {
 }
 
 pub fn radial_average(
-    arr: &[arrayfire::Array<crate::RawType>],
-    annuli: &[(f32, arrayfire::Array<crate::RawType>)],
-) -> Vec<Vec<(f32, f32)>> {
+    arr: &[arrayfire::Array<RawType>],
+    annuli: &[(RawType, arrayfire::Array<RawType>)],
+) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: Finish this function! should return 1D array I(q) for each tau
     let mut vector = Vec::with_capacity(arr.len());
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
             .par_iter()
-            .map(|(q, annulus)| (*q, (arrayfire::sum_all(&(annulus * a)).0 as f32) / (arrayfire::sum_all(annulus).0 as f32)))
-            .collect::<Vec<(f32, f32)>>();
+            .map(|(q, annulus)| (*q, ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0)) as f32))
+            .collect::<Vec<(RawType, RawType)>>();
         vector.push(average);
         println!("Radial averaged tau = {}!", i + 1);
     });
@@ -114,18 +115,18 @@ fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Arr
 pub fn generate_annuli(
     dimension: Option<i64>,
     spacing: u64,
-) -> Vec<(f32, arrayfire::Array<crate::RawType>)> {
+) -> Vec<(RawType, arrayfire::Array<crate::RawType>)> {
     let dimension = dimension.unwrap() as u64;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
     it.par_iter()
         .map(|&r| {
             (
-                (2 * r + spacing as usize) as f32 / 2.0f32,
+                (2 * r + spacing as usize) as RawType / 2.0 as RawType,
                 create_annulus(dimension, r as u64, spacing),
             )
         })
-        .collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>()
+        .collect::<Vec<(RawType, arrayfire::Array<crate::RawType>)>>()
 }
 
 #[cfg(test)]
