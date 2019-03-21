@@ -9,6 +9,7 @@
         "gp",
         "gplt",
         "highgui",
+        "ifft",
         "imin",
         "luma",
         "mersenne",

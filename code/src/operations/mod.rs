@@ -1,6 +1,8 @@
-use arrayfire::Array;
+use arrayfire as af;
 use rayon::prelude::*;
 use std::collections::VecDeque;
+use crate::utils::save_images;
+use crate::wait;
 
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
@@ -41,7 +43,7 @@ pub fn radial_average(
 
 pub struct Data<T: arrayfire::HasAfEnum> {
     pub time_delta: f64,
-    pub data: VecDeque<Array<T>>,
+    pub data: VecDeque<af::Array<T>>,
     pub capacity: Option<usize>,
 }
 
@@ -61,7 +63,7 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
             }
         }
     }
-    pub fn push(&mut self, array: Array<T>) {
+    pub fn push(&mut self, array: af::Array<T>) {
         if let Some(capacity) = self.capacity {
             if self.data.len() == capacity {
                 self.data.pop_front();
@@ -79,7 +81,7 @@ pub fn mean_image(
         Some(
             arr.iter().fold(
                 arrayfire::Array::new_empty(dims),
-                |acc: Array<crate::RawType>, x| acc + x,
+                |acc: af::Array<crate::RawType>, x| acc + x,
             ) / arr.len() as f32,
         )
     } else {
@@ -105,7 +107,7 @@ fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Arr
             }
         })
         .collect();
-    let arr = Array::new(
+    let arr = af::Array::new(
         annulus.as_slice(),
         arrayfire::Dim4::new(&[dimension, dimension, 1, 1]),
     );
@@ -120,12 +122,16 @@ pub fn generate_annuli(
     let dimension = dimension.unwrap() as u64;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
-    it.par_iter()
+    let annuli = it.par_iter()
         .map(|&r| {
             (
                 (2 * r + spacing as usize) as f32 / 2.0f32,
                 create_annulus(dimension, r as u64, spacing),
             )
         })
-        .collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>()
+        .collect::<Vec<(f32, arrayfire::Array<crate::RawType>)>>();
+    let a = annuli.iter().map(|(_, val)| {val.clone()}).collect::<Vec<af::Array<crate::RawType>>>();
+    save_images(&a, String::from("presentation_video"));
+    wait!();
+    annuli
 }

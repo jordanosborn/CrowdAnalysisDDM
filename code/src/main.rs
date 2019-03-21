@@ -13,11 +13,13 @@ use itertools::Itertools;
 use rayon::prelude::*;
 
 use native::*;
+use utils::save_plots;
 use operations::Data;
 
 pub mod ddm;
 pub mod native;
 pub mod operations;
+#[macro_use]
 pub mod utils;
 
 type RawType = f32;
@@ -27,13 +29,6 @@ type RawFtType = num_complex::Complex32;
 macro_rules! print_wait {
     ($item:expr) => {
         af::print_gen("".to_string(), &$item, Some(2));
-        let _: u32 = read!("{}");
-    };
-}
-
-#[allow(unused_macros)]
-macro_rules! wait {
-    () => {
         let _: u32 = read!("{}");
     };
 }
@@ -69,50 +64,6 @@ fn get_closest_power(x: i64) -> i64 {
         Some(n) => n,
         None => panic!("No suitable dimension!"),
     }
-}
-
-#[allow(dead_code)]
-fn save_plots(folder_name: &str, data: Vec<Vec<(crate::RawType, crate::RawType)>>) {
-    let output_dir = format!("results/{}", String::from(folder_name));
-    if !std::path::Path::new(&output_dir).exists() {
-        std::fs::create_dir(&output_dir).expect("Can't create output directory!");
-    }
-    println!("Saving to {}", output_dir);
-    for (index, graph) in data.iter().enumerate() {
-        let mut x = Vec::with_capacity(graph.len());
-        let mut y = Vec::with_capacity(graph.len());
-        graph.iter().for_each(|(q, i)| {
-            x.push(q);
-            y.push(i);
-        });
-        let mut fg = gnuplot::Figure::new();
-        fg.axes2d().lines(
-            x,
-            y,
-            &[
-                gnuplot::Caption(&format!("Tau = {}.", index + 1)),
-                gnuplot::Color("black"),
-            ],
-        );
-        fg.echo_to_file(&format!("{}/index{}.gplt", output_dir, index + 1));
-        println!("Gplt for index = {} saved!", index + 1);
-    }
-}
-
-#[allow(dead_code)]
-fn save_images(acc: &[af::Array<RawType>], filename: String) {
-    let size = acc.len().to_string().chars().count();
-    println!("Saving images to results/{}", filename);
-    acc.iter().enumerate().for_each(|(i, x)| {
-        let it = (i + 1).to_string();
-        let mut s = String::from("");
-        for _ in 0..(size - it.chars().count()) {
-            s.push('0');
-        }
-        s.push_str(&it);
-        let a = s.chars().join(".");
-        af::save_image(format!("results/{}/{}.png", filename, a), x);
-    });
 }
 
 fn set_backend() {
@@ -160,7 +111,7 @@ fn main() {
     let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
-    let annuli_spacing = 5;
+    let annuli_spacing = 20;
 
     if let Some(id) = id {
         let output_dir = if let Some(v) = filename {
@@ -200,8 +151,6 @@ fn main() {
                         }
                     }
                     let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
-                    save_images(&[value.data], String::from("presentation_video"));
-                    wait!();
                     match tx.send(Some(ft)) {
                         Ok(_) => {
                             println!("ft {} - complete!", counter);
@@ -264,6 +213,7 @@ fn main() {
                             panic!("Failed to receive annuli - {}!", e);
                         }
                     };
+                    let a = annuli.iter().map(|(_, a)| {a.clone()}).collect::<Vec<af::Array<RawType>>>();
                     let radial_averaged = operations::radial_average(&acc, &annuli);
                     let radial_average_transposed =
                         operations::transpose_2d_array(&radial_averaged);
