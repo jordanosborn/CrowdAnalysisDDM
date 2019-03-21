@@ -3,7 +3,6 @@
 extern crate text_io;
 
 use std::collections::VecDeque;
-use std::str::FromStr;
 use std::sync::mpsc;
 
 use arrayfire as af;
@@ -28,6 +27,13 @@ type RawFtType = num_complex::Complex32;
 macro_rules! print_wait {
     ($item:expr) => {
         af::print_gen("".to_string(), &$item, Some(2));
+        let _: u32 = read!("{}");
+    };
+}
+
+#[allow(unused_macros)]
+macro_rules! wait {
+    () => {
         let _: u32 = read!("{}");
     };
 }
@@ -91,7 +97,7 @@ fn save_images(acc: &[af::Array<RawType>], filename: String) {
         }
         s.push_str(&it);
         let a = s.chars().join(".");
-        af::save_image_native(format!("results/{}/{}.png", filename, a), x);
+        af::save_image(format!("results/{}/{}.png", filename, a), x);
     });
 }
 
@@ -124,27 +130,15 @@ fn main() {
     let args_slice = args.as_slice();
 
     // Args processing should extract!
-    let (id, average_over, filename) = match args_slice {
+    let (id, filename) = match args_slice {
         [_, command, path] if command == "video" => (
             Some(opencv::start_capture_safe(path)),
-            None,
             std::path::Path::new(path).file_stem(),
         ),
-        [_, command, path, avg] if command == "video" => {
-            if let Ok(avg) = usize::from_str(avg) {
-                (
-                    Some(opencv::start_capture_safe(path)),
-                    Some(avg),
-                    std::path::Path::new(path).file_name(),
-                )
-            } else {
-                (None, None, std::path::Path::new(path).file_name())
-            }
-        }
         [_, command] if command == "camera" => {
-            (Some(opencv::start_camera_capture_safe()), None, None)
+            (Some(opencv::start_camera_capture_safe()), None)
         }
-        _ => (None, None, None),
+        _ => (None, None),
     };
 
     let mut odim: Option<i64> = None;
@@ -167,90 +161,45 @@ fn main() {
             frame_count
         );
         let mut counter = 1u32;
-        let stream_thread = if let Some(average_over) = average_over {
-            let mut frames_to_average: VecDeque<af::Array<RawType>> =
-                VecDeque::with_capacity(average_over);
-            std::thread::spawn(move || loop {
-                let frame = opencv::GrayImage::get_frame(id);
-                match frame {
-                    None => {
-                        match tx.send(None) {
-                            _ => {
-                                break;
-                            }
-                        };
-                    }
-                    Some(value) => {
-                        if odim == None {
-                            let n = std::cmp::max(value.cols, value.rows);
-                            odim = Some(get_closest_power(n as i64));
-                            match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
-                                Ok(_) => println!("Generated annuli!"),
-                                Err(e) => {
-                                    panic!("Failed to generate annuli - {}!", e);
-                                }
+        let stream_thread = std::thread::spawn(move || loop {
+            let frame = opencv::GrayImage::get_frame(id);
+            match frame {
+                None => {
+                    match tx.send(None) {
+                        _ => {
+                            break;
+                        }
+                    };
+                }
+                Some(value) => {
+                    if odim == None {
+                        let n = std::cmp::max(value.cols, value.rows);
+                        odim = Some(get_closest_power(n as i64));
+                        match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
+                            Ok(_) => println!("Generated annuli!"),
+                            Err(e) => {
+                                panic!("Failed to generate annuli - {}!", e);
                             }
                         }
-                        frames_to_average.push_back(value.data);
-                        if frames_to_average.len() == average_over + 1 {
-                            frames_to_average.pop_front();
-                            if let Some(value) = operations::mean_image(&frames_to_average) {
-                                let ft = af::fft2(&value, 1.0, odim.unwrap(), odim.unwrap());
-                                println!("ft {} - complete!", counter);
-                                counter += 1;
-                                match tx.send(Some(ft)) {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        println!("Failed to send frame!");
-                                    }
-                                }
-                            }
-                        };
                     }
-                }
-                if let Ok(Signal::KILL) = srx.try_recv() {
-                    break;
-                }
-            })
-        } else {
-            std::thread::spawn(move || loop {
-                let frame = opencv::GrayImage::get_frame(id);
-                match frame {
-                    None => {
-                        match tx.send(None) {
-                            _ => {
-                                break;
-                            }
-                        };
-                    }
-                    Some(value) => {
-                        if odim == None {
-                            let n = std::cmp::max(value.cols, value.rows);
-                            odim = Some(get_closest_power(n as i64));
-                            match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
-                                Ok(_) => println!("Generated annuli!"),
-                                Err(e) => {
-                                    panic!("Failed to generate annuli - {}!", e);
-                                }
-                            }
+                    let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
+                    save_images(&[value.data], String::from("presentation_video"));
+                    wait!();
+                    match tx.send(Some(ft)) {
+                        Ok(_) => {
+                            println!("ft {} - complete!", counter);
                         }
-                        let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
-                        match tx.send(Some(ft)) {
-                            Ok(_) => {
-                                println!("ft {} - complete!", counter);
-                            }
-                            Err(_) => {
-                                println!("Failed to send frame!");
-                            }
+                        Err(_) => {
+                            println!("Failed to send frame!");
                         }
-                        counter += 1;
                     }
+                    counter += 1;
                 }
-                if let Ok(Signal::KILL) = srx.try_recv() {
-                    break;
-                }
-            })
-        };
+            }
+            if let Ok(Signal::KILL) = srx.try_recv() {
+                break;
+            }
+        });
 
         let capacity = fps; //* 1;
 
