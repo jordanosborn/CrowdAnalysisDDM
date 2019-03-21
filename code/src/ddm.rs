@@ -8,8 +8,7 @@ pub fn ddm_0(
     data: &VecDeque<arrayfire::Array<crate::RawFtType>>,
 ) -> VecDeque<arrayfire::Array<crate::RawType>> {
     let ft0 = &data[0];
-    data
-        .par_iter()
+    data.par_iter()
         .enumerate()
         .filter(|(i, _)| *i != 0usize)
         .map(|(_, x)| operations::difference(x, ft0))

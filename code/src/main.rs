@@ -41,8 +41,16 @@ macro_rules! wait {
 macro_rules! fft_shift {
     ($item:expr) => {
         //TODO: Why do I have to shift by a third?
-        arrayfire::shift(&$item, &[($item.dims()[0] / 2) as i32, ($item.dims()[1] / 3) as i32, 1, 1]);
-    }
+        arrayfire::shift(
+            &$item,
+            &[
+                ($item.dims()[0] / 2) as i32,
+                ($item.dims()[1] / 3) as i32,
+                1,
+                1,
+            ],
+        );
+    };
 }
 
 fn get_closest_power(x: i64) -> i64 {
@@ -78,8 +86,14 @@ fn save_plots(folder_name: &str, data: Vec<Vec<(crate::RawType, crate::RawType)>
             y.push(i);
         });
         let mut fg = gnuplot::Figure::new();
-        fg.axes2d()
-            .lines(x, y, &[gnuplot::Caption(&format!("Tau = {}.", index + 1)), gnuplot::Color("black")]);
+        fg.axes2d().lines(
+            x,
+            y,
+            &[
+                gnuplot::Caption(&format!("Tau = {}.", index + 1)),
+                gnuplot::Color("black"),
+            ],
+        );
         fg.echo_to_file(&format!("{}/index{}.gplt", output_dir, index + 1));
         println!("Gplt for index = {} saved!", index + 1);
     }
@@ -90,9 +104,9 @@ fn save_images(acc: &[af::Array<RawType>], filename: String) {
     let size = acc.len().to_string().chars().count();
     println!("Saving images to results/{}", filename);
     acc.iter().enumerate().for_each(|(i, x)| {
-        let it = (i+1).to_string();
+        let it = (i + 1).to_string();
         let mut s = String::from("");
-        for _ in 0..(size-it.chars().count()) {
+        for _ in 0..(size - it.chars().count()) {
             s.push('0');
         }
         s.push_str(&it);
@@ -117,6 +131,21 @@ fn set_backend() {
     }
 }
 
+fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<String>) {
+    let args_slice = args.as_slice();
+    match args_slice {
+        [_, command, path] if command == "video" => (
+            Some(opencv::start_capture_safe(path)),
+            match std::path::Path::new(path).file_stem() {
+                Some(s) => Some(String::from(s.to_str().unwrap())),
+                None => None
+            }
+        ),
+        [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None),
+        _ => (None, None),
+    }
+}
+
 enum Signal {
     KILL,
 }
@@ -126,32 +155,22 @@ fn main() {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) = mpsc::channel::<Vec<(f32, arrayfire::Array<crate::RawType>)>>();
-    let args = std::env::args().collect::<Vec<String>>();
-    let args_slice = args.as_slice();
 
     // Args processing should extract!
-    let (id, filename) = match args_slice {
-        [_, command, path] if command == "video" => (
-            Some(opencv::start_capture_safe(path)),
-            std::path::Path::new(path).file_stem(),
-        ),
-        [_, command] if command == "camera" => {
-            (Some(opencv::start_camera_capture_safe()), None)
-        }
-        _ => (None, None),
-    };
+    let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
     let annuli_spacing = 5;
 
     if let Some(id) = id {
+        let output_dir = if let Some(v) = filename {
+            v
+        } else {
+            String::from("camera")
+        };
         println!(
-            "Analysis of {} started!",
-            if let Some(filename) = filename {
-                filename.to_str().unwrap()
-            } else {
-                "camera stream"
-            }
+            "Analysis of {} stream started!",
+            &output_dir
         );
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
@@ -164,13 +183,11 @@ fn main() {
         let stream_thread = std::thread::spawn(move || loop {
             let frame = opencv::GrayImage::get_frame(id);
             match frame {
-                None => {
-                    match tx.send(None) {
-                        _ => {
-                            break;
-                        }
-                    };
-                }
+                None => match tx.send(None) {
+                    _ => {
+                        break;
+                    }
+                },
                 Some(value) => {
                     if odim == None {
                         let n = std::cmp::max(value.cols, value.rows);
@@ -248,23 +265,19 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&acc, &annuli);
-                    let radial_average_transposed = operations::transpose_2d_array(&radial_averaged);
-                    let filename = String::from(filename.unwrap().to_str().unwrap());
+                    let radial_average_transposed =
+                        operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
                     //create plots here
-                    save_plots(&filename, radial_averaged);
-                    save_plots(&(filename + "_vs_tau"), radial_average_transposed);
+                    save_plots(&output_dir, radial_averaged);
+                    save_plots(&(format!("{}_vs_tau", &output_dir)), radial_average_transposed);
                 }
                 break;
             }
         }
         println!(
-            "Analysis of {} complete!",
-            if let Some(filename) = filename {
-                filename.to_str().unwrap()
-            } else {
-                "camera stream"
-            }
+            "Analysis of {} stream complete!",
+            &output_dir
         );
         match stx.send(Signal::KILL) {
             Ok(_) | Err(_) => {
