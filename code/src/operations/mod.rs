@@ -10,6 +10,17 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+pub fn transpose_2d_array<T: Clone>(arr : &Vec<Vec<T>>) -> Vec<Vec<T>> {
+    assert!(arr.len() >= 1 && arr[0].len() >= 1);
+    let mut copy = vec![vec![arr[0][0].clone(); arr.len()];arr[0].len()];
+    for i in 0..arr[0].len() {
+        for j in 0..arr.len() {
+            copy[i][j] = arr[j][i].clone();
+        }
+    }
+    copy
+}
+
 pub fn radial_average(
     arr: &[arrayfire::Array<crate::RawType>],
     annuli: &[(f32, arrayfire::Array<crate::RawType>)]

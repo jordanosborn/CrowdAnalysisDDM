@@ -34,7 +34,7 @@ macro_rules! print_wait {
 
 macro_rules! fft_shift {
     ($item:expr) => {
-        // Why do I have to shift by a third?
+        //TODO: Why do I have to shift by a third?
         arrayfire::shift(&$item, &[($item.dims()[0] / 2) as i32, ($item.dims()[1] / 3) as i32, 1, 1]);
     }
 }
@@ -54,6 +54,28 @@ fn get_closest_power(x: i64) -> i64 {
     match minima {
         Some(n) => n,
         None => panic!("No suitable dimension!"),
+    }
+}
+
+#[allow(dead_code)]
+fn save_plots(folder_name: &str, data: Vec<Vec<(crate::RawType, crate::RawType)>>) {
+    let output_dir = format!("results/{}", String::from(folder_name));
+    if !std::path::Path::new(&output_dir).exists() {
+        std::fs::create_dir(&output_dir).expect("Can't create output directory!");
+    }
+    println!("Saving to {}", output_dir);
+    for (index, graph) in data.iter().enumerate() {
+        let mut x = Vec::with_capacity(graph.len());
+        let mut y = Vec::with_capacity(graph.len());
+        graph.iter().for_each(|(q, i)| {
+            x.push(q);
+            y.push(i);
+        });
+        let mut fg = gnuplot::Figure::new();
+        fg.axes2d()
+            .lines(x, y, &[gnuplot::Caption(&format!("Tau = {}.", index + 1)), gnuplot::Color("black")]);
+        fg.echo_to_file(&format!("{}/index{}.gplt", output_dir, index + 1));
+        println!("Gplt for index = {} saved!", index + 1);
     }
 }
 
@@ -231,14 +253,6 @@ fn main() {
         };
 
         let capacity = fps; //* 1;
-        let output_dir = if let Some(filename) = filename {
-            format!("results/{}", filename.to_str().unwrap_or(""))
-        } else {
-            "results".to_string()
-        };
-        if !std::path::Path::new(&output_dir).exists() {
-            std::fs::create_dir(&output_dir).expect("Can't create output directory!");
-        }
 
         let mut counter_t0 = 0;
         let mut data: Data<crate::RawFtType> = Data::new(fps, Some(capacity));
@@ -285,24 +299,12 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&acc, &annuli);
+                    let radial_average_transposed = operations::transpose_2d_array(&radial_averaged);
                     let filename = String::from(filename.unwrap().to_str().unwrap());
                     //TODO: I vs q for various tau
                     //create plots here
-                    for (tau, graph) in radial_averaged.iter().enumerate() {
-                        let mut x = Vec::with_capacity(graph.len());
-                        let mut y = Vec::with_capacity(graph.len());
-                        graph.iter().for_each(|(q, i)| {
-                            x.push(q);
-                            y.push(i);
-                        });
-                        let mut fg = gnuplot::Figure::new();
-                        fg.axes2d()
-                        .lines(x, y, &[gnuplot::Caption(&format!("Tau = {}.", tau + 1)), gnuplot::Color("black")]);
-                        fg.echo_to_file(&format!("results/{}/tau{}.gplt", filename, tau + 1));
-                        println!("Gplt for tau = {} saved!", tau + 1);
-                    }
-                    //save_images(&acc, filename);
-
+                    save_plots(&filename, radial_averaged);
+                    save_plots(&(filename + "_vs_tau"), radial_average_transposed);
                 }
                 break;
             }
