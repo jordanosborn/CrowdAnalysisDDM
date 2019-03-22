@@ -226,6 +226,7 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
+                    //TODO: fix this
                     let images = radial_averaged.iter().map(|rad| {
                         rad.iter().zip(annuli.iter()).fold(af::Array::new_empty(accumulator[0].dims().clone()), |acc, ((q, I), (_, annulus))| {
                             acc + annulus * (*I) / (2.0 * std::f32::consts::PI * q)

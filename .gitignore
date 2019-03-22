@@ -22,9 +22,10 @@ code/target/*
 *.png
 code/*.jpg
 *.rar
-code/videos/collectivemotiondatabase/*
+code/videos/*
 *.mp4
 *.avi
 code/venv/*
 *.m4v
 *.gplt
+*.tiff
