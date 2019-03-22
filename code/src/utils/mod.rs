@@ -97,7 +97,7 @@ pub fn save_plots(folder_name: &str, data: Vec<Vec<(crate::RawType, crate::RawTy
 }
 
 #[allow(dead_code)]
-pub fn save_images(acc: &[af::Array<crate::RawType>], filename: String) {
+pub fn save_images(acc: &Vec<af::Array<crate::RawType>>, filename: String) {
     let size = acc.len().to_string().chars().count();
     println!("Saving images to results/{}", filename);
     acc.iter().enumerate().for_each(|(i, x)| {

@@ -207,7 +207,7 @@ fn main() {
                 // save_images(&mapped, output_dir.clone());
                 // wait!();
 
-                //TODO: Fix in here
+                //TODO: Fix in here dodgy
                 accumulator = ddm::ddm(accumulator, &data.data);
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
@@ -226,6 +226,13 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
+                    let images = radial_averaged.iter().map(|rad| {
+                        rad.iter().zip(annuli.iter()).fold(af::Array::new_empty(accumulator[0].dims().clone()), |acc, ((q, I), (_, annulus))| {
+                            acc + annulus * (*I) / (2.0 * std::f32::consts::PI * q)
+                        })
+                    }).collect();
+                    save_images(&images, output_dir.clone());
+                    wait!();
                     let radial_average_transposed =
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
