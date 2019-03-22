@@ -32,7 +32,7 @@ macro_rules! fft_shift {
             &$item,
             &[
                 ($item.dims()[0] / 2) as i32,
-                ($item.dims()[1] / 3) as i32,
+                ($item.dims()[1] / 2) as i32,
                 1,
                 1,
             ],
@@ -135,6 +135,9 @@ fn main() {
                 Some(value) => {
                     if let Some(dim) = odim {
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
+                        let abs = af::abs(&ft);
+                        af::save_image(String::from("output.png"), &af::mul(&abs, &abs, true));
+                        wait!();
                         match tx.send(Some(ft)) {
                             Ok(_) => {
                                 println!("ft {} - complete!", counter);
