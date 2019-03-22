@@ -113,10 +113,10 @@ fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Arr
 }
 
 pub fn generate_annuli(
-    dimension: Option<i64>,
+    dimension: u64,
     spacing: u64,
 ) -> Vec<(RawType, arrayfire::Array<crate::RawType>)> {
-    let dimension = dimension.unwrap() as u64;
+    let dimension = dimension;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
     it.par_iter()

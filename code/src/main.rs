@@ -143,23 +143,25 @@ fn main() {
                     if odim == None {
                         let n = std::cmp::max(value.cols, value.rows);
                         odim = Some(get_closest_power(n as i64));
-                        match annuli_tx.send(operations::generate_annuli(odim, annuli_spacing)) {
+                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing)) {
                             Ok(_) => println!("Generated annuli!"),
                             Err(e) => {
                                 panic!("Failed to generate annuli - {}!", e);
                             }
                         }
                     }
-                    let ft = fft_shift!(af::fft2(&value.data, 1.0, odim.unwrap(), odim.unwrap()));
-                    match tx.send(Some(ft)) {
-                        Ok(_) => {
-                            println!("ft {} - complete!", counter);
+                    if let Some(dim) = odim {
+                        let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
+                        match tx.send(Some(ft)) {
+                            Ok(_) => {
+                                println!("ft {} - complete!", counter);
+                            }
+                            Err(_) => {
+                                println!("Failed to send frame!");
+                            }
                         }
-                        Err(_) => {
-                            println!("Failed to send frame!");
-                        }
+                        counter += 1;
                     }
-                    counter += 1;
                 }
             }
             if let Ok(Signal::KILL) = srx.try_recv() {
@@ -229,7 +231,7 @@ fn main() {
             &output_dir
         );
         match stx.send(Signal::KILL) {
-            Ok(_) | Err(_) => {
+            _ => {
                 stream_thread.join().unwrap();
                 opencv::close_stream_safe(id);
                 utils::print_times();

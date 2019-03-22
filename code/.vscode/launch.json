@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
           "type": "gdb",
           "request": "launch",
@@ -19,7 +20,7 @@
             "request": "launch",
             "preLaunchTask": "cargo build",
             "program": "${workspaceFolder}/target/debug/code",
-            "args": ["video", "videos/output/againstWalker1.avi"],
+            "args": ["video", "../presentation_video.m4v"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
