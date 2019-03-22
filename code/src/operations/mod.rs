@@ -28,6 +28,7 @@ pub fn radial_average(
 ) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: Finish this function! should return 1D array I(q) for each tau
     let mut vector = Vec::with_capacity(arr.len());
+    println!("Started radial averaging!");
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
             .par_iter()
@@ -71,7 +72,10 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
     pub fn push(&mut self, array: af::Array<T>) {
         if let Some(capacity) = self.capacity {
             if self.data.len() == capacity {
-                self.data.pop_front();
+                let v = self.data.pop_front();
+                if let Some(dat) = v {
+                    drop(dat);
+                }
             }
         }
         self.data.push_back(array);

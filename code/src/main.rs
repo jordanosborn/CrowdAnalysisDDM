@@ -14,7 +14,7 @@ use rayon::prelude::*;
 
 use native::*;
 use operations::Data;
-use utils::save_plots;
+use utils::{save_plots, save_images};
 
 pub mod ddm;
 pub mod native;
@@ -181,7 +181,7 @@ fn main() {
         let mut data: Data<crate::RawFtType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
 
-        let mut acc: Option<VecDeque<af::Array<RawType>>> = None;
+        let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -200,18 +200,22 @@ fn main() {
             }
 
             if data.data.len() == capacity {
-                if let Some(a) = acc {
-                    acc = Some(ddm::ddm(a, &data.data));
-                } else {
-                    acc = Some(ddm::ddm_0(&data.data));
-                };
+                // let mapped: Vec<af::Array<crate::RawType>> = data.data.iter().map(|v| {
+                //     let abs = af::abs(&v);
+                //     af::mul(&abs, &abs, true)
+                // }).collect();
+                // save_images(&mapped, output_dir.clone());
+                // wait!();
+
+                //TODO: Fix in here
+                accumulator = ddm::ddm(accumulator, &data.data);
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
 
             if collected_all_frames {
-                if let Some(a) = acc {
-                    let acc = a
+                if let Some(a) = accumulator {
+                    let accumulator = a
                         .par_iter()
                         .map(|x| x / (counter_t0 as f32))
                         .collect::<Vec<af::Array<RawType>>>();
@@ -221,7 +225,7 @@ fn main() {
                             panic!("Failed to receive annuli - {}!", e);
                         }
                     };
-                    let radial_averaged = operations::radial_average(&acc, &annuli);
+                    let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     let radial_average_transposed =
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
