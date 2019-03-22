@@ -105,9 +105,8 @@ fn main() {
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
-    let (annuli_tx, annuli_rx) = mpsc::channel::<Vec<(f32, arrayfire::Array<crate::RawType>)>>();
+    let (annuli_tx, annuli_rx) = mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
 
-    // Args processing should extract!
     let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
@@ -140,16 +139,6 @@ fn main() {
                     }
                 },
                 Some(value) => {
-                    if odim == None {
-                        let n = std::cmp::max(value.cols, value.rows);
-                        odim = Some(get_closest_power(n as i64));
-                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing)) {
-                            Ok(_) => println!("Generated annuli!"),
-                            Err(e) => {
-                                panic!("Failed to generate annuli - {}!", e);
-                            }
-                        }
-                    }
                     if let Some(dim) = odim {
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
                         match tx.send(Some(ft)) {
@@ -161,6 +150,15 @@ fn main() {
                             }
                         }
                         counter += 1;
+                    } else {
+                        let n = std::cmp::max(value.cols, value.rows);
+                        odim = Some(get_closest_power(n as i64));
+                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing)) {
+                            Ok(_) => println!("Generated annuli!"),
+                            Err(e) => {
+                                panic!("Failed to generate annuli - {}!", e);
+                            }
+                        }
                     }
                 }
             }
