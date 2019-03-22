@@ -13,8 +13,8 @@ use itertools::Itertools;
 use rayon::prelude::*;
 
 use native::*;
-use utils::save_plots;
 use operations::Data;
+use utils::save_plots;
 
 pub mod ddm;
 pub mod native;
@@ -25,14 +25,29 @@ pub mod utils;
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
 
+#[allow(unused_macros)]
 macro_rules! fft_shift {
     ($item:expr) => {
-        //TODO: Why do I have to shift by a third?
         arrayfire::shift(
             &$item,
             &[
                 ($item.dims()[0] / 2) as i32,
                 ($item.dims()[1] / 2) as i32,
+                1,
+                1,
+            ],
+        );
+    };
+}
+
+#[allow(unused_macros)]
+macro_rules! fft_un_shift {
+    ($item:expr) => {
+        arrayfire::shift(
+            &$item,
+            &[
+                ($item.dims()[0] * 2) as i32,
+                ($item.dims()[1] * 2) as i32,
                 1,
                 1,
             ],
@@ -81,8 +96,8 @@ fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<String>) {
             Some(opencv::start_capture_safe(path)),
             match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
-                None => None
-            }
+                None => None,
+            },
         ),
         [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None),
         _ => (None, None),
@@ -100,7 +115,8 @@ fn main() {
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
-    let (annuli_tx, annuli_rx) = mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
+    let (annuli_tx, annuli_rx) =
+        mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
 
     let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
@@ -112,10 +128,7 @@ fn main() {
         } else {
             String::from("camera")
         };
-        println!(
-            "Analysis of {} stream started!",
-            &output_dir
-        );
+        println!("Analysis of {} stream started!", &output_dir);
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
         println!(
@@ -135,9 +148,6 @@ fn main() {
                 Some(value) => {
                     if let Some(dim) = odim {
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
-                        let abs = af::abs(&ft);
-                        af::save_image(String::from("output.png"), &af::mul(&abs, &abs, true));
-                        wait!();
                         match tx.send(Some(ft)) {
                             Ok(_) => {
                                 println!("ft {} - complete!", counter);
@@ -150,7 +160,8 @@ fn main() {
                     } else {
                         let n = std::cmp::max(value.cols, value.rows);
                         odim = Some(get_closest_power(n as i64));
-                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing)) {
+                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing))
+                        {
                             Ok(_) => println!("Generated annuli!"),
                             Err(e) => {
                                 panic!("Failed to generate annuli - {}!", e);
@@ -216,15 +227,15 @@ fn main() {
                     //TODO: I vs q for various tau
                     //create plots here
                     save_plots(&output_dir, radial_averaged);
-                    save_plots(&(format!("{}_vs_tau", &output_dir)), radial_average_transposed);
+                    save_plots(
+                        &(format!("{}_vs_tau", &output_dir)),
+                        radial_average_transposed,
+                    );
                 }
                 break;
             }
         }
-        println!(
-            "Analysis of {} stream complete!",
-            &output_dir
-        );
+        println!("Analysis of {} stream complete!", &output_dir);
         match stx.send(Signal::KILL) {
             _ => {
                 stream_thread.join().unwrap();

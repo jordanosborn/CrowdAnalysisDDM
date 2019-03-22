@@ -1,7 +1,7 @@
+use crate::RawType;
 use arrayfire as af;
 use rayon::prelude::*;
 use std::collections::VecDeque;
-use crate::RawType;
 
 pub fn difference(
     arr1: &arrayfire::Array<crate::RawFtType>,
@@ -31,7 +31,13 @@ pub fn radial_average(
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
             .par_iter()
-            .map(|(q, annulus)| (*q, ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0)) as f32))
+            .map(|(q, annulus)| {
+                (
+                    *q,
+                    ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0))
+                        as f32,
+                )
+            })
             .collect::<Vec<(RawType, RawType)>>();
         vector.push(average);
         println!("Radial averaged tau = {}!", i + 1);
@@ -137,7 +143,10 @@ mod tests {
     fn test_annuli() {
         crate::set_backend();
         let annuli = generate_annuli(Some(500), 10);
-        let a = annuli.iter().map(|(_, val)| {val.clone()}).collect::<Vec<af::Array<crate::RawType>>>();
+        let a = annuli
+            .iter()
+            .map(|(_, val)| val.clone())
+            .collect::<Vec<af::Array<crate::RawType>>>();
         save_images(&a, String::from("presentation_video"));
         wait!();
     }

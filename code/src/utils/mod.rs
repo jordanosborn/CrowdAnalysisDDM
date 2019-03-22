@@ -1,9 +1,9 @@
 use arrayfire as af;
 use arrayfire::{Array, Window};
 use flame as fl;
-use rayon::prelude::*;
-use itertools::Itertools;
 use gnuplot;
+use itertools::Itertools;
+use rayon::prelude::*;
 
 use crate::opencv;
 
@@ -18,7 +18,6 @@ macro_rules! wait {
                 break;
             }
         }
-
     };
 }
 
