@@ -25,14 +25,6 @@ pub mod utils;
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
 
-#[allow(unused_macros)]
-macro_rules! print_wait {
-    ($item:expr) => {
-        af::print_gen("".to_string(), &$item, Some(2));
-        let _: u32 = read!("{}");
-    };
-}
-
 macro_rules! fft_shift {
     ($item:expr) => {
         //TODO: Why do I have to shift by a third?
@@ -102,6 +94,9 @@ enum Signal {
 }
 
 fn main() {
+    //User definable
+    let annuli_spacing = 1;
+
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
@@ -110,7 +105,6 @@ fn main() {
     let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
-    let annuli_spacing = 1;
 
     if let Some(id) = id {
         let output_dir = if let Some(v) = filename {
