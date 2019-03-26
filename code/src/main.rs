@@ -1,3 +1,4 @@
+#![warn(clippy::all)]
 #[allow(unused_imports)]
 #[macro_use]
 extern crate text_io;
@@ -15,7 +16,7 @@ use rayon::prelude::*;
 use native::*;
 use operations::Data;
 #[allow(unused_imports)]
-use utils::{save_plots, save_images};
+use utils::{save_images, save_plots};
 
 pub mod ddm;
 pub mod native;

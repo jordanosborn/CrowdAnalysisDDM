@@ -12,8 +12,8 @@ pub fn difference(
 }
 
 //TODO: This does not work as intended
-pub fn transpose_2d_array<T: Clone>(arr: &Vec<Vec<T>>) -> Vec<Vec<T>> {
-    assert!(arr.len() >= 1 && arr[0].len() >= 1);
+pub fn transpose_2d_array<T: Clone>(arr: &[Vec<T>]) -> Vec<Vec<T>> {
+    assert!(!arr.is_empty() && !arr[0].is_empty());
     let mut copy = vec![vec![arr[0][0].clone(); arr.len()]; arr[0].len()];
     for i in 0..arr[0].len() {
         for j in 0..arr.len() {
