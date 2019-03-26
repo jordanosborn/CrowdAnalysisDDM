@@ -11,14 +11,25 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
-//TODO: This does not work as intended
-pub fn transpose_2d_array<T: Clone>(arr: &[Vec<T>]) -> Vec<Vec<T>> {
+pub trait As<T> {
+    fn from(v: T) -> Self;
+}
+
+impl As<usize> for f32 {
+    fn from(v: usize) -> Self {
+        v as f32
+    }
+}
+
+//TODO: This does not work as intended!!!!
+pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> Vec<Vec<(T, T)>> {
     assert!(!arr.is_empty() && !arr[0].is_empty());
-    let mut output: Vec<Vec<T>> = vec![Vec::with_capacity(arr[0].len()); arr.len()];
-    for v in arr.iter() {
+    let mut output: Vec<Vec<(T, T)>> = vec![Vec::with_capacity(arr[0].len()); arr.len()];
+    for (j, v) in arr.iter().enumerate() {
         for (i, value) in v.iter().enumerate() {
             if let Some(x) = output.get_mut(i) {
-                x.push(value.clone());
+                let replaced = (T::from(j + 1), value.clone().1);
+                x.push(replaced);
             }
         }
     }

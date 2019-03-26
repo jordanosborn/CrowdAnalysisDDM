@@ -92,18 +92,23 @@ fn set_backend() {
     }
 }
 
-fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<String>) {
+fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<usize>, Option<String>) {
     let args_slice = args.as_slice();
     match args_slice {
-        [_, command, path] if command == "video" => (
+        [_, command, capacity, path] if command == "video" => (
             Some(opencv::start_capture_safe(path)),
+            Some(capacity.parse::<usize>().unwrap()),
             match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
                 None => None,
             },
         ),
-        [_, command] if command == "camera" => (Some(opencv::start_camera_capture_safe()), None),
-        _ => (None, None),
+        [_, command, capacity] if command == "camera" => (
+            Some(opencv::start_camera_capture_safe()),
+            Some(capacity.parse::<usize>().unwrap()),
+            None,
+        ),
+        _ => (None, None, None),
     }
 }
 
@@ -114,7 +119,6 @@ enum Signal {
 fn main() {
     //User definable
     let annuli_spacing = 1;
-    let capacity = 20; //* 1;
 
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
@@ -122,7 +126,7 @@ fn main() {
     let (annuli_tx, annuli_rx) =
         mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
 
-    let (id, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
+    let (id, capacity, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
 
@@ -135,6 +139,9 @@ fn main() {
         println!("Analysis of {} stream started!", &output_dir);
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
+
+        let capacity = if let Some(c) = capacity { c } else { fps };
+
         println!(
             "Video is about {} seconds long, containing {} frames!",
             (frame_count as f64) / (fps as f64),
@@ -234,8 +241,6 @@ fn main() {
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
                     //create plots here
-                    println!("{:?}", radial_average_transposed);
-                    println!("{:?}", radial_averaged);
                     save_plots(&output_dir, radial_averaged);
                     save_plots(
                         &(format!("{}_vs_tau", &output_dir)),
@@ -254,6 +259,6 @@ fn main() {
             }
         };
     } else {
-        println!("No arguments supplied!");
+        println!("Invalid arguments supplied!");
     }
 }
