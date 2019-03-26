@@ -14,13 +14,15 @@ pub fn difference(
 //TODO: This does not work as intended
 pub fn transpose_2d_array<T: Clone>(arr: &[Vec<T>]) -> Vec<Vec<T>> {
     assert!(!arr.is_empty() && !arr[0].is_empty());
-    let mut copy = vec![vec![arr[0][0].clone(); arr.len()]; arr[0].len()];
-    for i in 0..arr[0].len() {
-        for j in 0..arr.len() {
-            copy[i][j] = arr[j][i].clone();
+    let mut output: Vec<Vec<T>> = vec![Vec::with_capacity(arr[0].len()); arr.len()];
+    for v in arr.iter() {
+        for (i, value) in v.iter().enumerate() {
+            if let Some(x) = output.get_mut(i) {
+                x.push(value.clone());
+            }
         }
     }
-    copy
+    output
 }
 
 pub fn radial_average(
