@@ -14,6 +14,7 @@ use rayon::prelude::*;
 
 use native::*;
 use operations::Data;
+#[allow(unused_imports)]
 use utils::{save_plots, save_images};
 
 pub mod ddm;
@@ -111,6 +112,7 @@ enum Signal {
 fn main() {
     //User definable
     let annuli_spacing = 1;
+    let capacity = 20; //* 1;
 
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
@@ -175,8 +177,6 @@ fn main() {
             }
         });
 
-        let capacity = fps; //* 1;
-
         let mut counter_t0 = 0;
         let mut data: Data<crate::RawFtType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
@@ -227,17 +227,13 @@ fn main() {
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     //TODO: fix this
-                    let images = radial_averaged.iter().map(|rad| {
-                        rad.iter().zip(annuli.iter()).fold(af::Array::new_empty(accumulator[0].dims().clone()), |acc, ((q, I), (_, annulus))| {
-                            acc + annulus * (*I) / (2.0 * std::f32::consts::PI * q)
-                        })
-                    }).collect();
-                    save_images(&images, output_dir.clone());
-                    wait!();
+
                     let radial_average_transposed =
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
                     //create plots here
+                    println!("{:?}", radial_average_transposed);
+                    println!("{:?}", radial_averaged);
                     save_plots(&output_dir, radial_averaged);
                     save_plots(
                         &(format!("{}_vs_tau", &output_dir)),

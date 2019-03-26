@@ -11,6 +11,7 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+//TODO: This does not work as intended
 pub fn transpose_2d_array<T: Clone>(arr: &Vec<Vec<T>>) -> Vec<Vec<T>> {
     assert!(arr.len() >= 1 && arr[0].len() >= 1);
     let mut copy = vec![vec![arr[0][0].clone(); arr.len()]; arr[0].len()];
