@@ -32,5 +32,6 @@ to fix stdlib errors on mac
 
 install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
+Python 3.7 for automation
 
 #
