@@ -29,5 +29,8 @@ code/venv/*
 *.m4v
 *.gplt
 *.tiff
+<<<<<<< HEAD
 code/old_videos
 code/videos/
+=======
+>>>>>>> parent of 052acd0... added videos
