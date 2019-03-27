@@ -92,12 +92,24 @@ fn set_backend() {
     }
 }
 
-fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<usize>, Option<String>) {
+fn process_arguments(
+    args: Vec<String>,
+) -> (Option<usize>, Option<usize>, Option<u64>, Option<String>) {
     let args_slice = args.as_slice();
     match args_slice {
         [_, command, capacity, path] if command == "video" => (
             Some(opencv::start_capture_safe(path)),
             Some(capacity.parse::<usize>().unwrap()),
+            None,
+            match std::path::Path::new(path).file_stem() {
+                Some(s) => Some(String::from(s.to_str().unwrap())),
+                None => None,
+            },
+        ),
+        [_, command, capacity, annuli_spacing, path] if command == "video" => (
+            Some(opencv::start_capture_safe(path)),
+            Some(capacity.parse::<usize>().unwrap()),
+            Some(annuli_spacing.parse::<u64>().unwrap()),
             match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
                 None => None,
@@ -107,8 +119,9 @@ fn process_arguments(args: Vec<String>) -> (Option<usize>, Option<usize>, Option
             Some(opencv::start_camera_capture_safe()),
             Some(capacity.parse::<usize>().unwrap()),
             None,
+            None,
         ),
-        _ => (None, None, None),
+        _ => (None, None, None, None),
     }
 }
 
@@ -117,18 +130,18 @@ enum Signal {
 }
 
 fn main() {
-    //User definable
-    let annuli_spacing = 1;
-
     set_backend();
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
         mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
 
-    let (id, capacity, filename) = process_arguments(std::env::args().collect::<Vec<String>>());
+    let (id, capacity, annuli_spacing, filename) =
+        process_arguments(std::env::args().collect::<Vec<String>>());
 
     let mut odim: Option<i64> = None;
+
+    let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
 
     if let Some(id) = id {
         let output_dir = if let Some(v) = filename {

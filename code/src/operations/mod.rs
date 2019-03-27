@@ -21,7 +21,7 @@ impl As<usize> for f32 {
     }
 }
 
-//TODO: This does not work as intended!!!! WTF
+//TODO: This does work gnuplot crate is acting questionable
 pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> Vec<Vec<(T, T)>> {
     assert!(!arr.is_empty() && !arr[0].is_empty());
     let mut output: Vec<Vec<(T, T)>> = vec![Vec::with_capacity(arr[0].len()); arr.len()];
