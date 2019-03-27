@@ -253,14 +253,17 @@ fn main() {
                     let radial_averaged_transposed =
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
-                    let _ = save_csv(&radial_averaged, "radial_Avg.csv");
-                    let _ = save_csv(&radial_averaged_transposed, "radial_Avg_transposed.csv");
-                    //create plots here
-                    save_plots(&output_dir, radial_averaged);
-                    save_plots(
-                        &(format!("{}_vs_tau", &output_dir)),
-                        radial_averaged_transposed,
+                    let _ = save_csv(&radial_averaged, &format!("{}/radial_Avg.csv", &output_dir));
+                    let _ = save_csv(
+                        &radial_averaged_transposed,
+                        &format!("{}/radial_Avg_transposed.csv", &output_dir),
                     );
+                    //create plots here
+                    // save_plots(&output_dir, radial_averaged);
+                    // save_plots(
+                    //     &(format!("{}_vs_tau", &output_dir)),
+                    //     radial_averaged_transposed,
+                    // );
                 }
                 break;
             }
