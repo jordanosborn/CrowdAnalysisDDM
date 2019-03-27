@@ -29,3 +29,5 @@ code/venv/*
 *.m4v
 *.gplt
 *.tiff
+code/old_videos
+code/videos/
