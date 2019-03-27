@@ -6,6 +6,9 @@ with open('radial_Avg_transposed.csv') as f:
     data = f.readlines()
 data = list(map(lambda s: s.replace('\n', '').split(',')[:-1], data))
 X = None
+
+index = data[0]
+data = data[1:]
 cleaned = []
 for d in data:
     x = []
