@@ -6,7 +6,7 @@ use itertools::Itertools;
 use rayon::prelude::*;
 use std::io::prelude::*;
 
-use crate::opencv;
+use super::native::opencv;
 
 #[allow(unused_macros)]
 #[macro_export]

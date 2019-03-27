@@ -5,13 +5,10 @@
 extern crate text_io;
 
 use arrayfire as af;
+use native::opencv;
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
-
-use native::*;
-#[allow(unused_imports)]
-use utils::{save_csv, save_images, save_plots};
 
 pub mod ddm;
 pub mod native;
@@ -94,7 +91,7 @@ fn main() {
         process_arguments(std::env::args().collect::<Vec<String>>());
     match what {
         What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
-        What::MultiDDM => {}
+        What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
         What::PROCESS => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");

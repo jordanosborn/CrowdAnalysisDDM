@@ -11,7 +11,7 @@ use crate::operations::Data;
 use crate::utils::get_closest_power;
 use crate::{RawFtType, RawType};
 
-pub fn ddm(
+fn ddm(
     accumulator: Option<VecDeque<arrayfire::Array<crate::RawType>>>,
     data: &VecDeque<arrayfire::Array<crate::RawFtType>>,
 ) -> Option<VecDeque<arrayfire::Array<crate::RawType>>> {
@@ -143,7 +143,6 @@ pub fn single_ddm(
             }
 
             if data.data.len() == capacity {
-                //TODO: Fix in here dodgy
                 accumulator = ddm(accumulator, &data.data);
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
@@ -165,11 +164,10 @@ pub fn single_ddm(
                     let radial_averaged_index = (1..=radial_averaged.len())
                         .map(|i| i as f32)
                         .collect::<Vec<f32>>();
-                    //TODO: fix this
 
                     let (radial_averaged_transposed_index, radial_averaged_transposed) =
                         operations::transpose_2d_array(&radial_averaged);
-                    //TODO: I vs q for various tau
+
                     let _ = save_csv(
                         &radial_averaged_index,
                         &radial_averaged,
@@ -182,12 +180,6 @@ pub fn single_ddm(
                         &format!("results/{}", &output_dir),
                         "radial_Avg_transposed.csv",
                     );
-                    //create plots here
-                    // save_plots(&output_dir, radial_averaged);
-                    // save_plots(
-                    //     &(format!("{}_vs_tau", &output_dir)),
-                    //     radial_averaged_transposed,
-                    // );
                 }
                 break;
             }
@@ -201,5 +193,79 @@ pub fn single_ddm(
         };
     } else {
         println!("Invalid arguments supplied!");
+    }
+}
+
+//TODO: implement this!
+#[allow(unused_variables)]
+pub fn multi_ddm(
+    id: Option<usize>,
+    capacity: Option<usize>,
+    annuli_spacing: Option<u64>,
+    filename: Option<String>,
+) {
+    let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
+    let (stx, srx) = mpsc::channel::<Signal>();
+    let (annuli_tx, annuli_rx) =
+        mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
+
+    let mut odim: Option<i64> = None;
+
+    let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
+
+    if let Some(id) = id {
+        let output_dir = if let Some(v) = filename {
+            v
+        } else {
+            String::from("camera")
+        };
+        println!("Analysis of {} stream started!", &output_dir);
+        let fps = opencv::fps(id);
+        let frame_count = opencv::frame_count(id);
+
+        let capacity = if let Some(c) = capacity { c } else { fps };
+
+        println!(
+            "Video is about {} seconds long, containing {} frames!",
+            (frame_count as f64) / (fps as f64),
+            frame_count
+        );
+        let mut counter = 1u32;
+        let stream_thread = std::thread::spawn(move || loop {
+            let frame = opencv::GrayImage::get_frame(id);
+            match frame {
+                None => match tx.send(None) {
+                    _ => {
+                        break;
+                    }
+                },
+                Some(value) => {
+                    if let Some(dim) = odim {
+                        match tx.send(Some(value.data)) {
+                            Ok(_) => {
+                                println!("ft {} - complete!", counter);
+                            }
+                            Err(_) => {
+                                println!("Failed to send frame!");
+                            }
+                        }
+                        counter += 1;
+                    } else {
+                        let n = std::cmp::max(value.cols, value.rows);
+                        odim = Some(get_closest_power(n as i64));
+                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing))
+                        {
+                            Ok(_) => println!("Generated annuli!"),
+                            Err(e) => {
+                                panic!("Failed to generate annuli - {}!", e);
+                            }
+                        }
+                    }
+                }
+            }
+            if let Ok(Signal::KILL) = srx.try_recv() {
+                break;
+            }
+        });
     }
 }
