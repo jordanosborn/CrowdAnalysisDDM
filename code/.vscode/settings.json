@@ -6,11 +6,16 @@
     "cSpell.words": [
         "clippy",
         "cmat",
+        "consts",
         "gp",
+        "gplt",
         "highgui",
+        "ifft",
+        "imin",
         "luma",
         "mersenne",
         "named",
+        "odim",
         "prin",
         "repr",
         "vidstream",
@@ -67,5 +72,7 @@
         "cinttypes": "cpp",
         "complex": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/local/opt/python/bin/python3.7",
+    "python.linting.pylintEnabled": true
 }

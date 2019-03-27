@@ -1,4 +1,4 @@
-cargo clean if having linking isssues
+Cargo clean if having linking issues
 install arrayfire.sh
 bashrc
 export AF_PATH=af root dir
@@ -8,8 +8,6 @@ Must compile OpenCV
 Must compile ArrayFire
 See docs
 
-
-Write a cpp helper file that streams video using opencv and can send frames in to rust to be processed
 
 https://doc.rust-lang.org/nomicon/ffi.html
 https://doc.rust-lang.org/cargo/reference/build-scripts.html
@@ -22,8 +20,8 @@ Array fire 3.6
 Install other dependencies etc.
 
 
-install nano set AF_PATH
-startup script docker
+Install nano set AF_PATH
+Startup script docker
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder
 
 ## On mac

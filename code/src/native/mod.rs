@@ -56,8 +56,18 @@ pub mod opencv {
         fn mat_elem_size1(cmat: *const CMat) -> usize;
         fn mat_type(cmat: *const CMat) -> CvType;
         fn close_stream(stream_id: usize);
+        fn get_fps(stream_id: usize) -> usize;
+        fn get_frame_count(stream_id: usize) -> usize;
     //pub fn write(filename: *const c_char, cmat: *const CMat);
     //pub fn show_next(stream_id: size_t);
+    }
+
+    pub fn fps(stream_id: usize) -> usize {
+        unsafe { get_fps(stream_id) }
+    }
+
+    pub fn frame_count(stream_id: usize) -> usize {
+        unsafe { get_frame_count(stream_id) }
     }
 
     pub fn close_stream_safe(stream_id: usize) {
@@ -110,28 +120,27 @@ pub mod opencv {
     }
 
     pub struct Image {
-        pub data: arrayfire::Array<u8>,
+        pub data: arrayfire::Array<crate::RawType>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
         pub depth: u64,
     }
-
+    #[derive(Clone)]
     pub struct GrayImage {
-        pub data: arrayfire::Array<u8>,
+        pub data: arrayfire::Array<crate::RawType>,
         pub channels: u64,
         pub rows: u64,
         pub cols: u64,
         pub depth: u64,
     }
 
-    //TODO: maybe store as Dim4(cols, rows,) this does not work
     impl Image {
         pub fn new(frame: &Mat) -> Image {
             let data = frame.data();
             Image {
                 data: arrayfire::Array::new(
-                    data,
+                    data.as_slice(),
                     arrayfire::Dim4::new(&[frame.cols, frame.rows, frame.channels, 1]),
                 ),
                 channels: frame.channels,
@@ -141,7 +150,7 @@ pub mod opencv {
             }
         }
 
-        pub fn from(arr: arrayfire::Array<u8>) -> Image {
+        pub fn from(arr: arrayfire::Array<crate::RawType>) -> Image {
             let dims = arr.dims().get().to_vec();
             Image {
                 data: arr,
@@ -161,12 +170,19 @@ pub mod opencv {
         }
 
         pub fn to_buffer(&self) -> image::DynamicImage {
-            let mut data: Vec<u8> = vec![0; (self.rows * self.cols * self.channels) as usize];
+            let mut data: Vec<crate::RawType> =
+                vec![crate::RawType::from(0u8); (self.rows * self.cols * self.channels) as usize];
             self.data.host(data.as_mut_slice());
             let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
             (0..(self.cols * self.rows)).for_each(|index| {
                 let mut arr: [u8; 3] = Default::default();
-                arr.copy_from_slice(&data[((3 * index) as usize)..((3 * index + 3) as usize)]);
+
+                arr.copy_from_slice(
+                    &data[((3 * index) as usize)..((3 * index + 3) as usize)]
+                        .iter()
+                        .map(|&x| x as u8)
+                        .collect::<Vec<u8>>(),
+                );
                 buffer.put_pixel(
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
@@ -181,18 +197,15 @@ pub mod opencv {
     impl GrayImage {
         pub fn new(frame: &Mat) -> GrayImage {
             let data = frame.data();
-            let mut vector: Vec<u8> = Vec::with_capacity((frame.cols * frame.rows) as usize);
+            let mut vector: Vec<crate::RawType> =
+                Vec::with_capacity((frame.cols * frame.rows) as usize);
             for index in 0..vector.capacity() {
                 let (r, g, b) = match &data[3 * index..(3 * index + 3)] {
-                    [r, g, b] => (
-                        f64::from(*r) / 255.0,
-                        f64::from(*g) / 255.0,
-                        f64::from(*b) / 255.0,
-                    ),
+                    [r, g, b] => (*r / 255.0, *g / 255.0, *b / 255.0),
                     _ => (0.0, 0.0, 0.0),
                 };
-                let greyscale = (0.2126 * r + 0.7152 * g + 0.0722 * b) * (255.0);
-                vector.push(greyscale as u8);
+                let greyscale = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                vector.push(greyscale);
             }
             GrayImage {
                 data: arrayfire::Array::new(
@@ -206,6 +219,19 @@ pub mod opencv {
             }
         }
 
+        pub fn empty() -> GrayImage {
+            GrayImage {
+                data: arrayfire::Array::new(
+                    vec![crate::RawType::from(0u8)].as_slice(),
+                    arrayfire::Dim4::new(&[1, 1, 1, 1]),
+                ),
+                channels: 0,
+                rows: 0,
+                cols: 0,
+                depth: 0,
+            }
+        }
+
         pub fn get_frame(stream_id: usize) -> Option<GrayImage> {
             let frame = get_frame_safe(stream_id);
             match frame {
@@ -214,7 +240,7 @@ pub mod opencv {
             }
         }
 
-        pub fn from(arr: arrayfire::Array<u8>) -> GrayImage {
+        pub fn from(arr: arrayfire::Array<crate::RawType>) -> GrayImage {
             let dims = arr.dims().get().to_vec();
             GrayImage {
                 data: arr,
@@ -225,20 +251,20 @@ pub mod opencv {
             }
         }
 
-        pub fn to_buffer(&self) -> image::DynamicImage {
-            let mut data: Vec<u8> = vec![0u8; (self.rows * self.cols) as usize];
-            self.data.host(data.as_mut_slice());
-            let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
-            data.iter().enumerate().for_each(|(index, &v)| {
-                buffer.put_pixel(
-                    ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
-                        as u32,
-                    (index as f64 / (self.cols as f64)) as u32,
-                    image::Luma { data: [v] },
-                );
-            });
-            image::DynamicImage::ImageLuma8(buffer)
-        }
+        // pub fn to_buffer(&self) -> image::DynamicImage {
+        //     let mut data: Vec<crate::RawType> = vec![0 as crate::RawType; (self.rows * self.cols) as usize];
+        //     self.data.host(data.as_mut_slice());
+        //     let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
+        //     data.iter().enumerate().for_each(|(index, &v)| {
+        //         buffer.put_pixel(
+        //             ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
+        //                 as u32,
+        //             (index as f64 / (self.cols as f64)) as u32,
+        //             image::Luma { data: [v as crate::RawType] },
+        //         );
+        //     });
+        //     image::DynamicImage::ImageLuma8(buffer)
+        // }
     }
 
     impl Mat {
@@ -252,13 +278,19 @@ pub mod opencv {
                 channels: unsafe { mat_channels(raw) as u64 },
             }
         }
-        /// Returns the raw data (as a u8 array
-        pub fn data(&self) -> &[u8] {
+        /// Returns the raw data (as a crate::RawType vector
+        pub fn data(&self) -> Vec<crate::RawType> {
             let bytes = unsafe { mat_data(self.inner) };
             let len = self.total() * self.elem_size();
-            unsafe { std::slice::from_raw_parts(bytes, len) }
+            let slice = unsafe { std::slice::from_raw_parts(bytes, len).to_vec() };
+            let mut output = Vec::with_capacity(len);
+            for s in slice.iter() {
+                output.push(crate::RawType::from(*s));
+            }
+            output
         }
 
+        #[inline]
         pub fn total(&self) -> usize {
             unsafe { mat_total(self.inner) }
         }
@@ -267,6 +299,7 @@ pub mod opencv {
         ///
         /// The method returns the matrix element size in bytes. For example, if the
         /// matrix type is CV_16SC3 , the method returns 3*sizeof(short) or 6.
+        #[inline]
         pub fn elem_size(&self) -> usize {
             unsafe { mat_elem_size(self.inner) }
         }
@@ -276,6 +309,8 @@ pub mod opencv {
         /// The method returns the matrix element channel size in bytes, that
         /// is, it ignores the number of channels. For example, if the matrix
         /// type is CV_16SC3 , the method returns sizeof(short) or 2.
+        ///
+        #[inline]
         pub fn elem_size1(&self) -> usize {
             unsafe { mat_elem_size1(self.inner) }
         }
@@ -284,11 +319,13 @@ pub mod opencv {
         ///
         /// The method returns a matrix step divided by Mat::elemSize1() . It can be
         /// useful to quickly access an arbitrary matrix element
+        #[inline]
         pub fn step1(&self, i: c_int) -> usize {
             unsafe { mat_step1(self.inner, i) }
         }
 
         /// Returns the size of this matrix.
+        #[inline]
         pub fn size(&self) -> (usize, usize) {
             (self.rows as usize, self.cols as usize)
         }
@@ -308,10 +345,14 @@ pub mod opencv {
     }
 
     pub fn start_capture_safe(s: &str) -> usize {
-        let c_string = s.c_string();
+        let mut c_string = s.c_string();
+        //FIX: Bizarrely this sometimes breaks and string is not null terminated causing an exception when video file is attempted to be read
+        // string reads in to non-owned memory giving garbage??? explicitly appending a null seems to fix this
+        c_string.push(0);
         unsafe { start_capture(c_string.as_ptr()) }
     }
 
+    #[inline]
     pub fn start_camera_capture_safe() -> usize {
         unsafe { start_camera_capture() }
     }

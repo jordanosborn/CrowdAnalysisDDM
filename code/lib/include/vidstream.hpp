@@ -36,8 +36,6 @@ extern "C" {
 
     int mat_channels(const cv::Mat*);
 
-    const uint8_t *mat_data(const cv::Mat*);
-
     void mat_drop(cv::Mat*);
 
     int mat_type(const cv::Mat* const);
@@ -51,6 +49,10 @@ extern "C" {
     size_t mat_elem_size1(const cv::Mat* const);
 
     size_t mat_step1(const cv::Mat* const, int);
+
+    size_t get_fps(size_t);
+
+size_t get_frame_count(size_t);
 
     void close_stream(size_t);
 
