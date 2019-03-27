@@ -115,10 +115,16 @@ pub fn save_images(acc: &[af::Array<crate::RawType>], filename: String) {
 
 #[allow(dead_code)]
 pub fn save_csv<T: std::fmt::Display>(
+    index: &[T],
     arr: &[Vec<(T, T)>],
     output_file: &str,
 ) -> std::io::Result<()> {
     let mut file = std::fs::File::create(std::path::Path::new(output_file))?;
+    for v in index.iter() {
+        let s = format!("{},", v);
+        file.write_all(&s.as_bytes())?;
+    }
+    file.write_all(b"\n")?;
     for line in arr.iter() {
         for item in line.iter() {
             let s = format!("({} {}),", item.0, item.1);

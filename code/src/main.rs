@@ -222,13 +222,6 @@ fn main() {
             }
 
             if data.data.len() == capacity {
-                // let mapped: Vec<af::Array<crate::RawType>> = data.data.iter().map(|v| {
-                //     let abs = af::abs(&v);
-                //     af::mul(&abs, &abs, true)
-                // }).collect();
-                // save_images(&mapped, output_dir.clone());
-                // wait!();
-
                 //TODO: Fix in here dodgy
                 accumulator = ddm::ddm(accumulator, &data.data);
                 counter_t0 += 1;
@@ -248,13 +241,21 @@ fn main() {
                         }
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
+                    let radial_averaged_index = (1..radial_averaged.len())
+                        .map(|i| i as f32)
+                        .collect::<Vec<f32>>();
                     //TODO: fix this
 
-                    let radial_averaged_transposed =
+                    let (radial_averaged_transposed_index, radial_averaged_transposed) =
                         operations::transpose_2d_array(&radial_averaged);
                     //TODO: I vs q for various tau
-                    let _ = save_csv(&radial_averaged, &format!("{}/radial_Avg.csv", &output_dir));
                     let _ = save_csv(
+                        &radial_averaged_index,
+                        &radial_averaged,
+                        &format!("{}/radial_Avg.csv", &output_dir),
+                    );
+                    let _ = save_csv(
+                        &radial_averaged_transposed_index,
                         &radial_averaged_transposed,
                         &format!("{}/radial_Avg_transposed.csv", &output_dir),
                     );
