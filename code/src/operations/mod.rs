@@ -21,7 +21,7 @@ impl As<usize> for f32 {
     }
 }
 
-//TODO: This does not work as intended!!!!
+//TODO: This does not work as intended!!!! WTF
 pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> Vec<Vec<(T, T)>> {
     assert!(!arr.is_empty() && !arr[0].is_empty());
     let mut output: Vec<Vec<(T, T)>> = vec![Vec::with_capacity(arr[0].len()); arr.len()];
@@ -156,11 +156,13 @@ pub fn generate_annuli(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::wait;
 
     #[test]
     fn test_annuli() {
+        use crate::utils::save_images;
         crate::set_backend();
-        let annuli = generate_annuli(Some(500), 10);
+        let annuli = generate_annuli(500, 10);
         let a = annuli
             .iter()
             .map(|(_, val)| val.clone())

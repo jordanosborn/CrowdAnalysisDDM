@@ -4,6 +4,7 @@ use flame as fl;
 use gnuplot;
 use itertools::Itertools;
 use rayon::prelude::*;
+use std::io::prelude::*;
 
 use crate::opencv;
 
@@ -110,4 +111,20 @@ pub fn save_images(acc: &[af::Array<crate::RawType>], filename: String) {
         let a = s.chars().join(".");
         af::save_image(format!("results/{}/{}.png", filename, a), x);
     });
+}
+
+#[allow(dead_code)]
+pub fn save_csv<T: std::fmt::Display>(
+    arr: &[Vec<(T, T)>],
+    output_file: &str,
+) -> std::io::Result<()> {
+    let mut file = std::fs::File::create(std::path::Path::new(output_file))?;
+    for line in arr.iter() {
+        for item in line.iter() {
+            let s = format!("({} {}),", item.0, item.1);
+            file.write_all(&s.as_bytes())?;
+        }
+        file.write_all(b"\n")?;
+    }
+    Ok(())
 }
