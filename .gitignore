@@ -30,3 +30,4 @@ code/venv/*
 *.tiff
 code/old_videos
 code/videos/*
+code/secrets.json
