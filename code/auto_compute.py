@@ -45,8 +45,5 @@ if __name__ == "__main__":
                     f"Have completed approximately {index * 100 / len(files)}%.")
 
     else:
-        send_message(
-            secrets["twilio"],
-            "HI friend!")
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
