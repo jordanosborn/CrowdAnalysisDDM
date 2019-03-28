@@ -4,7 +4,7 @@ import subprocess as sp
 import os
 import multiprocessing
 from twilio.rest import Client
-from typing import Any
+from typing import Any, List
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -37,14 +37,22 @@ def upload():
     sp.call(["git", "push"])
 
 
+def incomplete_filter(files: List[str]) -> List[str]:
+    None
+
+
 if __name__ == "__main__":
-    if len(sys.argv) == 5 and sys.argv[1] in ["video-multi-ddm", "video-ddm"]:
+    if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
+        sys.argv = sys.argv + [80, 1]
+    if len(sys.argv) == 5 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
         files = []
         capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-
-        for index, video in enumerate(files):
+        files_filtered = incomplete_filter(files)
+        print(files, files_filtered)
+        exit()
+        for index, video in enumerate(files_filtered):
             run(sys.argv[1], video, capacity, radial_width)
             if index % 5 == 0 and index != 0:
                 send_message(
