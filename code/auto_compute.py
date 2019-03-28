@@ -4,7 +4,7 @@ import subprocess as sp
 import os
 import multiprocessing
 from twilio.rest import Client
-from typing import Any, List
+from typing import Any, List, Iterable
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -37,8 +37,15 @@ def upload():
     sp.call(["git", "push"])
 
 
-def incomplete_filter(files: List[str]) -> List[str]:
-    None
+def contains_any(string: str, to_check: List[str]) -> bool:
+    return any(map(lambda x: string.find(x) != -1, to_check))
+
+
+def incomplete_filter(files: List[str]) -> Iterable[str]:
+    completed_videos = []
+    for (dirpath, dirnames, filenames) in os.walk("./results"):
+        completed_videos.extend(dirnames)
+    return filter(lambda x: not contains_any(x, completed_videos), files)
 
 
 if __name__ == "__main__":
@@ -50,11 +57,9 @@ if __name__ == "__main__":
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
         files_filtered = incomplete_filter(files)
-        print(files, files_filtered)
-        exit()
         for index, video in enumerate(files_filtered):
             run(sys.argv[1], video, capacity, radial_width)
-            if index % 5 == 0 and index != 0:
+            if index % 3 == 0 and index != 0:
                 send_message(
                     secrets["twilio"],
                     f"Have completed approximately {index * 100 / len(files)}%.")
