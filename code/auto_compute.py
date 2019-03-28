@@ -30,20 +30,27 @@ def run(command: str, video: str, capacity: int, radial_width: int):
              str(capacity), str(radial_width), video])
 
 
+def upload():
+    sp.call(["git", "add", "'*.csv'"])
+    sp.call([["git", "commit", "-m", "'added more data'"]])
+    sp.call(["git", "pull", "--rebase"])
+    sp.call(["git", "push"])
+
+
 if __name__ == "__main__":
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 5 and sys.argv[1] in ["video-multi-ddm", "video-ddm"]:
         files = []
-        capacity, radial_width = int(sys.argv[2]), int(sys.argv[3])
-        for (dirpath, dirnames, filenames) in os.walk(sys.argv[1]):
+        capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
+        for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
 
         for index, video in enumerate(files):
-            run("video-ddm", video, capacity, radial_width)
-            if index % 10 == 0 and index != 0:
+            run(sys.argv[1], video, capacity, radial_width)
+            if index % 5 == 0 and index != 0:
                 send_message(
                     secrets["twilio"],
                     f"Have completed approximately {index * 100 / len(files)}%.")
-
+                upload()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
