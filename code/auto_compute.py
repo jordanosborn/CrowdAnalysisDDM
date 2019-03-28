@@ -57,6 +57,7 @@ if __name__ == "__main__":
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
         files_filtered = incomplete_filter(files)
+        print(f"{len(files_filtered)}/{len(files)} left to analyse.")
         for index, video in enumerate(files_filtered):
             run(sys.argv[1], video, capacity, radial_width)
             if index % 3 == 0 and index != 0:
