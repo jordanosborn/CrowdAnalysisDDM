@@ -54,6 +54,13 @@ fn process_arguments(
 ) {
     let args_slice = args.as_slice();
     match args_slice {
+        [_, command, path]
+            if command == "process"
+                && std::path::Path::new(path).exists()
+                && path.ends_with(".csv") =>
+        {
+            (None, What::PROCESS, None, None, Some(path.clone()))
+        }
         [_, command, capacity, path] if command == "video-ddm" => (
             Some(opencv::start_capture_safe(path)),
             What::DDM,
@@ -92,9 +99,15 @@ fn main() {
     match what {
         What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
         What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
-        What::PROCESS => {}
+        What::PROCESS => {
+            process(&filename.unwrap());
+        }
         What::OTHER => {
             println!("Invalid arguments supplied!");
         }
     }
+}
+
+fn process(file: &str) {
+    
 }
