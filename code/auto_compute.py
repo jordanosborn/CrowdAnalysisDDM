@@ -43,9 +43,9 @@ def contains_any(string: str, to_check: List[str]) -> bool:
     return any(map(lambda x: string.find(x) != -1, to_check))
 
 
-def incomplete_filter(files: List[str]) -> Iterable[str]:
+def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
     completed_videos = []
-    for (dirpath, dirnames, filenames) in os.walk("./results"):
+    for (dirpath, dirnames, filenames) in os.walk(directory):
         completed_videos.extend(dirnames)
     return filter(lambda x: not contains_any(x, completed_videos), files)
 
@@ -53,13 +53,20 @@ def incomplete_filter(files: List[str]) -> Iterable[str]:
 
 
 def retranspose(files: List[str]):
-    pass
+    for i, f in enumerate(files):
+        sp.call(["cargo", "run", "--release", "retranspose", f])
+        sp.call(["mv", "output.csv", f.replace(
+            "results", "results-transposed")])
+        print(f"Completed {i * 100 / len(files)}%.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "retranspose":
-        # TODO
-        retranspose([])
+        files = []
+        for (dirpath, dirnames, filenames) in os.walk("./results"):
+            files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
+        files_filtered = list(incomplete_filter(files, "./results-transposed"))
+        retranspose(files_filtered)
     else:
         if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
             sys.argv = sys.argv + [80, 1]
@@ -68,7 +75,7 @@ if __name__ == "__main__":
             capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
             for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
                 files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-            files_filtered = list(incomplete_filter(files))
+            files_filtered = list(incomplete_filter(files, "./results"))
             print(f"{len(files_filtered)}/{len(files)} left to analyse.")
             for index, video in enumerate(files_filtered):
                 run(sys.argv[1], video, capacity, radial_width)
