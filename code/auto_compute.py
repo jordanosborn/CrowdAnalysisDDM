@@ -17,11 +17,10 @@ def send_message(secrets: Any, body: str):
 
     message = client.messages.create(
         body=body,
-        from_='whatsapp:+14155238886',
-        to=f'whatsapp:{secrets["phone_number"]}'
+        from_=f'{secrets["twilio_number"]}',
+        to=f'{secrets["phone_number"]}'
     )
-
-    print(message.sid)
+    print(f'Sent message to {secrets["phone_number"]} message_ID = {message.sid}')
 
 
 def run(command: str, video: str, capacity: int, radial_width: int):
@@ -66,5 +65,6 @@ if __name__ == "__main__":
                     f"Have completed approximately {(index + len(files) -len(files_filtered)) * 100 / len(files)}%.")
                 upload()
     else:
+        send_message(secrets["twilio"], "hello there")
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
