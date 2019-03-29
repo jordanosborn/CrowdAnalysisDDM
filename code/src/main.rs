@@ -6,7 +6,7 @@ extern crate text_io;
 
 use arrayfire as af;
 use native::opencv;
-use utils::read_csv;
+use utils::{read_csv, save_csv};
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
@@ -109,7 +109,9 @@ fn main() {
 
 fn process(file: &str) {
     let data = read_csv(file, true);
-    println!("{:?}", data);
+    let data_transposed = operations::transpose_2d_array(&data);
+    println!("{} {}", data[0].len(), data_transposed.1.len());
+    save_csv(&data_transposed.0, &data_transposed.1, ".", "hello.csv");
     // let mut reader = csv::ReaderBuilder::new()
     //     .has_headers(true)
     //     .delimiter(b',')
