@@ -32,7 +32,7 @@ def run(command: str, video: str, capacity: int, radial_width: int):
 
 def upload():
     sp.call(["git", "add", "."])
-    sp.call([["git", "commit", "-m", "\"added more data\""]])
+    sp.call(["git", "commit", "-m", "\"added more data\""])
     sp.call(["git", "pull", "--rebase"])
     sp.call(["git", "push"])
 
