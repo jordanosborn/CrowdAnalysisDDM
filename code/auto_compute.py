@@ -6,6 +6,8 @@ import multiprocessing
 from twilio.rest import Client
 from typing import Any, List, Iterable
 
+# TODO: retranspose everything
+
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
 
@@ -20,7 +22,8 @@ def send_message(secrets: Any, body: str):
         from_=f'{secrets["twilio_number"]}',
         to=f'{secrets["phone_number"]}'
     )
-    print(f'Sent message to {secrets["phone_number"]} message_ID = {message.sid}')
+    print(
+        f'Sent message to {secrets["phone_number"]} message_ID = {message.sid}')
 
 
 def run(command: str, video: str, capacity: int, radial_width: int):
