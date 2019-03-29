@@ -6,6 +6,7 @@ extern crate text_io;
 
 use arrayfire as af;
 use native::opencv;
+use utils::read_csv;
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
@@ -99,9 +100,7 @@ fn main() {
     match what {
         What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
         What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
-        What::PROCESS => {
-            process(&filename.unwrap());
-        }
+        What::PROCESS => process(&filename.unwrap()),
         What::OTHER => {
             println!("Invalid arguments supplied!");
         }
@@ -109,5 +108,18 @@ fn main() {
 }
 
 fn process(file: &str) {
-    
+    let data = read_csv(file, true);
+    println!("{:?}", data);
+    // let mut reader = csv::ReaderBuilder::new()
+    //     .has_headers(true)
+    //     .delimiter(b',')
+    //     .trim(csv::Trim::All)
+    //     .from_path(std::path::Path::new(file))?;
+    // let mut data = Vec::new();
+    // for result in reader.records() {
+    //     let record = result?;
+    //     data.push(record);
+    // }
+    // println!("aga");
+    // println!("{:?}", data);
 }

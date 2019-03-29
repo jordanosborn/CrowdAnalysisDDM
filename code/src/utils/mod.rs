@@ -189,3 +189,33 @@ pub fn save_csv<T: std::fmt::Display>(
     }
     Ok(())
 }
+
+#[allow(dead_code)]
+pub fn read_csv(filename: &str, has_header: bool) -> Vec<Vec<(f32, f32)>> {
+    let mut file = std::fs::File::open(filename).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    let mut data = contents
+        .split('\n')
+        .filter(|&x| x != "")
+        .collect::<Vec<&str>>();
+    if has_header {
+        data = data.drain(1..).collect();
+    }
+    data.iter()
+        .map(|&x| {
+            x.split(',')
+                .filter(|&x| x != "")
+                .map(|v| {
+                    let tmp = v.replace("(", "");
+                    let tmp = tmp.replace(")", "");
+                    let vector = tmp.split(' ').collect::<Vec<&str>>();
+                    match (vector[0].parse(), vector[1].parse()) {
+                        (Ok(n1), Ok(n2)) => (n1, n2),
+                        (_, _) => (std::f32::NAN, std::f32::NAN),
+                    }
+                })
+                .collect::<Vec<(f32, f32)>>()
+        })
+        .collect::<Vec<Vec<(f32, f32)>>>()
+}
