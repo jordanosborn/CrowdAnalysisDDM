@@ -54,18 +54,22 @@ def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
 
 def retranspose(files: List[str]):
     for i, f in enumerate(files):
-        sp.call(["cargo", "run", "--release", "retranspose", f])
-        sp.call(["mv", "output.csv", f.replace(
-            "results", "results-transposed")])
-        print(f"Completed {i * 100 / len(files)}%.")
+        sp.call(["cargo", "run", "--release",
+                 "retranspose", f.replace("./", "")])
+        file_path = f.replace("./", "").replace(
+            "results", "results-transposed")
+        os.mkdir("/".join(file_path.split("/")[0:-1]))
+        sp.call(["mv", "output.csv", file_path])
+        print(f"Completed {(i+1) * 100 / len(files)}%.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 and sys.argv[1] == "retranspose":
         files = []
         for (dirpath, dirnames, filenames) in os.walk("./results"):
-            files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-        files_filtered = list(incomplete_filter(files, "./results-transposed"))
+            files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
+        files_filtered = list(filter(lambda x: x.find(
+            ".csv") != -1 and x.find("transposed") == -1, incomplete_filter(files, "./results-transposed")))
         retranspose(files_filtered)
     else:
         if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
