@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "code"
+version = "0.1.0"
+description = ""
+authors = ["Jordan Osborn <jordanosborn0@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+numpy = "*"
+matplotlib = "*"
+twilio = "*"
+pandas = "*"
+scipy = "*"
+sklearn = "*"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
