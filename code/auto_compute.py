@@ -32,7 +32,7 @@ def run(command: str, video: str, capacity: int, radial_width: int):
 
 def upload():
     sp.call(["git", "add", "."])
-    sp.call([["git", "commit", "-m", "'added more data'"]])
+    sp.call([["git", "commit", "-m", "\"added more data\""]])
     sp.call(["git", "pull", "--rebase"])
     sp.call(["git", "push"])
 
@@ -64,7 +64,6 @@ if __name__ == "__main__":
                 send_message(
                     secrets["twilio"],
                     f"Have completed approximately {index * 100 / len(files)}%.")
-                upload()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
