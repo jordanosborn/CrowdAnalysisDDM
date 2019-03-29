@@ -49,25 +49,34 @@ def incomplete_filter(files: List[str]) -> Iterable[str]:
         completed_videos.extend(dirnames)
     return filter(lambda x: not contains_any(x, completed_videos), files)
 
+# TODO
+
+
+def retranspose(files: List[str]):
+    pass
+
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
-        sys.argv = sys.argv + [80, 1]
-    if len(sys.argv) == 5 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
-        files = []
-        capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
-        for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
-            files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-        files_filtered = list(incomplete_filter(files))
-        print(f"{len(files_filtered)}/{len(files)} left to analyse.")
-        for index, video in enumerate(files_filtered):
-            run(sys.argv[1], video, capacity, radial_width)
-            if index % 3 == 0 and index != 0:
-                send_message(
-                    secrets["twilio"],
-                    f"Have completed approximately {(index + len(files) -len(files_filtered)) * 100 / len(files)}%.")
-                upload()
+    if len(sys.argv) == 2 and sys.argv[1] == "retranspose":
+        # TODO
+        retranspose([])
     else:
-        send_message(secrets["twilio"], "hello there")
-        print(
-            f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
+        if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
+            sys.argv = sys.argv + [80, 1]
+        if len(sys.argv) == 5 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
+            files = []
+            capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
+            for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
+                files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
+            files_filtered = list(incomplete_filter(files))
+            print(f"{len(files_filtered)}/{len(files)} left to analyse.")
+            for index, video in enumerate(files_filtered):
+                run(sys.argv[1], video, capacity, radial_width)
+                if index % 3 == 0 and index != 0:
+                    send_message(
+                        secrets["twilio"],
+                        f"Have completed approximately {(index + len(files) -len(files_filtered)) * 100 / len(files)}%.")
+                    upload()
+        else:
+            print(
+                f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
