@@ -6,7 +6,6 @@ extern crate text_io;
 
 use arrayfire as af;
 use native::opencv;
-use utils::{read_csv, save_csv};
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
@@ -16,6 +15,8 @@ pub mod native;
 pub mod operations;
 #[macro_use]
 pub mod utils;
+
+pub mod process;
 
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
@@ -100,28 +101,9 @@ fn main() {
     match what {
         What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
         What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
-        What::PROCESS => process(&filename.unwrap()),
+        What::PROCESS => process::retranspose(&filename.unwrap(), "output.csv"),
         What::OTHER => {
             println!("Invalid arguments supplied!");
         }
     }
-}
-
-fn process(file: &str) {
-    let data = read_csv(file, true);
-    let data_transposed = operations::transpose_2d_array(&data);
-    println!("{} {}", data[0].len(), data_transposed.1.len());
-    save_csv(&data_transposed.0, &data_transposed.1, ".", "hello.csv");
-    // let mut reader = csv::ReaderBuilder::new()
-    //     .has_headers(true)
-    //     .delimiter(b',')
-    //     .trim(csv::Trim::All)
-    //     .from_path(std::path::Path::new(file))?;
-    // let mut data = Vec::new();
-    // for result in reader.records() {
-    //     let record = result?;
-    //     data.push(record);
-    // }
-    // println!("aga");
-    // println!("{:?}", data);
 }
