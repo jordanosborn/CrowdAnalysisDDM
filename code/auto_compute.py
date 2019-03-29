@@ -63,7 +63,7 @@ if __name__ == "__main__":
             if index % 3 == 0 and index != 0:
                 send_message(
                     secrets["twilio"],
-                    f"Have completed approximately {index * 100 / len(files)}%.")
+                    f"Have completed approximately {(index + len(files) -len(files_filtered)) * 100 / len(files)}%.")
                 upload()
     else:
         print(
