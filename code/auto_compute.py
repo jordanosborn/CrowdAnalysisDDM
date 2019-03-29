@@ -64,6 +64,7 @@ if __name__ == "__main__":
                 send_message(
                     secrets["twilio"],
                     f"Have completed approximately {index * 100 / len(files)}%.")
+                upload()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}")
