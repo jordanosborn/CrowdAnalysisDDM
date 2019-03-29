@@ -22,10 +22,12 @@ code/target/*
 *.png
 code/*.jpg
 *.rar
-code/videos/*
-*.mp4
-*.avi
 code/venv/*
-*.m4v
 *.gplt
+*.avi
+*.mp4
+*.m4v
 *.tiff
+code/old_videos
+code/videos/*
+code/secrets.json

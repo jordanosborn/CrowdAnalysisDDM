@@ -6,7 +6,7 @@ use itertools::Itertools;
 use rayon::prelude::*;
 use std::io::prelude::*;
 
-use crate::opencv;
+use super::native::opencv;
 
 #[allow(unused_macros)]
 #[macro_export]
@@ -20,6 +20,56 @@ macro_rules! wait {
             }
         }
     };
+}
+
+#[allow(unused_macros)]
+#[macro_export]
+macro_rules! fft_shift {
+    ($item:expr) => {
+        arrayfire::shift(
+            &$item,
+            &[
+                ($item.dims()[0] / 2) as i32,
+                ($item.dims()[1] / 2) as i32,
+                1,
+                1,
+            ],
+        );
+    };
+}
+
+#[allow(unused_macros)]
+#[macro_export]
+macro_rules! fft_un_shift {
+    ($item:expr) => {
+        arrayfire::shift(
+            &$item,
+            &[
+                ($item.dims()[0] * 2) as i32,
+                ($item.dims()[1] * 2) as i32,
+                1,
+                1,
+            ],
+        );
+    };
+}
+
+pub fn get_closest_power(x: i64) -> i64 {
+    let xf64 = x as f64;
+    let power2 = f64::log2(xf64).ceil() as i64;
+    let power3 = f64::log(xf64, 3.0f64).ceil() as i64;
+    let power5 = f64::log(xf64, 5.0f64).ceil() as i64;
+    let minima = (0..=power2)
+        .cartesian_product((0..=power3).cartesian_product(0..=power5))
+        .map(|(a, (b, c))| {
+            (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as i64
+        })
+        .filter(|&value| value >= x)
+        .min();
+    match minima {
+        Some(n) => n,
+        None => panic!("No suitable dimension!"),
+    }
 }
 
 pub fn times() -> Vec<(String, f64)> {
@@ -117,9 +167,14 @@ pub fn save_images(acc: &[af::Array<crate::RawType>], filename: String) {
 pub fn save_csv<T: std::fmt::Display>(
     index: &[T],
     arr: &[Vec<(T, T)>],
-    output_file: &str,
+    output_dir: &str,
+    output_filename: &str,
 ) -> std::io::Result<()> {
-    let mut file = std::fs::File::create(std::path::Path::new(output_file))?;
+    if !std::path::Path::new(&output_dir).is_dir() {
+        std::fs::create_dir(&output_dir).expect("Can't create output directory!");
+    }
+    let output = format!("{}/{}", output_dir, output_filename);
+    let mut file = std::fs::File::create(std::path::Path::new(&output))?;
     for v in index.iter() {
         let s = format!("{},", v);
         file.write_all(&s.as_bytes())?;

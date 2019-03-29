@@ -18,6 +18,7 @@
         "odim",
         "prin",
         "repr",
+        "twilio",
         "vidstream",
         "window"
     ],
@@ -74,5 +75,6 @@
         "typeinfo": "cpp"
     },
     "python.pythonPath": "/usr/local/opt/python/bin/python3.7",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "git.ignoreLimitWarning": true
 }

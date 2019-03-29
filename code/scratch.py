@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-with open('radial_Avg_transposed.csv') as f:
+with open(sys.argv[1] + '/radial_Avg_transposed.csv') as f:
     data = f.readlines()
 data = list(map(lambda s: s.replace('\n', '').split(',')[:-1], data))
 X = None
@@ -22,5 +22,5 @@ for d in data:
         X = x
     cleaned.append(y)
 
-plt.plot(X, cleaned[int(sys.argv[1])])
+plt.plot(X, cleaned[int(sys.argv[2])])
 plt.show()

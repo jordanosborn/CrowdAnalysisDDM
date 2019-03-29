@@ -41,7 +41,7 @@ pub fn radial_average(
     arr: &[arrayfire::Array<RawType>],
     annuli: &[(RawType, arrayfire::Array<RawType>)],
 ) -> Vec<Vec<(RawType, RawType)>> {
-    //TODO: Finish this function! should return 1D array I(q) for each tau
+    //TODO: speed this up this is very slow
     let mut vector = Vec::with_capacity(arr.len());
     println!("Started radial averaging!");
     arr.iter().enumerate().for_each(|(i, a)| {
