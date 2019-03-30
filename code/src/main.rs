@@ -47,7 +47,7 @@ enum What {
         Option<String>,
     ),
     MultiDDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
-    PROCESS,
+    PROCESS(Option<String>),
     RETRANSPOSE(String, String),
     OTHER,
 }
@@ -133,7 +133,7 @@ fn main() {
             ddm::multi_ddm(id, capacity, annuli_spacing, filename);
         }
         What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),
-        What::PROCESS => {}
+        What::PROCESS(_) => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");
         }
