@@ -62,6 +62,16 @@ fn process_arguments(args: Vec<String>) -> What {
         {
             What::RETRANSPOSE(path.clone())
         }
+        [_, command, capacity, path] if command == "video-ddm" => What::DDM(
+            Some(opencv::start_capture_safe(path)),
+            Some(capacity.parse::<usize>().unwrap()),
+            None,
+            match std::path::Path::new(path).file_stem() {
+                Some(s) => Some(String::from(s.to_str().unwrap())),
+                None => None,
+            },
+            None,
+        ),
         [_, command, capacity, path, output] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
             Some(capacity.parse::<usize>().unwrap()),
