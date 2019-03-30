@@ -52,7 +52,7 @@ enum Signal {
 pub fn single_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
-    annuli_spacing: Option<u64>,
+    annuli_spacing: Option<usize>,
     filename: Option<String>,
 ) {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
@@ -105,7 +105,7 @@ pub fn single_ddm(
                     } else {
                         let n = std::cmp::max(value.cols, value.rows);
                         odim = Some(get_closest_power(n as i64));
-                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing))
+                        match annuli_tx.send(operations::generate_annuli(n as u64, annuli_spacing as u64))
                         {
                             Ok(_) => println!("Generated annuli!"),
                             Err(e) => {

@@ -6,6 +6,7 @@ extern crate text_io;
 
 use arrayfire as af;
 use native::opencv;
+use std::collections::HashMap;
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
@@ -39,22 +40,14 @@ fn set_backend() {
 
 #[allow(dead_code)]
 enum What {
-    DDM,
+    DDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
     MultiDDM,
     PROCESS,
-    RETRANSPOSE,
+    RETRANSPOSE(String),
     OTHER,
 }
 
-fn process_arguments(
-    args: Vec<String>,
-) -> (
-    Option<usize>,
-    What,
-    Option<usize>,
-    Option<u64>,
-    Option<String>,
-) {
+fn process_arguments(args: Vec<String>) -> What {
     let args_slice = args.as_slice();
     match args_slice {
         [_, command, path]
@@ -62,11 +55,10 @@ fn process_arguments(
                 && std::path::Path::new(path).exists()
                 && path.ends_with(".csv") =>
         {
-            (None, What::RETRANSPOSE, None, None, Some(path.clone()))
+            What::RETRANSPOSE(path.clone())
         }
-        [_, command, capacity, path] if command == "video-ddm" => (
+        [_, command, capacity, path] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
-            What::DDM,
             Some(capacity.parse::<usize>().unwrap()),
             None,
             match std::path::Path::new(path).file_stem() {
@@ -74,35 +66,34 @@ fn process_arguments(
                 None => None,
             },
         ),
-        [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => (
+        [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
-            What::DDM,
             Some(capacity.parse::<usize>().unwrap()),
-            Some(annuli_spacing.parse::<u64>().unwrap()),
+            Some(annuli_spacing.parse::<usize>().unwrap()),
             match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
                 None => None,
             },
         ),
-        [_, command, capacity] if command == "camera-ddm" => (
+        [_, command, capacity] if command == "camera-ddm" => What::DDM(
             Some(opencv::start_camera_capture_safe()),
-            What::DDM,
             Some(capacity.parse::<usize>().unwrap()),
             None,
             None,
         ),
-        _ => (None, What::OTHER, None, None, None),
+        _ => What::OTHER,
     }
 }
 
 fn main() {
     set_backend();
-    let (id, what, capacity, annuli_spacing, filename) =
-        process_arguments(std::env::args().collect::<Vec<String>>());
-    match what {
-        What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
+    let parsed_args = process_arguments(std::env::args().collect::<Vec<String>>());
+    match parsed_args {
+        What::DDM(id, capacity, annuli_spacing, filename) => {
+            ddm::single_ddm(id, capacity, annuli_spacing, filename)
+        }
         What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
-        What::RETRANSPOSE => process::retranspose(&filename.unwrap(), "output.csv"),
+        What::RETRANSPOSE(filename) => process::retranspose(&filename.unwrap(), "output.csv"),
         What::PROCESS => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");
