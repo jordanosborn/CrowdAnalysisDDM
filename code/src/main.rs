@@ -16,6 +16,8 @@ pub mod operations;
 #[macro_use]
 pub mod utils;
 
+pub mod process;
+
 type RawType = f32;
 type RawFtType = num_complex::Complex32;
 
@@ -40,6 +42,7 @@ enum What {
     DDM,
     MultiDDM,
     PROCESS,
+    RETRANSPOSE,
     OTHER,
 }
 
@@ -54,6 +57,13 @@ fn process_arguments(
 ) {
     let args_slice = args.as_slice();
     match args_slice {
+        [_, command, path]
+            if command == "retranspose"
+                && std::path::Path::new(path).exists()
+                && path.ends_with(".csv") =>
+        {
+            (None, What::RETRANSPOSE, None, None, Some(path.clone()))
+        }
         [_, command, capacity, path] if command == "video-ddm" => (
             Some(opencv::start_capture_safe(path)),
             What::DDM,
@@ -92,6 +102,7 @@ fn main() {
     match what {
         What::DDM => ddm::single_ddm(id, capacity, annuli_spacing, filename),
         What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
+        What::RETRANSPOSE => process::retranspose(&filename.unwrap(), "output.csv"),
         What::PROCESS => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");

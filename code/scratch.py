@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-with open(sys.argv[1] + '/radial_Avg_transposed.csv') as f:
+with open(sys.argv[1]) as f:
     data = f.readlines()
 data = list(map(lambda s: s.replace('\n', '').split(',')[:-1], data))
 X = None

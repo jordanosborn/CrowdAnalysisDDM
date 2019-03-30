@@ -18,6 +18,7 @@
         "odim",
         "prin",
         "repr",
+        "retranspose",
         "twilio",
         "vidstream",
         "window"
