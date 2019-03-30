@@ -72,7 +72,7 @@ fn process_arguments(args: Vec<String>) -> What {
             },
             None,
         ),
-        [_, command, capacity, path, output] if command == "video-ddm" => What::DDM(
+        [_, command, capacity, path, output] if command == "video-ddm" && output.=> What::DDM(
             Some(opencv::start_capture_safe(path)),
             Some(capacity.parse::<usize>().unwrap()),
             None,
