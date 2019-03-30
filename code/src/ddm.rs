@@ -55,7 +55,7 @@ pub fn single_ddm(
     annuli_spacing: Option<usize>,
     filename: Option<String>,
     output: Option<String>,
-) {
+) -> Option<Vec<Vec<(crate::RawType, crate::RawType)>>> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -64,14 +64,23 @@ pub fn single_ddm(
     let mut odim: Option<i64> = None;
 
     let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
-
+    let mut data_out = None;
     if let Some(id) = id {
-        let output_dir = if let Some(v) = filename {
+        let mut output_dir;
+        let output_name = if let Some(v) = output {
+            output_dir = ".".to_string();
             v
+        } else if let Some(v) = filename {
+            output_dir = format!("results/{}", v);
+            "radial_averaged.csv".to_string()
         } else {
+            output_dir = ".".to_string();
             String::from("camera")
         };
-        println!("Analysis of {} stream started!", &output_dir);
+        println!(
+            "Analysis of {}/{} stream started!",
+            &output_dir, &output_name
+        );
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
@@ -167,26 +176,21 @@ pub fn single_ddm(
                         .map(|i| i as f32)
                         .collect::<Vec<f32>>();
 
-                    let (radial_averaged_transposed_index, radial_averaged_transposed) =
-                        operations::transpose_2d_array(&radial_averaged);
-
                     let _ = save_csv(
                         &radial_averaged_index,
                         &radial_averaged,
-                        &format!("results/{}", &output_dir),
-                        "radial_Avg.csv",
+                        &output_dir,
+                        &output_name,
                     );
-                    let _ = save_csv(
-                        &radial_averaged_transposed_index,
-                        &radial_averaged_transposed,
-                        &format!("results/{}", &output_dir),
-                        "radial_Avg_transposed.csv",
-                    );
+                    data_out = Some(radial_averaged);
                 }
                 break;
             }
         }
-        println!("Analysis of {} stream complete!", &output_dir);
+        println!(
+            "Analysis of {}/{} stream complete!",
+            &output_dir, &output_name
+        );
         match stx.send(Signal::KILL) {
             _ => {
                 stream_thread.join().unwrap();
@@ -196,6 +200,7 @@ pub fn single_ddm(
     } else {
         println!("Invalid arguments supplied!");
     }
+    data_out
 }
 
 //TODO: implement this!

@@ -100,10 +100,10 @@ fn main() {
     let parsed_args = process_arguments(std::env::args().collect::<Vec<String>>());
     match parsed_args {
         What::DDM(id, capacity, annuli_spacing, filename, output) => {
-            ddm::single_ddm(id, capacity, annuli_spacing, filename, output)
+            ddm::single_ddm(id, capacity, annuli_spacing, filename, output);
         }
         What::MultiDDM(id, capacity, annuli_spacing, filename) => {
-            ddm::multi_ddm(id, capacity, annuli_spacing, filename)
+            ddm::multi_ddm(id, capacity, annuli_spacing, filename);
         }
         What::RETRANSPOSE(filename) => process::retranspose(&filename, "output.csv"),
         What::PROCESS => {}
