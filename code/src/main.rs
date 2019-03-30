@@ -6,7 +6,6 @@ extern crate text_io;
 
 use arrayfire as af;
 use native::opencv;
-use std::collections::HashMap;
 
 #[allow(unused_imports)]
 use rayon::prelude::*;
@@ -41,7 +40,7 @@ fn set_backend() {
 #[allow(dead_code)]
 enum What {
     DDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
-    MultiDDM,
+    MultiDDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
     PROCESS,
     RETRANSPOSE(String),
     OTHER,
@@ -92,8 +91,10 @@ fn main() {
         What::DDM(id, capacity, annuli_spacing, filename) => {
             ddm::single_ddm(id, capacity, annuli_spacing, filename)
         }
-        What::MultiDDM => ddm::multi_ddm(id, capacity, annuli_spacing, filename),
-        What::RETRANSPOSE(filename) => process::retranspose(&filename.unwrap(), "output.csv"),
+        What::MultiDDM(id, capacity, annuli_spacing, filename) => {
+            ddm::multi_ddm(id, capacity, annuli_spacing, filename)
+        }
+        What::RETRANSPOSE(filename) => process::retranspose(&filename, "output.csv"),
         What::PROCESS => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");
