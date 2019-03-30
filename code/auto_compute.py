@@ -55,7 +55,7 @@ def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
 def retranspose(files: List[str]):
     for i, f in enumerate(files):
         sp.call(["cargo", "run", "--release",
-                 "retranspose", f.replace("./", "")])
+                 "retranspose", f.replace("./", ""), "output.csv"])
         file_path = f.replace("./", "").replace(
             "results", "results-transposed")
         os.mkdir("/".join(file_path.split("/")[0:-1]))

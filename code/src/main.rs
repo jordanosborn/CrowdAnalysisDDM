@@ -48,19 +48,20 @@ enum What {
     ),
     MultiDDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
     PROCESS,
-    RETRANSPOSE(String),
+    RETRANSPOSE(String, String),
     OTHER,
 }
 
 fn process_arguments(args: Vec<String>) -> What {
     let args_slice = args.as_slice();
     match args_slice {
-        [_, command, path]
+        [_, command, path, output]
             if command == "retranspose"
                 && std::path::Path::new(path).exists()
-                && path.ends_with(".csv") =>
+                && path.ends_with(".csv")
+                && output.ends_with(".csv") =>
         {
-            What::RETRANSPOSE(path.clone())
+            What::RETRANSPOSE(path.clone(), output.clone())
         }
         [_, command, capacity, path] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
@@ -131,7 +132,7 @@ fn main() {
         What::MultiDDM(id, capacity, annuli_spacing, filename) => {
             ddm::multi_ddm(id, capacity, annuli_spacing, filename);
         }
-        What::RETRANSPOSE(filename) => process::retranspose(&filename, "output.csv"),
+        What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),
         What::PROCESS => {}
         What::OTHER => {
             println!("Invalid arguments supplied!");
