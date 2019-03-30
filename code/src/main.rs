@@ -39,7 +39,13 @@ fn set_backend() {
 
 #[allow(dead_code)]
 enum What {
-    DDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
+    DDM(
+        Option<usize>,
+        Option<usize>,
+        Option<usize>,
+        Option<String>,
+        Option<String>,
+    ),
     MultiDDM(Option<usize>, Option<usize>, Option<usize>, Option<String>),
     PROCESS,
     RETRANSPOSE(String),
@@ -56,7 +62,7 @@ fn process_arguments(args: Vec<String>) -> What {
         {
             What::RETRANSPOSE(path.clone())
         }
-        [_, command, capacity, path] if command == "video-ddm" => What::DDM(
+        [_, command, capacity, path, output] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
             Some(capacity.parse::<usize>().unwrap()),
             None,
@@ -64,19 +70,24 @@ fn process_arguments(args: Vec<String>) -> What {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
                 None => None,
             },
+            Some(output.to_string()),
         ),
-        [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => What::DDM(
-            Some(opencv::start_capture_safe(path)),
-            Some(capacity.parse::<usize>().unwrap()),
-            Some(annuli_spacing.parse::<usize>().unwrap()),
-            match std::path::Path::new(path).file_stem() {
-                Some(s) => Some(String::from(s.to_str().unwrap())),
-                None => None,
-            },
-        ),
+        [_, command, capacity, annuli_spacing, path, output] if command == "video-ddm" => {
+            What::DDM(
+                Some(opencv::start_capture_safe(path)),
+                Some(capacity.parse::<usize>().unwrap()),
+                Some(annuli_spacing.parse::<usize>().unwrap()),
+                match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                Some(output.to_string()),
+            )
+        }
         [_, command, capacity] if command == "camera-ddm" => What::DDM(
             Some(opencv::start_camera_capture_safe()),
             Some(capacity.parse::<usize>().unwrap()),
+            None,
             None,
             None,
         ),
@@ -88,8 +99,8 @@ fn main() {
     set_backend();
     let parsed_args = process_arguments(std::env::args().collect::<Vec<String>>());
     match parsed_args {
-        What::DDM(id, capacity, annuli_spacing, filename) => {
-            ddm::single_ddm(id, capacity, annuli_spacing, filename)
+        What::DDM(id, capacity, annuli_spacing, filename, output) => {
+            ddm::single_ddm(id, capacity, annuli_spacing, filename, output)
         }
         What::MultiDDM(id, capacity, annuli_spacing, filename) => {
             ddm::multi_ddm(id, capacity, annuli_spacing, filename)
