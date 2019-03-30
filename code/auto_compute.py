@@ -71,6 +71,7 @@ if __name__ == "__main__":
         files_filtered = list(filter(lambda x: x.find(
             ".csv") != -1 and x.find("transposed") == -1, incomplete_filter(files, "./results-transposed")))
         retranspose(files_filtered)
+        upload()
     else:
         if len(sys.argv) == 3 and sys.argv[1] in ["video-multi-ddm", "video-ddm"] and os.path.isdir(sys.argv[2]):
             sys.argv = sys.argv + [80, 1]
