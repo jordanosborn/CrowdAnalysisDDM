@@ -49,13 +49,18 @@ enum Signal {
     KILL,
 }
 
+type IndexedData = (
+    Vec<crate::RawType>,
+    Vec<Vec<(crate::RawType, crate::RawType)>>,
+);
+
 pub fn single_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
     filename: Option<String>,
     output: Option<String>,
-) -> Option<Vec<Vec<(crate::RawType, crate::RawType)>>> {
+) -> Option<IndexedData> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawFtType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -72,7 +77,7 @@ pub fn single_ddm(
             v
         } else if let Some(v) = filename {
             output_dir = format!("results/{}", v);
-            "radial_averaged.csv".to_string()
+            "radial_Avg.csv".to_string()
         } else {
             output_dir = ".".to_string();
             String::from("camera")
@@ -176,13 +181,25 @@ pub fn single_ddm(
                         .map(|i| i as f32)
                         .collect::<Vec<f32>>();
 
+                    let (r_avg_transposed_index, r_avg_transposed) =
+                        operations::transpose_2d_array(&radial_averaged);
+
                     let _ = save_csv(
                         &radial_averaged_index,
                         &radial_averaged,
                         &output_dir,
                         &output_name,
                     );
-                    data_out = Some(radial_averaged);
+                    let output_name_transposed =
+                        output_name.clone().replace(".csv", "_transposed.csv");
+                    let _ = save_csv(
+                        &r_avg_transposed_index,
+                        &r_avg_transposed,
+                        &output_dir,
+                        &output_name_transposed,
+                    );
+
+                    data_out = Some((r_avg_transposed_index, r_avg_transposed));
                 }
                 break;
             }

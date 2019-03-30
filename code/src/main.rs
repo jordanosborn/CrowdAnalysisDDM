@@ -72,17 +72,33 @@ fn process_arguments(args: Vec<String>) -> What {
             },
             None,
         ),
-        [_, command, capacity, path, output] if command == "video-ddm" && output.=> What::DDM(
+        [_, command, capacity, path, output]
+            if command == "video-ddm" && output.ends_with(".csv") =>
+        {
+            What::DDM(
+                Some(opencv::start_capture_safe(path)),
+                Some(capacity.parse::<usize>().unwrap()),
+                None,
+                match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                Some(output.to_string()),
+            )
+        }
+        [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => What::DDM(
             Some(opencv::start_capture_safe(path)),
             Some(capacity.parse::<usize>().unwrap()),
-            None,
+            Some(annuli_spacing.parse::<usize>().unwrap()),
             match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
                 None => None,
             },
-            Some(output.to_string()),
+            None,
         ),
-        [_, command, capacity, annuli_spacing, path, output] if command == "video-ddm" => {
+        [_, command, capacity, annuli_spacing, path, output]
+            if command == "video-ddm" && output.ends_with(".csv") =>
+        {
             What::DDM(
                 Some(opencv::start_capture_safe(path)),
                 Some(capacity.parse::<usize>().unwrap()),
