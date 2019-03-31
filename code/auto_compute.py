@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 import sys
-import subprocess as sp
+import subprocess as sp  # nosec
 import os
 import multiprocessing
 from twilio.rest import Client
