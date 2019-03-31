@@ -4,7 +4,7 @@ import subprocess as sp
 import os
 import multiprocessing
 from twilio.rest import Client
-from typing import Any, List, Iterable
+from typing import Union, Any, List, Iterable
 
 # TODO: retranspose everything
 
@@ -52,6 +52,11 @@ def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
 # TODO
 
 
+def filter_non_videos(files: Union[Iterable[str], List[str]]) -> Iterable[str]:
+    video_filetypes = [".avi", ".mp4", ".m4v"]
+    return filter(lambda s: contains_any(s, video_filetypes), files)
+
+
 def retranspose(files: List[str]):
     for i, f in enumerate(files):
         sp.call(["cargo", "run", "--release",
@@ -80,7 +85,8 @@ if __name__ == "__main__":
             capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
             for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
                 files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-            files_filtered = list(incomplete_filter(files, "./results"))
+            files_filtered = incomplete_filter(files, "./results")
+            files_filtered = list(filter_non_videos(files_filtered))
             print(f"{len(files_filtered)}/{len(files)} left to analyse.")
             for index, video in enumerate(files_filtered):
                 run(sys.argv[1], video, capacity, radial_width)
