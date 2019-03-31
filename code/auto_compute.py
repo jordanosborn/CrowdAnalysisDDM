@@ -7,7 +7,6 @@ import multiprocessing
 from twilio.rest import Client
 from typing import Union, Any, List, Iterable
 
-# TODO: retranspose everything
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -46,7 +45,7 @@ def contains_any(string: str, to_check: List[str]) -> bool:
 
 def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
     completed_videos = []
-    for (dirpath, dirnames, filenames) in os.walk(directory):
+    for (_, dirnames, _) in os.walk(directory):
         completed_videos.extend(dirnames)
     return filter(lambda x: not contains_any(x, completed_videos), files)
 
