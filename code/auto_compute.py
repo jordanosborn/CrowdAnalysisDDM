@@ -1,12 +1,12 @@
+#!/usr/bin/env python3
 import json
 import sys
-import subprocess as sp
+import subprocess as sp  # nosec
 import os
 import multiprocessing
 from twilio.rest import Client
-from typing import Any, List, Iterable
+from typing import Union, Any, List, Iterable
 
-# TODO: retranspose everything
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -45,17 +45,22 @@ def contains_any(string: str, to_check: List[str]) -> bool:
 
 def incomplete_filter(files: List[str], directory: str) -> Iterable[str]:
     completed_videos = []
-    for (dirpath, dirnames, filenames) in os.walk(directory):
+    for (_, dirnames, _) in os.walk(directory):
         completed_videos.extend(dirnames)
     return filter(lambda x: not contains_any(x, completed_videos), files)
 
 # TODO
 
 
+def filter_non_videos(files: Union[Iterable[str], List[str]]) -> Iterable[str]:
+    video_filetypes = [".avi", ".mp4", ".m4v"]
+    return filter(lambda s: contains_any(s, video_filetypes), files)
+
+
 def retranspose(files: List[str]):
     for i, f in enumerate(files):
         sp.call(["cargo", "run", "--release",
-                 "retranspose", f.replace("./", "")])
+                 "retranspose", f.replace("./", ""), "output.csv"])
         file_path = f.replace("./", "").replace(
             "results", "results-transposed")
         os.mkdir("/".join(file_path.split("/")[0:-1]))
@@ -80,7 +85,8 @@ if __name__ == "__main__":
             capacity, radial_width = int(sys.argv[3]), int(sys.argv[4])
             for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
                 files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
-            files_filtered = list(incomplete_filter(files, "./results"))
+            files_filtered = incomplete_filter(files, "./results")
+            files_filtered = list(filter_non_videos(files_filtered))
             print(f"{len(files_filtered)}/{len(files)} left to analyse.")
             for index, video in enumerate(files_filtered):
                 run(sys.argv[1], video, capacity, radial_width)

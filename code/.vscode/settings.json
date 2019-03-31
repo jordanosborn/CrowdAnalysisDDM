@@ -15,6 +15,7 @@
         "luma",
         "mersenne",
         "named",
+        "nosec",
         "odim",
         "prin",
         "repr",
