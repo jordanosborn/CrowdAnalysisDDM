@@ -331,24 +331,8 @@ pub mod opencv {
         }
     }
 
-    pub trait CString {
-        fn c_string(&self) -> Vec<i8>;
-    }
-
-    impl CString for str {
-        fn c_string(&self) -> Vec<i8> {
-            self.as_bytes()
-                .iter()
-                .map(|&x| x as i8)
-                .collect::<Vec<i8>>()
-        }
-    }
-
     pub fn start_capture_safe(s: &str) -> usize {
-        let mut c_string = s.c_string();
-        //FIX: Bizarrely this sometimes breaks and string is not null terminated causing an exception when video file is attempted to be read
-        // string reads in to non-owned memory giving garbage??? explicitly appending a null seems to fix this
-        c_string.push(0);
+        let c_string = std::ffi::CString::new(s).expect("Filename invalid!");
         unsafe { start_capture(c_string.as_ptr()) }
     }
 
