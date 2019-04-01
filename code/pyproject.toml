@@ -12,6 +12,10 @@ twilio = "*"
 pandas = "*"
 scipy = "*"
 sklearn = "*"
+pylint = "^2.3"
+bandit = "^1.5"
+mypy = "^0.670.0"
+flake8 = "^3.7"
 
 [tool.poetry.dev-dependencies]
 
