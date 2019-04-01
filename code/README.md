@@ -27,6 +27,8 @@ setup ssh  then git pull on start cd in to directory remove copying move docker 
 ## On mac
 brew install opencv llvm (need clang-7) glfw
 
+sudo update_dyld_shared_cache
+
 use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 to fix stdlib errors on mac
 
