@@ -25,6 +25,7 @@ fn ddm(
                     .zip(acc.par_iter())
                     .map(|(i, a)| {
                         //TODO: WTF why does this work when loc is added below???! panics at t0 = 47 ??????
+                        //This works on mac mini
                         arrayfire::imin_all(a);
                         a + operations::difference(i, &ft0)
                     })

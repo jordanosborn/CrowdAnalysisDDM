@@ -25,17 +25,23 @@ Startup script docker
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder
 
 ## On mac
-brew install opencv llvm (need clang-7)
+brew install opencv llvm (need clang-7) glfw
+
+sudo update_dyld_shared_cache
 
 use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 to fix stdlib errors on mac
+
+illegal instruction 4?
+
+sudo update_dyld_shared_cache
 
 install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 Python 3.7 for automation
 
 ## On Linux
-install arrayfire using linux package 
+install arrayfire using linux package
 
 move to /opt/arrayfire
 
@@ -46,4 +52,3 @@ install libstdc++
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
 echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
-
