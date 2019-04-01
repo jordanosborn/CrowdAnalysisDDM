@@ -39,15 +39,18 @@ fn build(src_files: Vec<&str>, output: &str) {
     cc::Build::new()
         .files(src_files)
         .cpp(true)
-        .shared_flag(true)
+        .flag("-std=c++14")
+        .flag("-L/opt/arrayfire/lib64")
+        .flag("-L/usr/local/lib")
         .flag(&get_opencv_flags())
         .include("./lib/include")
         .include("/usr/local/include")
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib64 --std=c++17 -march=native")
-        .compiler("g++")
+        .cpp_link_stdlib("c++")
+        .cpp_set_stdlib("c++")
+        .compiler("clang++")
         .compile(output);
     unix::opencv_link();
 }
@@ -75,7 +78,6 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp_set_stdlib("c++")
         .flag("-std=c++14")
         //.flag("-fopenmp")
-        //.flag("-march=native") //Makes Slower....
         .compiler("clang++")
         .compile(output);
     unix::opencv_link();

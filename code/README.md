@@ -33,4 +33,16 @@ to fix stdlib errors on mac
 install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 
-#
+## On Linux
+install arrayfire using linux package 
+
+move to /opt/arrayfire
+
+install clang
+
+install libstdc++
+
+echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
+
+echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
+
