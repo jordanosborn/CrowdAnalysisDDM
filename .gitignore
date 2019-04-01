@@ -31,3 +31,4 @@ code/venv/*
 code/old_videos
 code/videos/*
 code/secrets.json
+code/.mypy_cache

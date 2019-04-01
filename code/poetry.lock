@@ -13,7 +13,7 @@ typed-ast = ">=1.3.0"
 wrapt = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Security oriented static analyser for python code."
 name = "bandit"
 optional = false
@@ -65,7 +65,7 @@ version = "0.10.0"
 six = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Discover and load entry points from installed packages."
 name = "entrypoints"
 optional = false
@@ -73,7 +73,7 @@ python-versions = ">=2.7"
 version = "0.3"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "the modular source code checker: pep8, pyflakes and co"
 name = "flake8"
 optional = false
@@ -87,7 +87,7 @@ pycodestyle = ">=2.5.0,<2.6.0"
 pyflakes = ">=2.1.0,<2.2.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Git Object Database"
 name = "gitdb2"
 optional = false
@@ -98,7 +98,7 @@ version = "2.0.5"
 smmap2 = ">=2.0.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python Git Library"
 name = "gitpython"
 optional = false
@@ -168,7 +168,7 @@ python-versions = "*"
 version = "0.6.1"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Optional static typing for Python"
 name = "mypy"
 optional = false
@@ -180,7 +180,7 @@ mypy-extensions = ">=0.4.0,<0.5.0"
 typed-ast = ">=1.3.1,<1.4.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
 name = "mypy-extensions"
 optional = false
@@ -209,7 +209,7 @@ python-dateutil = ">=2.5.0"
 pytz = ">=2011k"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python Build Reasonableness"
 name = "pbr"
 optional = false
@@ -217,7 +217,7 @@ python-versions = "*"
 version = "5.1.3"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python style guide checker"
 name = "pycodestyle"
 optional = false
@@ -225,7 +225,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.5.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "passive checker of Python programs"
 name = "pyflakes"
 optional = false
@@ -291,7 +291,7 @@ python-versions = "*"
 version = "2018.9"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
 optional = false
@@ -356,7 +356,7 @@ version = "0.0"
 scikit-learn = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "A pure Python implementation of a sliding window memory map manager"
 name = "smmap2"
 optional = false
@@ -364,7 +364,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.0.5"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Manage dynamic plugins for Python applications"
 name = "stevedore"
 optional = false
@@ -422,7 +422,7 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "4b377b7ec57ed363e8e02dd3e57bcb7f70eb9edbf20c3d128bb7194837c52d03"
+content-hash = "4d4dfe28715afb3a66d398c50ae73a255cdbddeba714666e3c84fb0e63d6d592"
 python-versions = "^3.7"
 
 [metadata.hashes]
