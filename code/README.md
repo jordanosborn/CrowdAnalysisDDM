@@ -32,6 +32,10 @@ sudo update_dyld_shared_cache
 use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 to fix stdlib errors on mac
 
+illegal instruction 4?
+
+sudo update_dyld_shared_cache
+
 install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 
