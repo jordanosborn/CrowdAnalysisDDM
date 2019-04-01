@@ -20,6 +20,7 @@
         "prin",
         "repr",
         "retranspose",
+        "scipy",
         "twilio",
         "vidstream",
         "window"
