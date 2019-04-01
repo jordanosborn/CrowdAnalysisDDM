@@ -3,7 +3,7 @@ use std::process::Command;
 #[cfg(unix)]
 mod unix {
     pub fn opencv_include() -> &'static str {
-        if cfg!(linux) {
+        if cfg!(target_os = "linux") {
             "/usr/local/include/opencv4"
         } else {
             "/usr/local/Cellar/opencv/4.0.1/include/opencv4"
@@ -11,7 +11,7 @@ mod unix {
     }
 
     pub fn opencv_link() {
-        if cfg!(linux) {
+        if cfg!(target_os = "linux") {
             println!("cargo:rustc-link-search=native=/usr/local/lib");
         } else {
             println!("cargo:rustc-link-search=native=/usr/local/Cellar/opencv/4.0.1/lib");
@@ -41,12 +41,12 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp(true)
         .shared_flag(true)
         .flag(&get_opencv_flags())
-        .include("lib/include")
+        .include("./lib/include")
         .include("/usr/local/include")
         .include("/opt/arrayfire/include")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
-        .flag("-L/usr/local/lib -L/opt/arrayfire/lib -L/opt/arrayfire/lib64 --std=c++17 -fopenmp -march=native")
+        .flag("-L/usr/local/lib -L/opt/arrayfire/lib64 --std=c++17 -march=native")
         .compiler("g++")
         .compile(output);
     unix::opencv_link();
