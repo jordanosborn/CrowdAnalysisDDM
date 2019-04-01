@@ -79,5 +79,6 @@
     },
     "python.pythonPath": "/usr/local/opt/python/bin/python3.7",
     "python.linting.pylintEnabled": true,
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "python.formatting.provider": "black"
 }
