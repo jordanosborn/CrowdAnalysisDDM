@@ -12,6 +12,7 @@ twilio = "*"
 pandas = "*"
 scipy = "*"
 sklearn = "*"
+opencv-python = "^4.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.3"
