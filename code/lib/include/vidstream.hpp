@@ -4,9 +4,16 @@
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
-#include "opencv2/core.hpp"
-#include "opencv2/opencv.hpp"
-#include <opencv2/highgui.hpp>
+
+#ifdef __linux__
+	#include <opencv2/core/core.hpp>
+	#include <opencv2/opencv.hpp>
+	#include <opencv2/highgui/highgui.hpp>
+#else
+	#include "opencv2/core.hpp"
+	#include "opencv2/opencv.hpp"
+	#include <opencv2/highgui.hpp>
+#endif
 
 
 static std::vector<cv::VideoCapture> streams;

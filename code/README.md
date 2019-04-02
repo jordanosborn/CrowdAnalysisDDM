@@ -51,3 +51,6 @@ install libstdc++
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
 echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
+
+https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
+
