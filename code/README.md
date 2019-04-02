@@ -54,3 +54,4 @@ echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
+ldconfig to config library cache

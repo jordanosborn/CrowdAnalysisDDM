@@ -115,6 +115,7 @@ if __name__ == "__main__":
                 )
             )
         retranspose(files)
+        upload()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"
