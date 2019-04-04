@@ -4,7 +4,7 @@ use std::process::Command;
 mod unix {
     pub fn opencv_include() -> &'static str {
         if cfg!(target_os = "linux") {
-            "/usr/local/include/opencv4"
+            "/usr/include/opencv2"
         } else {
             "/usr/local/Cellar/opencv/4.0.1/include/opencv4"
         }
@@ -45,7 +45,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .flag(&get_opencv_flags())
         .include("./lib/include")
         .include("/usr/local/include")
-        .include("/opt/arrayfire/include")
+        .include("/usr/local/include/af")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
         .cpp_link_stdlib("c++")
@@ -57,7 +57,7 @@ fn build(src_files: Vec<&str>, output: &str) {
 
 fn get_opencv_flags() -> String {
     let opencv = Command::new("pkg-config")
-        .args(&["--cflags", "--libs", "opencv4"])
+        .args(&["--cflags", "--libs", if cfg!(target_os= "linux" ) {"opencv"} else {"opencv4"}])
         .output()
         .expect("failed to execute process");
     unsafe { String::from_utf8_unchecked(opencv.stdout) }

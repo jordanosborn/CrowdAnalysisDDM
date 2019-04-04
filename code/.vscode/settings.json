@@ -77,7 +77,7 @@
         "complex": "cpp",
         "typeinfo": "cpp"
     },
-    "python.pythonPath": "/Users/jordanosborn/.pyenv/versions/3.7.2/bin/python",
+    "python.pythonPath": "venv/bin/python",
     "python.linting.pylintEnabled": true,
     "git.ignoreLimitWarning": true,
     "python.formatting.provider": "black"

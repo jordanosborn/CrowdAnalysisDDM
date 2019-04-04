@@ -50,6 +50,7 @@ install libstdc++ libstd++abi-dev
 
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
+ldconfig to config library cache
 echo -e "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:$AF_PATH/lib'" >> $HOME/.bashrc
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux

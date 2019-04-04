@@ -54,20 +54,24 @@ def filter_non_videos(files: Union[Iterable[str], List[str]]) -> Iterable[str]:
 
 def retranspose(files: List[str]):
     for i, f in enumerate(files):
-        sp.call(
-            [
-                "cargo",
-                "run",
-                "--release",
-                "retranspose",
-                f.replace("./", ""),
-                "output.csv",
-            ]
-        )
         file_path = f.replace("./", "").replace("results", "results-transposed")
-        os.mkdir("/".join(file_path.split("/")[0:-1]))
-        sp.call(["mv", "output.csv", file_path])
-        print(f"Completed {(i+1) * 100 / len(files)}%.")
+        try:
+            os.mkdir("/".join(file_path.split("/")[0:-1]))
+        except FileExistsError:
+            pass
+        else:
+            sp.call(
+                [
+                    "cargo",
+                    "run",
+                    "--release",
+                    "retranspose",
+                    f.replace("./", ""),
+                    "output.csv",
+                ]
+            )
+            sp.call(["mv", "output.csv", file_path])
+            print(f"Completed {(i+1) * 100 / len(files)}%.")
 
 
 if __name__ == "__main__":
@@ -97,6 +101,21 @@ if __name__ == "__main__":
                     f"Have completed approximately {round((index + len(files) - len(files_filtered)) * 100 / len(files), 2)}%.",
                 )
                 upload()
+    elif (
+        len(sys.argv) == 3
+        and sys.argv[1] == "retranspose"
+        and os.path.isdir(sys.argv[2])
+    ):
+        files: List[str] = []
+        for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
+            files.extend(
+                filter(
+                    lambda s: s.find("radial_Avg.csv") != -1,
+                    map(lambda s: f"./{dirpath}/{s}", filenames),
+                )
+            )
+        retranspose(files)
+        upload()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"
