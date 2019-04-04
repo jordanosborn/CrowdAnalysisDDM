@@ -24,6 +24,9 @@ Install nano set AF_PATH
 Startup script docker
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder
 
+curl https://sh.rustup.rs -sSf | sh
+
+
 ## On mac
 brew install opencv llvm (need clang-7) glfw
 
@@ -41,8 +44,9 @@ https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 Python 3.7 for automation
 
 ## On Linux
-install arrayfire compile
-to /opt/arrayfire follow instructions
+build arrayfire
+
+move to /opt/arrayfire
 
 install clang
 
@@ -57,4 +61,3 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
 https://elinux.org/Jetson/Installing_ArrayFire#Install
-
