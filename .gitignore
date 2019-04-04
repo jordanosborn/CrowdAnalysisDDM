@@ -33,3 +33,4 @@ code/videos/*
 code/secrets.json
 code/.mypy_cache
 *.pyc
+code/analysis_scratch/test

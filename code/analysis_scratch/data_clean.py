@@ -25,3 +25,9 @@ def data_open(file: str) -> Tuple[List[float], List[float], List[List[float]]]:
             X = x
         cleaned.append(y)
     return (index, X, cleaned)
+
+
+if __name__ == "__main__":
+    index, x, y = data_open(sys.argv[1])
+    plt.plot(x, y[int(sys.argv[2])])
+    plt.show()
