@@ -41,14 +41,13 @@ https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 Python 3.7 for automation
 
 ## On Linux
-install arrayfire using linux package
-
-move to /opt/arrayfire
+install arrayfire compile
+to /opt/arrayfire follow instructions
 
 install clang
 
-install libstdc++
+install libstdc++ libstd++abi-dev
 
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
-echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
+echo -e "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:$AF_PATH/lib'" >> $HOME/.bashrc
