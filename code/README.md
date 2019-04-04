@@ -24,6 +24,9 @@ Install nano set AF_PATH
 Startup script docker
 setup ssh  then git pull on start cd in to directory remove copying move docker stuff into separate folder
 
+curl https://sh.rustup.rs -sSf | sh
+
+
 ## On mac
 brew install opencv llvm (need clang-7) glfw
 
@@ -40,7 +43,7 @@ install arrayfire using osx package
 https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 
 ## On Linux
-install arrayfire using linux package
+build arrayfire
 
 move to /opt/arrayfire
 
@@ -50,7 +53,7 @@ install libstdc++
 
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
-echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
+echo -e "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/opt/arrayfire/lib64'" >> $HOME/.bashrc
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
