@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-
+from typing import Tuple, List
+def data_clean(file: str) -> Tuple[List[float], List[float]]
 with open(sys.argv[1]) as f:
     data = f.readlines()
 data = list(map(lambda s: s.replace('\n', '').split(',')[:-1], data))
