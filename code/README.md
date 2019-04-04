@@ -44,14 +44,9 @@ https://arrayfire.s3.amazonaws.com/3.6.2/ArrayFire-v3.6.2_OSX_x86_64.pkg
 Python 3.7 for automation
 
 ## On Linux
-<<<<<<< HEAD
 build arrayfire
 
 move to /opt/arrayfire
-=======
-install arrayfire compile
-to /opt/arrayfire follow instructions
->>>>>>> 12ecb3085f1d094ecd9e280233ccf96470307a61
 
 install clang
 
@@ -59,15 +54,10 @@ install libstdc++ libstd++abi-dev
 
 echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
 
-<<<<<<< HEAD
-echo -e "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/opt/arrayfire/lib64'" >> $HOME/.bashrc
-=======
 ldconfig to config library cache
 echo -e "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:$AF_PATH/lib'" >> $HOME/.bashrc
->>>>>>> 12ecb3085f1d094ecd9e280233ccf96470307a61
 
 https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
 https://elinux.org/Jetson/Installing_ArrayFire#Install
-
