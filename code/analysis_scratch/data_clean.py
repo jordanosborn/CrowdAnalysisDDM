@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
 import sys
-from typing import Tuple, List
+from typing import List, Tuple
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def data_open(file: str) -> Tuple[List[float], List[float], List[List[float]]]:
