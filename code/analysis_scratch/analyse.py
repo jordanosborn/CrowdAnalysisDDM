@@ -18,7 +18,7 @@ def get_fit(f, x, y):
 
 
 def create_plot(path: str):
-    print(path)
+    video_name = path.split("/")[2]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
     data = []
@@ -28,10 +28,10 @@ def create_plot(path: str):
         y_data = np.array(y)
         y_max = np.max(y_data)
         fit = get_fit(func, x_data, y_data / y_max)
-        fit = [fit[0] * y_max, fit[1], fit[2] * y_max]
+        fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
         plt.title(
-            f"Plot of Intensity difference (normalised by I_max) for q={q} against frame difference tau"
+            f"Plot of Intensity difference ({video_name}) for q={q} against frame difference tau"
         )
         plt.ylabel(f"I(q={q}, tau)")
         plt.xlabel("tau")
@@ -45,21 +45,25 @@ def create_plot(path: str):
         plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
 
     # # Save raw fit data
-    
+    with open(path + "/fit_data.csv") as f:
+        f.write("q, (a, b, c)\n")
+        for q, (a, b, c) in zip(index, data):
+            f.write(f"{q}, ({a}, {b}, {c})\n")
 
-    # plt.title(
-    #         f"Plot of Intensity difference (normalised by I_max) for q={q} against frame difference tau"
-    #     )
-    # plt.ylabel(f"I(q={q}, tau)")
-    # plt.xlabel("tau")
-    # plt.plot(x_data, y_data, label="data")
-    # plt.plot(
-    #     x_data,
-    #     func(x_data, *fit),
-    #     label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
-    # )
-    # plt.legend(loc="upper left")
-    # plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
+    # save log tau_c vs log q
+    tau_c = np.array(map(lambda x: x[1], data))
+    q = np.array(index)
+    plt.title("")
+    plt.ylabel(f"I(q={q}, tau)")
+    plt.xlabel("tau")
+    plt.plot(x_data, y_data, label="data")
+    plt.plot(
+        x_data,
+        func(x_data, *fit),
+        label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
+    )
+    plt.legend(loc="upper left")
+    plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
 
 
 # TODO: save csv with tau_c vs q for chosen video
@@ -73,6 +77,7 @@ if __name__ == "__main__":
         print(output)
         for path in output:
             create_plot(path)
+            input()
 
     # index, x_data, Y = data_open(argv[1])
     # x_data = np.array(x_data, dtype=np.float)
