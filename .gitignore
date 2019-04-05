@@ -19,7 +19,7 @@ gen
 *.out
 *.xml
 code/target/*
-*.png
+
 code/*.jpg
 *.rar
 code/venv/*
