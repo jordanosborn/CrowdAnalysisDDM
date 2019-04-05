@@ -7,6 +7,7 @@ from scipy.optimize import curve_fit
 from multiprocessing import Pool, cpu_count
 import os
 from twilio.rest import Client
+from typing import Any
 
 
 def send_message(secrets: Any, body: str):
