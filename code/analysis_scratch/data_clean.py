@@ -7,7 +7,7 @@ import numpy as np
 
 
 def data_open(file: str) -> Tuple[List[float], List[float], List[List[float]]]:
-    with open(sys.argv[1]) as f:
+    with open(file) as f:
         data = f.readlines()
     data = list(map(lambda s: s.replace("\n", "").split(",")[:-1], data))
     X = None
