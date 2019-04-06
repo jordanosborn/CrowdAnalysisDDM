@@ -227,7 +227,9 @@ pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
+    tiling_range: Option<(usize, usize)>,
     filename: Option<String>,
+    output_dir: Option<String>,
 ) {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
