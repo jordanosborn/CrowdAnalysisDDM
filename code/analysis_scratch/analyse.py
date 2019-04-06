@@ -102,3 +102,5 @@ if __name__ == "__main__":
                     secrets["twilio"],
                     f"Completed approximately {round(i * 100 / len(directories))}%.",
                 )
+    elif os.path.isfile(argv[1]) and argv[1].find(".csv") != -1:
+        analyse(argv[1].replace("/radial_Avg.csv"))
