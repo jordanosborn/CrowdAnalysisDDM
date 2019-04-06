@@ -1,10 +1,12 @@
 import cv2
 import numpy as np
 
+t = 0
 dt = 0.1
 fps = 2 / dt
 N = 1000
 L = 800
+mu = 0
 sigma = 3
 frames = 200
 
@@ -14,8 +16,8 @@ dL = 10
 
 def brownian():
     return zip(
-        np.sqrt(dt) * sigma * np.random.normal(0.0, sigma, N),
-        np.sqrt(dt) * sigma * np.random.normal(0.0, sigma, N),
+        np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
+        np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
     )
 
 
@@ -25,12 +27,8 @@ class particle:
         self.y = np.random.uniform(dL, L - dL)
 
     def update(self, dx, dy):
-        new_x = self.x + dx
-        new_y = self.y + dy
-        if dL < new_x < L - dL:
-            self.x = new_x
-        if dL < new_y < L - dL:
-            self.y = new_y
+        self.x = (self.x + dx) % L
+        self.y = (self.y + dy) % L
 
 
 if __name__ == "__main__":
@@ -51,6 +49,7 @@ if __name__ == "__main__":
             img[px + 1][py - 1] = WHITE
             img[px - 1][py + 1] = WHITE
             p.update(*d)
+        t += dt
         video.write(img)
     cv2.destroyAllWindows()
     video.release()
