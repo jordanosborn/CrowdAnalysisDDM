@@ -98,4 +98,7 @@ if __name__ == "__main__":
         for i, v in enumerate(directories):
             analyse(v)
             if i % 10 == 0:
-                send_message(secrets["twilio"], f"Completed approximately {round(i * 100 / len(directories))}%.")
+                send_message(
+                    secrets["twilio"],
+                    f"Completed approximately {round(i * 100 / len(directories))}%.",
+                )
