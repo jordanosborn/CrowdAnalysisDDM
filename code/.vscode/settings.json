@@ -7,6 +7,7 @@
         "clippy",
         "cmat",
         "consts",
+        "dtype",
         "gp",
         "gplt",
         "highgui",
@@ -23,7 +24,9 @@
         "scipy",
         "twilio",
         "vidstream",
-        "window"
+        "window",
+        "xlabel",
+        "ylabel"
     ],
     "files.associations": {
         "clocale": "cpp",

@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 import sys
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 
-def data_open(file: str) -> Tuple[List[float], List[float], List[List[float]]]:
-    with open(sys.argv[1]) as f:
-        data = f.readlines()
-    data = list(map(lambda s: s.replace("\n", "").split(",")[:-1], data))
+def data_open(file: str) -> Tuple[List[float], Optional[List[float]], List[List[float]]]:
+    with open(file) as f:
+        raw_data = f.readlines()
+    data: List[List[str]] = list(map(lambda s: s.replace("\n", "").split(",")[:-1], raw_data))
     X = None
-    index = data[0]
+    index = list(map(float, data[0]))
     data = data[1:]
     cleaned = []
     for d in data:
