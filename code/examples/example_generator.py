@@ -6,8 +6,12 @@ WHITE = (255, 255, 255)
 
 def brownian(N, t, mu, sigma, dt=0.1):
     return zip(
-        np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
-        np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
+        np.sqrt(dt)
+        * sigma
+        * np.random.normal(mu * t, sigma * (t ** 2 if mu != 0 else 1), N),
+        np.sqrt(dt)
+        * sigma
+        * np.random.normal(mu * t, sigma * (t ** 2 if mu != 0 else 1), N),
     )
 
 
@@ -32,16 +36,18 @@ if __name__ == "__main__":
         img = np.zeros((L, L, 3), np.uint8)
         delta = brownian(N, t, mu, sigma, dt)
         for p, d in zip(particles, delta):
-            px, py = int(p.x), int(p.y)
+            px, py = int(p.x) % L, int(p.y) % L
+            px_p1, py_p1 = (px + 1) % L, (py + 1) % L
+            px_m1, py_m1 = (px - 1) % L, (py - 1) % L
             img[px][py] = WHITE
-            img[px + 1][py] = WHITE
-            img[px][py + 1] = WHITE
-            img[px + 1][py + 1] = WHITE
-            img[px - 1][py] = WHITE
-            img[px][py - 1] = WHITE
-            img[px - 1][py - 1] = WHITE
-            img[px + 1][py - 1] = WHITE
-            img[px - 1][py + 1] = WHITE
+            img[px_p1][py] = WHITE
+            img[px][py_p1] = WHITE
+            img[px_p1][py_p1] = WHITE
+            img[px_m1][py] = WHITE
+            img[px][py_m1] = WHITE
+            img[px_m1][py_m1] = WHITE
+            img[px_p1][py_m1] = WHITE
+            img[px_m1][py_p1] = WHITE
             p.update(L, *d)
         t += dt
         video.write(img)
