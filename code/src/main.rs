@@ -69,6 +69,14 @@ fn main() {
             tiling_range,
             filename,
             output_dir,
+        })
+        | What::CameraMultiDDM(MultiDDMArgs {
+            stream_id,
+            capacity,
+            annuli_spacing,
+            tiling_range,
+            filename,
+            output_dir,
         }) => {
             ddm::multi_ddm(
                 stream_id,

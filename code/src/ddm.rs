@@ -270,7 +270,7 @@ pub fn multi_ddm(
                     if let Some(dim) = odim {
                         match tx.send(Some(value.data)) {
                             Ok(_) => {
-                                println!("ft {} - complete!", counter);
+                                println!("Image capture {} - complete!", counter);
                             }
                             Err(_) => {
                                 println!("Failed to send frame!");

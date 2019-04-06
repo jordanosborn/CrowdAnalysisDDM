@@ -21,6 +21,7 @@ pub enum What {
     DDM(DDMArgs),
     CameraDDM(DDMArgs),
     MultiDDM(MultiDDMArgs),
+    CameraMultiDDM(MultiDDMArgs),
     PROCESS(Option<String>),
     RETRANSPOSE(String, String),
     OTHER,
@@ -121,12 +122,32 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 output_dir: None,
             })
         }
-        [_, command, capacity] if command == "camera-ddm" => What::CameraDDM(DDMArgs {
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, output_dir]
+            if command == "camera-multi-ddm" =>
+        {
+            What::MultiDDM(MultiDDMArgs {
+                stream_id: Some(opencv::start_camera_capture_safe()),
+                capacity: Some(capacity.parse::<usize>().unwrap()),
+                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                tiling_range: Some((tiling_min.parse().unwrap(), tiling_max.parse().unwrap())),
+                filename: None,
+                output_dir: if !std::path::Path::new(output_dir).exists() {
+                    Some(output_dir.to_owned())
+                } else {
+                    panic!("Output directory already exists!")
+                },
+            })
+        }
+        [_, command, capacity, output] if command == "camera-ddm" => What::CameraDDM(DDMArgs {
             stream_id: Some(opencv::start_camera_capture_safe()),
             capacity: Some(capacity.parse::<usize>().unwrap()),
             annuli_spacing: None,
             filename: None,
-            output: None,
+            output: if !std::path::Path::new(output).exists() {
+                Some(output.to_owned())
+            } else {
+                panic!("Output file already exists!")
+            },
         }),
         _ => What::OTHER,
     }
