@@ -4,10 +4,13 @@ from sys import argv
 from matplotlib import pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
-from multiprocessing import Pool, cpu_count
 import os
 from twilio.rest import Client
-from typing import Any
+from typing import Any, List
+import json
+
+with open("secrets.json") as f:
+    secrets = json.loads(f.read())
 
 
 def send_message(secrets: Any, body: str):
@@ -45,22 +48,22 @@ def analyse(path: str):
         fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
         # TODO: IS necessary ???
-        # plt.title(
-        #     f"Plot of Intensity delta ({video_name}) for q={q} vs frame difference tau"
-        # )
-        # plt.ylabel(f"I(q={q}, tau)")
-        # plt.xlabel("tau")
-        # plt.plot(x_data, y_data, label="data")
-        # plt.plot(
-        #     x_data,
-        #     func(x_data, *fit),
-        #     label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
-        # )
-        # plt.legend(loc="upper left")
-        # if i % 10 == 0:
-        #     print(f"{round(100 * i/len(index), 0)}% complete.")
-        # plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
-        # plt.close()
+        plt.title(
+            f"Plot of Intensity delta ({video_name}) for q={q} vs frame difference tau"
+        )
+        plt.ylabel(f"I(q={q}, tau)")
+        plt.xlabel("tau")
+        plt.plot(x_data, y_data, label="data")
+        plt.plot(
+            x_data,
+            func(x_data, *fit),
+            label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
+        )
+        plt.legend(loc="upper left")
+        if i % 10 == 0:
+            print(f"{round(100 * i/len(index), 0)}% complete.")
+        plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
+        plt.close()
 
     # # Save raw fit data
     with open(path + "/fit_data.csv", "w") as f:
@@ -82,11 +85,13 @@ def analyse(path: str):
 # TODO: save csv with tau_c vs q for chosen video
 if __name__ == "__main__":
     if os.path.isdir(argv[1]):
-        files = []
+        files: List[str] = []
         for (dirpath, dirnames, filenames) in os.walk(argv[1]):
             files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
         files = list(filter(lambda s: s.find("radial_Avg.csv") != -1, files))
         directories = list(map(lambda s: s.replace("/radial_Avg.csv", ""), files))
         analyse(directories[0])
-        pool = Pool(cpu_count() - 1 or 1)
-        pool.map(analyse, directories)
+        for i, v in enumerate(directories):
+            analyse(v)
+            if i % 10 == 0:
+                send_message(secrets["twilio"], f"Completed approximately {round(i * 100 / len(directories))}%.")
