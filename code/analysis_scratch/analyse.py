@@ -29,8 +29,12 @@ def func(x, a, b, c):
 
 
 def get_fit(f, x, y):
-    fit, _ = curve_fit(func, x, y, bounds=([-np.inf, 0.0, -np.inf], np.inf))
-    return fit
+    try:
+        fit, _ = curve_fit(func, x, y, bounds=([-np.inf, 0.0, -np.inf], np.inf))
+    except RuntimeError:
+        return [0.0, 1.0, 0.0]
+    else:
+        return fit
 
 
 def analyse(path: str):
