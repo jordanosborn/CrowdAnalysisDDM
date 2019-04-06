@@ -5,55 +5,12 @@ use rayon::prelude::*;
 use std::collections::VecDeque;
 use std::sync::mpsc;
 
+use super::common::*;
 use crate::fft_shift;
 use crate::operations;
 use crate::operations::Data;
 use crate::utils::get_closest_power;
 use crate::{RawFtType, RawType};
-
-fn ddm(
-    accumulator: Option<VecDeque<arrayfire::Array<crate::RawType>>>,
-    data: &VecDeque<arrayfire::Array<crate::RawFtType>>,
-) -> Option<VecDeque<arrayfire::Array<crate::RawType>>> {
-    match accumulator {
-        Some(acc) => {
-            let mut data_slice = data.clone();
-            let ft0 = data_slice.pop_front().unwrap();
-            Some(
-                data_slice
-                    .par_iter()
-                    .zip(acc.par_iter())
-                    .map(|(i, a)| {
-                        //TODO: WTF why does this work when loc is added below???! panics at t0 = 47 ??????
-                        //This works on mac mini
-                        arrayfire::imin_all(a);
-                        a + operations::difference(i, &ft0)
-                    })
-                    .collect::<VecDeque<arrayfire::Array<crate::RawType>>>(),
-            )
-        }
-        None => {
-            let mut data_slice = data.clone();
-            let ft0 = data_slice.pop_front().unwrap();
-            Some(
-                data_slice
-                    .par_iter()
-                    .enumerate()
-                    .map(|(_, x)| operations::difference(x, &ft0))
-                    .collect::<VecDeque<arrayfire::Array<crate::RawType>>>(),
-            )
-        }
-    }
-}
-
-enum Signal {
-    KILL,
-}
-
-type IndexedData = (
-    Vec<crate::RawType>,
-    Vec<Vec<(crate::RawType, crate::RawType)>>,
-);
 
 pub fn single_ddm(
     id: Option<usize>,
@@ -219,81 +176,4 @@ pub fn single_ddm(
         println!("Invalid arguments supplied!");
     }
     data_out
-}
-
-//TODO: implement this!
-#[allow(unused_variables)]
-pub fn multi_ddm(
-    id: Option<usize>,
-    capacity: Option<usize>,
-    annuli_spacing: Option<usize>,
-    tiling_range: Option<(usize, usize)>,
-    filename: Option<String>,
-    output_dir: Option<String>,
-) {
-    let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
-    let (stx, srx) = mpsc::channel::<Signal>();
-    let (annuli_tx, annuli_rx) =
-        mpsc::channel::<Vec<(crate::RawType, arrayfire::Array<crate::RawType>)>>();
-
-    let mut odim: Option<i64> = None;
-
-    let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
-
-    if let Some(id) = id {
-        let output_dir = if let Some(v) = filename {
-            v
-        } else {
-            String::from("camera")
-        };
-        println!("Analysis of {} stream started!", &output_dir);
-        let fps = opencv::fps(id);
-        let frame_count = opencv::frame_count(id);
-
-        let capacity = if let Some(c) = capacity { c } else { fps };
-
-        println!(
-            "Video is about {} seconds long, containing {} frames!",
-            (frame_count as f64) / (fps as f64),
-            frame_count
-        );
-        let mut counter = 1u32;
-        let stream_thread = std::thread::spawn(move || loop {
-            let frame = opencv::GrayImage::get_frame(id);
-            match frame {
-                None => match tx.send(None) {
-                    _ => {
-                        break;
-                    }
-                },
-                Some(value) => {
-                    if let Some(dim) = odim {
-                        match tx.send(Some(value.data)) {
-                            Ok(_) => {
-                                println!("Image capture {} - complete!", counter);
-                            }
-                            Err(_) => {
-                                println!("Failed to send frame!");
-                            }
-                        }
-                        counter += 1;
-                    } else {
-                        let n = std::cmp::max(value.cols, value.rows);
-                        odim = Some(get_closest_power(n as i64));
-                        match annuli_tx
-                            .send(operations::generate_annuli(n as u64, annuli_spacing as u64))
-                        {
-                            Ok(_) => println!("Generated annuli!"),
-                            Err(e) => {
-                                panic!("Failed to generate annuli - {}!", e);
-                            }
-                        }
-                    }
-                }
-            }
-            if let Ok(Signal::KILL) = srx.try_recv() {
-                break;
-            }
-        });
-    }
 }
