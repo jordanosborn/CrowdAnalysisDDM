@@ -1,20 +1,10 @@
 import cv2
 import numpy as np
 
-t = 0
-dt = 0.1
-fps = 2 / dt
-N = 1000
-L = 800
-mu = 0
-sigma = 3
-frames = 200
-
 WHITE = (255, 255, 255)
-dL = 10
 
 
-def brownian():
+def brownian(N, t, mu, sigma, dt=0.1):
     return zip(
         np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
         np.sqrt(dt) * sigma * np.random.normal(mu * t, sigma, N),
@@ -22,21 +12,25 @@ def brownian():
 
 
 class particle:
-    def __init__(self):
+    def __init__(self, L, dL=10):
         self.x = np.random.uniform(dL, L - dL)
         self.y = np.random.uniform(dL, L - dL)
 
-    def update(self, dx, dy):
+    def update(self, L, dx, dy):
         self.x = (self.x + dx) % L
         self.y = (self.y + dy) % L
 
 
 if __name__ == "__main__":
+    t, dt = 0, 0.1
+    fps, frames = 2 / dt, 200
+    N, L, dL = 1000, 800, 10
+    mu, sigma = 0, 3
     video = cv2.VideoWriter("out.avi", cv2.VideoWriter_fourcc(*"H264"), fps, (L, L))
-    particles = map(lambda _: particle(), range(N))
+    particles = map(lambda _: particle(L, dL), range(N))
     for _ in range(frames):
         img = np.zeros((L, L, 3), np.uint8)
-        delta = brownian()
+        delta = brownian(N, t, mu, sigma, dt)
         for p, d in zip(particles, delta):
             px, py = int(p.x), int(p.y)
             img[px][py] = WHITE
@@ -48,7 +42,7 @@ if __name__ == "__main__":
             img[px - 1][py - 1] = WHITE
             img[px + 1][py - 1] = WHITE
             img[px - 1][py + 1] = WHITE
-            p.update(*d)
+            p.update(L, *d)
         t += dt
         video.write(img)
     cv2.destroyAllWindows()

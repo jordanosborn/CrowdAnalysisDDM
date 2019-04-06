@@ -23,6 +23,7 @@
         "retranspose",
         "scipy",
         "twilio",
+        "uint",
         "vidstream",
         "window",
         "xlabel",
