@@ -86,7 +86,6 @@ def analyse(path: str):
     plt.close()
 
 
-# TODO: save csv with tau_c vs q for chosen video
 if __name__ == "__main__":
     if os.path.isdir(argv[1]):
         files: List[str] = []
