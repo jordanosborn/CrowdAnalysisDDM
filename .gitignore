@@ -24,9 +24,8 @@ code/*.jpg
 *.rar
 code/venv/*
 *.gplt
-*.avi
-*.mp4
-*.m4v
+code/videos/*
+
 *.tiff
 code/old_videos
 code/videos/*

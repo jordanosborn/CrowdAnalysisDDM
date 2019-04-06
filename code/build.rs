@@ -57,7 +57,15 @@ fn build(src_files: Vec<&str>, output: &str) {
 
 fn get_opencv_flags() -> String {
     let opencv = Command::new("pkg-config")
-        .args(&["--cflags", "--libs", if cfg!(target_os= "linux" ) {"opencv"} else {"opencv4"}])
+        .args(&[
+            "--cflags",
+            "--libs",
+            if cfg!(target_os = "linux") {
+                "opencv"
+            } else {
+                "opencv4"
+            },
+        ])
         .output()
         .expect("failed to execute process");
     unsafe { String::from_utf8_unchecked(opencv.stdout) }

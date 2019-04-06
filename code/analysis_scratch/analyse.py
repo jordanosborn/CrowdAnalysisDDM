@@ -86,7 +86,6 @@ def analyse(path: str):
     plt.close()
 
 
-# TODO: save csv with tau_c vs q for chosen video
 if __name__ == "__main__":
     if os.path.isdir(argv[1]):
         files: List[str] = []
@@ -102,3 +101,5 @@ if __name__ == "__main__":
                     secrets["twilio"],
                     f"Completed approximately {round(i * 100 / len(directories))}%.",
                 )
+    elif os.path.isfile(argv[1]) and argv[1].find(".csv") != -1:
+        analyse(argv[1].replace("/radial_Avg.csv", ""))
