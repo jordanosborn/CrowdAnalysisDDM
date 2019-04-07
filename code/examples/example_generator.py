@@ -1,7 +1,7 @@
 import cv2
 import sys
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple, Iterator
 
 WHITE = (255, 255, 255)
 
@@ -23,14 +23,26 @@ def set_particle(img: np.array, L: int, location: Tuple[int, int]) -> np.array:
     return img
 
 
-def brownian(N, t, mu: Tuple[float, float], sigma: Tuple[float, float], dt=0.1):
+def brownian(
+    N: int,
+    t: float,
+    mu: Tuple[float, float],
+    sigma: Tuple[float, float],
+    dt: float = 0.1,
+) -> Iterator[Tuple[np.array, np.array]]:
     return zip(
         np.sqrt(dt) * sigma[0] * np.random.normal(mu[0], sigma[0], N),
         np.sqrt(dt) * sigma[1] * np.random.normal(mu[1], sigma[1], N),
     )
 
 
-def brownian_drift(N, t, mu: Tuple[float, float], sigma: Tuple[float, float], dt=0.1):
+def brownian_drift(
+    N: int,
+    t: float,
+    mu: Tuple[float, float],
+    sigma: Tuple[float, float],
+    dt: float = 0.1,
+) -> Iterator[Tuple[np.array, np.array]]:
     return zip(
         np.sqrt(dt) * sigma[0] * np.random.normal(mu[0] * t, sigma[0] * t ** 2, N),
         np.sqrt(dt) * sigma[1] * np.random.normal(mu[1] * t, sigma[1] * t ** 2, N),
@@ -38,11 +50,11 @@ def brownian_drift(N, t, mu: Tuple[float, float], sigma: Tuple[float, float], dt
 
 
 class particle:
-    def __init__(self, L, dL=10):
+    def __init__(self, L: int, dL: int = 10):
         self.x = np.random.uniform(dL, L - dL)
         self.y = np.random.uniform(dL, L - dL)
 
-    def update(self, L, dx, dy):
+    def update(self, L: int, dx: float, dy: float):
         self.x = self.x + dx
         self.y = self.y + dy
 
@@ -51,13 +63,13 @@ if __name__ == "__main__":
     t, dt = 0, 0.1
     fps, frames = 2 / dt, 200
     N, L, dL = 1000, 800, 10
-    mu_x, mu_y = 0, 1
-    sigma_x, sigma_y = 1, 1
+    mu_x, mu_y = 0, 0
+    sigma_x, sigma_y = 5, 5
     video = cv2.VideoWriter(sys.argv[1], cv2.VideoWriter_fourcc(*"H264"), fps, (L, L))
-    particles = list(map(lambda _: particle(L, dL), range(N)))
+    particles = [particle(L, dL) for _ in range(N)]
     for _ in range(frames):
         img = np.zeros((L, L, 3), np.uint8)
-        delta = list(brownian(N, t, (mu_x, mu_y), (sigma_x, sigma_y), dt))
+        delta = brownian(N, t, (mu_x, mu_y), (sigma_x, sigma_y), dt)
         for p, d in zip(particles, delta):
             px, py = int(p.x), int(p.y)
             img = set_particle(img, L, (px, py))
