@@ -38,7 +38,7 @@ def get_fit(f, x, y, bounds):
         return fit
 
 
-def analyse(path: str, function: Callable[Any], bounds):
+def analyse(path: str, function: Callable[[Any], float], bounds):
     video_name = path.split("/")[2]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
