@@ -68,12 +68,13 @@ def analyse(path: str):
             print(f"{round(100 * i/len(index), 0)}% complete.")
         plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
         plt.close()
-
+    print(f"100% complete.")
     # # Save raw fit data
     with open(path + "/fit_data.csv", "w") as f:
         f.write("q, (a, b, c)\n")
-        for q, (a, b, c) in zip(index, data):
-            f.write(f"{q}, ({a}, {b}, {c})\n")
+        for q, d in zip(index, data):
+            params = f"({','.join(map(str, d))})"
+            f.write(f"{q}, {params}\n")
 
     # save log tau_c vs log q
     tau_c = np.log(np.array(list(map(lambda x: x[1], data))))
@@ -102,4 +103,28 @@ if __name__ == "__main__":
                     f"Completed approximately {round(i * 100 / len(directories))}%.",
                 )
     elif os.path.isfile(argv[1]) and argv[1].find(".csv") != -1:
-        analyse(argv[1].replace("/radial_Avg.csv", ""))
+        print("Errors are not checked!")
+        params = input(  # nosec
+            "Comma spaced parameter list with range e.g.  A(0: np.inf)?"
+        )
+        params = params.replace(" ", "").replace("\t", "").split(",")
+        bounds = {}
+        for p in params:
+            name, values = p.replace(")", "").split("(")
+            bounds[name] = tuple(map(eval, values.split(":")))
+        independent_vars = input(  # nosec
+            "Please enter comma separated list of independent variable names? "
+        ).split(",")
+        independent_vars = list(
+            filter(
+                lambda s: s != "",
+                map(lambda s: s.replace(" ", "").replace("\t", ""), independent_vars),
+            )
+        )
+        function = input("Please enter function to fit to using params? ")  # nosec
+        print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function}")
+        if input("Are these correct (y/n)? ").strip() == "y":  # nosec
+
+            analyse(argv[1].replace("/radial_Avg.csv", ""))
+        else:
+            print("Try again!")
