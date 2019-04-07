@@ -8,6 +8,7 @@ import os
 from twilio.rest import Client
 from typing import Any, List
 import json
+from collections import OrderedDict
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -28,27 +29,29 @@ def func(x, a, b, c):
     return a * np.exp(-x / b) + c
 
 
-def get_fit(f, x, y):
+def get_fit(f, x, y, bounds):
     try:
-        fit, _ = curve_fit(func, x, y, bounds=([-np.inf, 0.0, -np.inf], np.inf))
+        fit, _ = curve_fit(func, x, y, bounds=(bounds[0], bounds[1]))
     except RuntimeError:
         return [0.0, 1.0, 0.0]
     else:
         return fit
 
 
-def analyse(path: str):
+def analyse(path: str, function, bounds):
     video_name = path.split("/")[2]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
     data = []
 
+    bounds = ([v[0] for _, v in bounds.items()], [v[1] for _, v in bounds.items()])
+    print(bounds)
     # Save all plots of I vs tau for each q
     for i, v in enumerate(zip(index, Y)):
         q, y = v
         y_data = np.array(y)
         y_max = np.max(y_data)
-        fit = get_fit(func, x_data, y_data / y_max)
+        fit = get_fit(func, x_data, y_data / y_max, bounds)
         fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
         # TODO: IS necessary ???
@@ -94,9 +97,21 @@ if __name__ == "__main__":
             files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
         files = list(filter(lambda s: s.find("radial_Avg.csv") != -1, files))
         directories = list(map(lambda s: s.replace("/radial_Avg.csv", ""), files))
-        analyse(directories[0])
+        analyse(
+            directories[0],
+            func,
+            OrderedDict(
+                {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
+            ),
+        )
         for i, v in enumerate(directories):
-            analyse(v)
+            analyse(
+                v,
+                func,
+                OrderedDict(
+                    {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
+                ),
+            )
             if i % 10 == 0:
                 send_message(
                     secrets["twilio"],
@@ -105,10 +120,10 @@ if __name__ == "__main__":
     elif os.path.isfile(argv[1]) and argv[1].find(".csv") != -1:
         print("Errors are not checked!")
         params = input(  # nosec
-            "Comma spaced parameter list with range e.g.  A(0: np.inf)?"
+            "Comma spaced parameter list with range e.g.  A(0: np.inf)? "
         )
         params = params.replace(" ", "").replace("\t", "").split(",")
-        bounds = {}
+        bounds = OrderedDict()
         for p in params:
             name, values = p.replace(")", "").split("(")
             bounds[name] = tuple(map(eval, values.split(":")))
@@ -124,7 +139,10 @@ if __name__ == "__main__":
         function = input("Please enter function to fit to using params? ")  # nosec
         print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function}")
         if input("Are these correct (y/n)? ").strip() == "y":  # nosec
-
-            analyse(argv[1].replace("/radial_Avg.csv", ""))
+            # TODO:
+            function = eval(
+                f"lambda {','.join(independent_vars)}, {','.join(bounds.keys())}: {function}"
+            )
+            analyse(argv[1].replace("/radial_Avg.csv", ""), function, bounds)
         else:
             print("Try again!")
