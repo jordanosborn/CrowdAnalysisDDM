@@ -33,7 +33,7 @@ def get_fit(f, x, y, bounds):
     try:
         fit, _ = curve_fit(func, x, y, bounds=(bounds[0], bounds[1]))
     except RuntimeError:
-        return [np.nan] * len(list(bounds.keys()))
+        return [np.nan] * len(bounds[0])
     else:
         return fit
 
@@ -43,7 +43,7 @@ def analyse(path: str, function: Callable[[Any], float], bounds):
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
     data = []
-
+    parameters = list(bounds.keys())
     bounds = ([v[0] for _, v in bounds.items()], [v[1] for _, v in bounds.items()])
     # Save all plots of I vs tau for each q
     for i, v in enumerate(zip(index, Y)):
@@ -73,7 +73,7 @@ def analyse(path: str, function: Callable[[Any], float], bounds):
     print(f"100% complete.")
     # # Save raw fit data
     with open(path + "/fit_data.csv", "w") as f:
-        f.write(f"q, ({', '.join(bounds.keys())})\n")
+        f.write(f"q, ({', '.join(parameters)})\n")
         for q, d in zip(index, data):
             params = f"({','.join(map(str, d))})"
             f.write(f"{q}, {params}\n")
