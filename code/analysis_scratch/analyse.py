@@ -58,7 +58,6 @@ def analyse(
         fit = get_fit(function, x_data, y_data, bounds)
         # fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
-        # TODO: IS necessary ???
         plt.title(
             f"Plot of Intensity delta ({video_name}) for q={q} vs frame difference tau"
         )
@@ -68,7 +67,6 @@ def analyse(
         plt.plot(
             x_data,
             func(x_data, *fit),
-            # TODO: label change for function
             label=f"fit f(tau) = {function_string.replace('np.', '')} with {', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(parameters, map(lambda s: round(s, 2), fit))))}",
         )
         plt.legend(loc="upper left")
