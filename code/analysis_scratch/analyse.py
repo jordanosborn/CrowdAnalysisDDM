@@ -149,7 +149,6 @@ if __name__ == "__main__":
         )
         print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function_string}")
         if input("Are these correct (y/n)? ").strip() == "y":  # nosec
-            # TODO:
             function = eval(
                 f"lambda {','.join(independent_vars)}, {','.join(bounds.keys())}: {function_string}"
             )
