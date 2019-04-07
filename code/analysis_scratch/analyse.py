@@ -38,8 +38,8 @@ def get_fit(f, x, y, bounds):
         return fit
 
 
-def analyse(path: str, function: Callable[[Any], float], bounds):
-    video_name = path.split("/")[2]
+def analyse(path: str, function: Callable[[Any], float], bounds, plot_param: int):
+    video_name = list(filter(lambda s: s != "", path.split("/")))[-1]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
     data = []
@@ -79,7 +79,7 @@ def analyse(path: str, function: Callable[[Any], float], bounds):
             f.write(f"{q}, {params}\n")
 
     # save log tau_c vs log q
-    tau_c = np.log(np.array(list(map(lambda x: x[1], data))))
+    tau_c = np.log(np.array(list(map(lambda x: x[plot_param], data))))
     q = np.log(np.array(index, dtype=np.float))
     plt.title(f"log(tau_c) vs log(q) for {video_name}")
     plt.ylabel("log(tau_c)")
@@ -102,6 +102,7 @@ if __name__ == "__main__":
             OrderedDict(
                 {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
             ),
+            1,
         )
         for i, v in enumerate(directories):
             analyse(
@@ -110,6 +111,7 @@ if __name__ == "__main__":
                 OrderedDict(
                     {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
                 ),
+                1,
             )
             if i % 10 == 0:
                 send_message(
@@ -136,12 +138,17 @@ if __name__ == "__main__":
             )
         )
         function = input("Please enter function to fit to using params? ")  # nosec
+        plot_param = int(
+            input("Please enter the index (starting 0) of the final plot? ")
+        )
         print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function}")
         if input("Are these correct (y/n)? ").strip() == "y":  # nosec
             # TODO:
             function = eval(
                 f"lambda {','.join(independent_vars)}, {','.join(bounds.keys())}: {function}"
             )
-            analyse(argv[1].replace("/radial_Avg.csv", ""), function, bounds)
+            analyse(
+                argv[1].replace("/radial_Avg.csv", ""), function, bounds, plot_param
+            )
         else:
             print("Try again!")
