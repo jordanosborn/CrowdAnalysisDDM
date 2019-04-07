@@ -6,6 +6,23 @@ from typing import Tuple, List
 WHITE = (255, 255, 255)
 
 
+def set_particle(img: np.array, L: int, location: Tuple[int, int]) -> np.array:
+    px, py = location
+    px_p1, py_p1 = (px + 1) % L, (py + 1) % L
+    px_m1, py_m1 = (px - 1) % L, (py - 1) % L
+    px, py = px % L, py % L
+    img[px][py] = WHITE
+    img[px_p1][py] = WHITE
+    img[px][py_p1] = WHITE
+    img[px_p1][py_p1] = WHITE
+    img[px_m1][py] = WHITE
+    img[px][py_m1] = WHITE
+    img[px_m1][py_m1] = WHITE
+    img[px_p1][py_m1] = WHITE
+    img[px_m1][py_p1] = WHITE
+    return img
+
+
 def brownian(N, t, mu: Tuple[float, float], sigma: Tuple[float, float], dt=0.1):
     return zip(
         np.sqrt(dt) * sigma[0] * np.random.normal(mu[0], sigma[0], N),
@@ -43,18 +60,7 @@ if __name__ == "__main__":
         delta = list(brownian(N, t, (mu_x, mu_y), (sigma_x, sigma_y), dt))
         for p, d in zip(particles, delta):
             px, py = int(p.x), int(p.y)
-            px_p1, py_p1 = (px + 1) % L, (py + 1) % L
-            px_m1, py_m1 = (px - 1) % L, (py - 1) % L
-            px, py = px % L, py % L
-            img[px][py] = WHITE
-            img[px_p1][py] = WHITE
-            img[px][py_p1] = WHITE
-            img[px_p1][py_p1] = WHITE
-            img[px_m1][py] = WHITE
-            img[px][py_m1] = WHITE
-            img[px_m1][py_m1] = WHITE
-            img[px_p1][py_m1] = WHITE
-            img[px_m1][py_p1] = WHITE
+            img = set_particle(img, L, (px, py))
             p.update(L, *d)
         t += dt
         video.write(img)
