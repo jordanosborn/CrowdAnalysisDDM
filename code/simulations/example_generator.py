@@ -36,6 +36,22 @@ def brownian(
     )
 
 
+def geometric_brownian(
+    N: int,
+    t: float,
+    mu: Tuple[float, float],
+    sigma: Tuple[float, float],
+    dt: float = 0.1,
+) -> Iterator[Tuple[np.array, np.array]]:
+    dx = (mu[0] - sigma[0] ** 2 / 2) * dt + np.sqrt(dt) * sigma[0] * np.random.normal(
+        0, 1, N
+    )
+    dy = (mu[1] - sigma[1] ** 2 / 2) * dt + np.sqrt(dt) * sigma[1] * np.random.normal(
+        0, 1, N
+    )
+    return zip(dx, dy)
+
+
 def brownian_drift(
     N: int,
     t: float,
@@ -63,13 +79,13 @@ if __name__ == "__main__":
     t, dt = 0, 0.1
     fps, frames = 2 / dt, 200
     N, L, dL = 1000, 800, 10
-    mu_x, mu_y = 0, 0
-    sigma_x, sigma_y = 5, 5
+    mu_x, mu_y = 5, 0
+    sigma_x, sigma_y = 1, 1
     video = cv2.VideoWriter(sys.argv[1], cv2.VideoWriter_fourcc(*"H264"), fps, (L, L))
     particles = [particle(L, dL) for _ in range(N)]
     for _ in range(frames):
         img = np.zeros((L, L, 3), np.uint8)
-        delta = brownian(N, t, (mu_x, mu_y), (sigma_x, sigma_y), dt)
+        delta = geometric_brownian(N, t, (mu_x, mu_y), (sigma_x, sigma_y), dt)
         for p, d in zip(particles, delta):
             px, py = int(p.x), int(p.y)
             img = set_particle(img, L, (px, py))
