@@ -33,7 +33,7 @@ def get_fit(f, x, y, bounds):
     try:
         fit, _ = curve_fit(func, x, y, bounds=(bounds[0], bounds[1]))
     except RuntimeError:
-        return [0.0, 1.0, 0.0]
+        return [np.nan] * len(list(bounds.keys()))
     else:
         return fit
 
@@ -45,14 +45,12 @@ def analyse(path: str, function, bounds):
     data = []
 
     bounds = ([v[0] for _, v in bounds.items()], [v[1] for _, v in bounds.items()])
-    print(bounds)
     # Save all plots of I vs tau for each q
     for i, v in enumerate(zip(index, Y)):
         q, y = v
         y_data = np.array(y)
-        y_max = np.max(y_data)
-        fit = get_fit(func, x_data, y_data / y_max, bounds)
-        fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
+        fit = get_fit(func, x_data, y_data, bounds)
+        # fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
         # TODO: IS necessary ???
         plt.title(
