@@ -6,7 +6,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import os
 from twilio.rest import Client
-from typing import Any, List
+from typing import Any, List, Callable
 import json
 from collections import OrderedDict
 
@@ -38,7 +38,7 @@ def get_fit(f, x, y, bounds):
         return fit
 
 
-def analyse(path: str, function, bounds):
+def analyse(path: str, function: Callable[Any], bounds):
     video_name = path.split("/")[2]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
@@ -49,7 +49,7 @@ def analyse(path: str, function, bounds):
     for i, v in enumerate(zip(index, Y)):
         q, y = v
         y_data = np.array(y)
-        fit = get_fit(func, x_data, y_data, bounds)
+        fit = get_fit(function, x_data, y_data, bounds)
         # fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
         # TODO: IS necessary ???
@@ -62,6 +62,7 @@ def analyse(path: str, function, bounds):
         plt.plot(
             x_data,
             func(x_data, *fit),
+            # TODO: label change for function
             label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
         )
         plt.legend(loc="upper left")
@@ -72,7 +73,7 @@ def analyse(path: str, function, bounds):
     print(f"100% complete.")
     # # Save raw fit data
     with open(path + "/fit_data.csv", "w") as f:
-        f.write("q, (a, b, c)\n")
+        f.write(f"q, ({', '.join(bounds.keys())})\n")
         for q, d in zip(index, data):
             params = f"({','.join(map(str, d))})"
             f.write(f"{q}, {params}\n")
