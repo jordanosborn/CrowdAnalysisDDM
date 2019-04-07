@@ -38,7 +38,13 @@ def get_fit(f, x, y, bounds):
         return fit
 
 
-def analyse(path: str, function: Callable[[Any], float], bounds, plot_param: int):
+def analyse(
+    path: str,
+    function: Callable[[Any], float],
+    bounds,
+    plot_param: int,
+    function_string="a * np.exp(-x / b) + c",
+):
     video_name = list(filter(lambda s: s != "", path.split("/")))[-1]
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
@@ -63,7 +69,7 @@ def analyse(path: str, function: Callable[[Any], float], bounds, plot_param: int
             x_data,
             func(x_data, *fit),
             # TODO: label change for function
-            label=f"fit {round(fit[0], 2)}*exp(-tau/{round(fit[1], 2)}) + {round(fit[2], 2)}",
+            label=f"fit f(tau) = {function_string.replace('np.', '')} with {', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(parameters, map(lambda s: round(s, 2), fit))))}",
         )
         plt.legend(loc="upper left")
         if i % 10 == 0:
@@ -137,18 +143,24 @@ if __name__ == "__main__":
                 map(lambda s: s.replace(" ", "").replace("\t", ""), independent_vars),
             )
         )
-        function = input("Please enter function to fit to using params? ")  # nosec
-        plot_param = int(
-            input("Please enter the index (starting 0) of the final plot? ")
+        function_string = input(  # nosec
+            "Please enter function to fit to using params? "
         )
-        print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function}")
+        plot_param = int(
+            input("Please enter the index (starting 0) of the final plot? ")  # nosec
+        )
+        print(bounds, "\n", f"f({', '.join(independent_vars)}) = {function_string}")
         if input("Are these correct (y/n)? ").strip() == "y":  # nosec
             # TODO:
             function = eval(
-                f"lambda {','.join(independent_vars)}, {','.join(bounds.keys())}: {function}"
+                f"lambda {','.join(independent_vars)}, {','.join(bounds.keys())}: {function_string}"
             )
             analyse(
-                argv[1].replace("/radial_Avg.csv", ""), function, bounds, plot_param
+                argv[1].replace("/radial_Avg.csv", ""),
+                function,
+                bounds,
+                plot_param,
+                function_string,
             )
         else:
             print("Try again!")
