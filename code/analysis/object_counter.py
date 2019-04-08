@@ -23,6 +23,7 @@ def save_images(video: str, directory: str):
 
 
 # TODO: not the quickest way of doing this
+# TODO: add to db not file
 if __name__ == "__main__":
     video = sys.argv[1]
     if os.path.isfile(video):
