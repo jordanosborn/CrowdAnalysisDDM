@@ -51,7 +51,9 @@ if __name__ == "__main__":
         names = list(
             map(
                 lambda s: "video_"
-                + s.replace("/radial_Avg.csv", "").replace("./results-transposed/", ""),
+                + s.replace("/radial_Avg.csv", "")
+                .replace("./results-transposed/", "")
+                .split(".")[0],
                 files,
             )
         )
@@ -66,11 +68,10 @@ if __name__ == "__main__":
             q, tau_list, I_q_tau = data_open(f)
             if tau_list is not None:
                 tau = ", ".join(map(lambda i: f"tau{int(i)} integer", tau_list))
-
                 with conn:
                     conn.execute(create_table(name, tau))
                 with conn:
                     conn.executemany(*insert(name, q, tau_list, I_q_tau))
-                input()
+                print(f"{name} added!")
             else:
                 continue
