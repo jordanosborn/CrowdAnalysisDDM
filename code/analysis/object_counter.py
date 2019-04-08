@@ -22,7 +22,7 @@ def save_images(video: str, directory: str):
         count += 1
 
 
-# TODO: not the quickest way of docing this
+# TODO: not the quickest way of doing this
 if __name__ == "__main__":
     video = sys.argv[1]
     if os.path.isfile(video):
