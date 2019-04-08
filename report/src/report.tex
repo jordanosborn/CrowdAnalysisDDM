@@ -7,9 +7,12 @@
 \documentclass[11pt]{article}
 
 % Packages
-\usepackage{amsmath}
+\usepackage{amsmath, mathrsfs}
 \usepackage{titling}
-\usepackage{biblatex}
+\usepackage{hyperref}
+\usepackage[sorting=none, backend=bibtex]{biblatex}
+\usepackage{graphicx}
+\nocite{*}
 \addbibresource{report.bib}
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
@@ -17,17 +20,43 @@
 % Document
 \begin{document}
 \begin{titlingpage}
-\maketitle
+    \maketitle
 \end{titlingpage}
+
+
 \clearpage
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
 \author{Supervisor: Professor Pietro Cicuta (pc245)}
 \maketitle
+\section*{Abstract}
 
+\clearpage
+\tableofcontents
+\clearpage
 \section{Introduction}
-Hello world
 
-\printbibliography
+\section{Literature Review}
+
+
+\section{Implementation}
+
+\section{Theory}
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Potential}
+
+\section{Conclusion}
+
+
+\clearpage
+\section{References}
+\printbibliography[heading=none]
+\clearpage
+
+\section{Appendices}
 
 \end{document}
