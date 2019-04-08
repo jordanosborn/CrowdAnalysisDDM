@@ -43,6 +43,8 @@ if __name__ == "__main__":
 
         person_regex = re.compile(r"person: (\d{1,3})%")
         with conn:
+            conn.execute(f"DROP TABLE IF EXISTS count_{name}")
+        with conn:
             conn.execute(
                 f"create table count_{name} (frame integer primary key, count float)"
             )
