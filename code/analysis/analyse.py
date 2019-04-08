@@ -7,8 +7,9 @@ from scipy.optimize import curve_fit
 import os
 from twilio.rest import Client
 from typing import Any, List, Callable, Dict, Tuple
-import json
+import json, sqlite3
 from collections import OrderedDict
+
 
 with open("secrets.json") as f:
     secrets = json.loads(f.read())
@@ -96,6 +97,7 @@ def analyse(
     plt.close()
 
 
+# TODO change this to query db instead
 if __name__ == "__main__":
     if os.path.isdir(argv[1]):
         files: List[str] = []
