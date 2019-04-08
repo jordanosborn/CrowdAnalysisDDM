@@ -13,6 +13,7 @@ pandas = "*"
 scipy = "*"
 sklearn = "*"
 opencv-python = "^4.0"
+imutils = "^0.5.2"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.3"
