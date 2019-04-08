@@ -39,7 +39,7 @@ def plot():
     plt.show()
 
 
-def modify_db(database: str, folder: str, filename: str):
+def modify_db(database: str, folder: str, filename: str, prefix: str="video"):
     conn = sqlite3.connect(database)
     files: List[str] = []
     for (dirpath, _, filenames) in os.walk(folder):
@@ -47,7 +47,7 @@ def modify_db(database: str, folder: str, filename: str):
     files = list(filter(lambda s: s.find(filename) != -1, files))
     names = list(
         map(
-            lambda s: "video_"
+            lambda s: f"{prefix}_"
             + s.replace(f"/{filename}", "").replace(f"./{folder}/", "").split(".")[0],
             files,
         )
