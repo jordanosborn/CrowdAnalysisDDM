@@ -97,7 +97,7 @@ def analyse(
     plt.close()
 
 
-# TODO change this to query db instead
+# TODO: change this to query db instead
 if __name__ == "__main__":
     if os.path.isdir(argv[1]):
         files: List[str] = []
