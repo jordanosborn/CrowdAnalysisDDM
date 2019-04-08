@@ -37,4 +37,4 @@ code/analysis_scratch/test
 *.toc
 *.gz
 report/src/report-blx.bib
-code/darknet
+code/darknet/*
