@@ -46,6 +46,8 @@ if __name__ == "__main__":
             if i % 10 == 0:
                 print(f"{100 * i / len(img_files)}% complete.")
         print(f"Average number of people in each frame ~ {count / len(img_files)}")
+        with open("../person_count.csv", "a") as count_file:
+            count_file.write(f"{name}, {count / len(img_files)}")
         if os.path.isdir("temp"):
             shutil.rmtree("temp")
         os.chdir("..")
