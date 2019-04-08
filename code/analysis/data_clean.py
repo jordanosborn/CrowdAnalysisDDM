@@ -39,39 +39,41 @@ def plot():
     plt.show()
 
 
+def modify_db(database: str, folder: str, filename: str):
+    conn = sqlite3.connect(database)
+    files: List[str] = []
+    for (dirpath, _, filenames) in os.walk(folder):
+        files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
+    files = list(filter(lambda s: s.find(filename) != -1, files))
+    names = list(
+        map(
+            lambda s: "video_"
+            + s.replace(f"/{filename}", "").replace(f"./{folder}/", "").split(".")[0],
+            files,
+        )
+    )
+    create_table = (
+        lambda table, tau: f"create table {table} (q float primary key, {tau})"
+    )
+    insert = lambda table, q, tau, I: (
+        f"insert into {table} values (?, {', '.join(['?']*len(tau))})",
+        map(lambda x: [x[0]] + [*x[1]], zip(q, I)),
+    )
+    for f, name in zip(files, names):
+        q, tau_list, I_q_tau = data_open(f)
+        if tau_list is not None:
+            tau = ", ".join(map(lambda i: f"tau{int(i)} integer", tau_list))
+            with conn:
+                conn.execute(create_table(name, tau))
+            with conn:
+                conn.executemany(*insert(name, q, tau_list, I_q_tau))
+            print(f"{name} added!")
+        else:
+            continue
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "plot":
         plot()
     else:
-        conn = sqlite3.connect("crowd.sqlite")
-        files: List[str] = []
-        for (dirpath, dirnames, filenames) in os.walk("results-transposed"):
-            files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
-        files = list(filter(lambda s: s.find("radial_Avg.csv") != -1, files))
-        names = list(
-            map(
-                lambda s: "video_"
-                + s.replace("/radial_Avg.csv", "")
-                .replace("./results-transposed/", "")
-                .split(".")[0],
-                files,
-            )
-        )
-        create_table = (
-            lambda table, tau: f"create table {table} (q float primary key, {tau})"
-        )
-        insert = lambda table, q, tau, I: (
-            f"insert into {table} values (?, {', '.join(['?']*len(tau))})",
-            map(lambda x: [x[0]] + [*x[1]], zip(q, I)),
-        )
-        for f, name in zip(files, names):
-            q, tau_list, I_q_tau = data_open(f)
-            if tau_list is not None:
-                tau = ", ".join(map(lambda i: f"tau{int(i)} integer", tau_list))
-                with conn:
-                    conn.execute(create_table(name, tau))
-                with conn:
-                    conn.executemany(*insert(name, q, tau_list, I_q_tau))
-                print(f"{name} added!")
-            else:
-                continue
+        modify_db("crowd.sqlite", "results-transposed", "radial_Avg.csv")
