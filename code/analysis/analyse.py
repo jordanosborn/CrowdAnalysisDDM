@@ -60,31 +60,37 @@ def analyse(
         q, y = v
         y_data = np.array(y)
         fit = get_fit(function, x_data, y_data, bounds)
-        # fit = (fit[0] * y_max, fit[1], fit[2] * y_max)
         data.append(fit)
-        plt.title(
-            f"Plot of Intensity delta ({video_name}) for q={q} vs frame difference tau"
-        )
-        plt.ylabel(f"I(q={q}, tau)")
-        plt.xlabel("tau")
-        plt.plot(x_data, y_data, label="data")
-        plt.plot(
-            x_data,
-            func(x_data, *fit),
-            label=f"fit f(tau) = {function_string.replace('np.', '')} with {', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(parameters, map(lambda s: round(s, 2), fit))))}",
-        )
-        plt.legend(loc="lower right")
+        # plt.title(
+        #     f"Plot of Intensity delta ({video_name}) for q={q} vs frame difference tau"
+        # )
+        # plt.ylabel(f"I(q={q}, tau)")
+        # plt.xlabel("tau")
+        # plt.plot(x_data, y_data, label="data")
+        # plt.plot(
+        #     x_data,
+        #     func(x_data, *fit),
+        #     label=f"fit f(tau) = {function_string.replace('np.', '')} with {', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(parameters, map(lambda s: round(s, 2), fit))))}",
+        # )
+        # plt.legend(loc="lower right")
+        # plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
+        # plt.close()
         if i % 10 == 0:
             print(f"{round(100 * i/len(index), 0)}% complete.")
-        plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
-        plt.close()
     print(f"100% complete.")
     # # Save raw fit data
-    with open(path + "/fit_data.csv", "w") as f:
-        f.write(f"q, ({', '.join(parameters)})\n")
-        for q, d in zip(index, data):
-            params = f"({','.join(map(str, d))})"
-            f.write(f"{q}, {params}\n")
+    conn = sqlite3.connect("crowd.sqlite")
+    with conn:
+        conn.execute(
+            f"create table fit_{video_name} (q float primary key, function text, {', '.join(parameters)})"
+        )
+    with conn:
+        conn.executemany(
+            f"insert into fit_{video_name} values (?, ?, {', '.join(['?'] * len(data[0]))})",
+            map(
+                lambda x: [float(x[0])] + [function_string] + [*x[1]], zip(index, data)
+            ),
+        )
 
     # save log tau_c vs log q
     tau_c = np.log(np.array(list(map(lambda x: x[plot_param], data))))
@@ -105,14 +111,6 @@ if __name__ == "__main__":
             files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
         files = list(filter(lambda s: s.find("radial_Avg.csv") != -1, files))
         directories = list(map(lambda s: s.replace("/radial_Avg.csv", ""), files))
-        analyse(
-            directories[0],
-            func,
-            OrderedDict(
-                {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
-            ),
-            1,
-        )
         for i, v in enumerate(directories):
             analyse(
                 v,
