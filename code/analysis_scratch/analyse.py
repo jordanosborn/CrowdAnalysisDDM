@@ -122,7 +122,20 @@ if __name__ == "__main__":
                     secrets["twilio"],
                     f"Completed approximately {round(i * 100 / len(directories))}%.",
                 )
-    elif os.path.isfile(argv[1]) and argv[1].find(".csv") != -1:
+    elif os.path.isfile(argv[1]) and argv[1].find("radial_Avg.csv") != -1:
+        analyse(
+            argv[1].replace("radial_Avg.csv", ""),
+            func,
+            OrderedDict(
+                {"a": (-np.inf, np.inf), "b": (0, np.inf), "c": (-np.inf, np.inf)}
+            ),
+            1,
+        )
+    elif (
+        os.path.isfile(argv[1])
+        and argv[1].find("radial_Avg.csv") != -1
+        and argv[2] == "custom"
+    ):
         print("Errors are not checked!")
         params = input(  # nosec
             "Comma spaced parameter list with range e.g.  A(0: np.inf)? "
