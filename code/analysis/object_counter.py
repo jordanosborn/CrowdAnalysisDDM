@@ -22,6 +22,7 @@ def save_images(video: str, directory: str):
         count += 1
 
 
+# TODO: not the quickest way of docing this
 if __name__ == "__main__":
     video = sys.argv[1]
     if os.path.isfile(video):
@@ -43,8 +44,9 @@ if __name__ == "__main__":
         with open("../person_count.csv", "a") as count_file:
             for i, f in enumerate(img_files):
                 proc = sp.Popen(darknet_commands + [f], stdout=sp.PIPE)
-                count += len(person_regex.findall(str(proc.communicate()[0])))
-                count_file.write(f"{name}-{i}: {count / len(img_files)}")
+                in_current_frame = len(person_regex.findall(str(proc.communicate()[0])))
+                count += in_current_frame
+                count_file.write(f"{name}-{i+1}: {in_current_frame}\n")
                 if i % 10 == 0:
                     print(f"{100 * i / len(img_files)}% complete.")
             print(f"Average number of people in each frame ~ {count / len(img_files)}")

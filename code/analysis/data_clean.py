@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 import sys
 from typing import List, Tuple, Optional
+import sqlite
+
 
 import matplotlib.pyplot as plt
 
 
-def data_open(file: str) -> Tuple[List[float], Optional[List[float]], List[List[float]]]:
+def data_open(
+    file: str
+) -> Tuple[List[float], Optional[List[float]], List[List[float]]]:
     with open(file) as f:
         raw_data = f.readlines()
-    data: List[List[str]] = list(map(lambda s: s.replace("\n", "").split(",")[:-1], raw_data))
+    data: List[List[str]] = list(
+        map(lambda s: s.replace("\n", "").split(",")[:-1], raw_data)
+    )
     X = None
     index = list(map(float, data[0]))
     data = data[1:]
@@ -27,7 +33,14 @@ def data_open(file: str) -> Tuple[List[float], Optional[List[float]], List[List[
     return (index, X, cleaned)
 
 
-if __name__ == "__main__":
-    index, x, y = data_open(sys.argv[1])
-    plt.plot(x, y[int(sys.argv[2])])
+def plot():
+    _, x, y = data_open(sys.argv[2])
+    plt.plot(x, y[int(sys.argv[3])])
     plt.show()
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "plot" and len(sys.argv) == 4:
+        plot()
+    else:
+        sqlite.
