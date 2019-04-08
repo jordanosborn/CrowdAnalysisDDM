@@ -15,6 +15,7 @@ sklearn = "*"
 opencv-python = "^4.0"
 imutils = "^0.5.2"
 dlib = "^19.17"
+natsort = "^6.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.3"
