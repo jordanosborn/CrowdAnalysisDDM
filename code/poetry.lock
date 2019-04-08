@@ -65,6 +65,14 @@ version = "0.10.0"
 six = "*"
 
 [[package]]
+category = "main"
+description = "A toolkit for making real world machine learning and data analysis applications"
+name = "dlib"
+optional = false
+python-versions = "*"
+version = "19.17.0"
+
+[[package]]
 category = "dev"
 description = "Discover and load entry points from installed packages."
 name = "entrypoints"
@@ -441,7 +449,7 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "008b8166ae195b04d47af4a05f84b72af4026b44449f7d3222d8a161d6505f07"
+content-hash = "f89bb58d48ee531621c3fe5632aab71f39982a41a1b3108958dc721a1eb35e0c"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -451,6 +459,7 @@ certifi = ["59b7658e26ca9c7339e00f8f4636cdfe59d34fa37b9b04f6f9e9926b3cece1a5", "
 chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"]
 colorama = ["05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d", "f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"]
 cycler = ["1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d", "cd7b2d1018258d7247a71425e9f26463dfb444d411c39569972f4ce586b0c9d8"]
+dlib = ["92587c81b0165e933593f505fdf099dface0d0f8ec874b1d8655fc774598911f"]
 entrypoints = ["589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19", "c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"]
 flake8 = ["859996073f341f2670741b51ec1e67a01da142831aa1fdc6242dbf88dffbe661", "a796a115208f5c03b18f332f7c11729812c8c3ded6c46319c59b53efd3819da8"]
 gitdb2 = ["83361131a1836661a155172932a13c08bda2db3674e4caa32368aa6eb02f38c2", "e3a0141c5f2a3f635c7209d56c496ebe1ad35da82fe4d3ec4aaa36278d70648a"]
