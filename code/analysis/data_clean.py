@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import sys
+import sys, os
 from typing import List, Tuple, Optional
-import sqlite
+import sqlite3
 
 
 import matplotlib.pyplot as plt
@@ -40,7 +40,37 @@ def plot():
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "plot" and len(sys.argv) == 4:
+    if len(sys.argv) == 4 and sys.argv[1] == "plot":
         plot()
     else:
-        sqlite.
+        conn = sqlite3.connect("crowd.sqlite")
+        files: List[str] = []
+        for (dirpath, dirnames, filenames) in os.walk("results-transposed"):
+            files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
+        files = list(filter(lambda s: s.find("radial_Avg.csv") != -1, files))
+        names = list(
+            map(
+                lambda s: "video_"
+                + s.replace("/radial_Avg.csv", "").replace("./results-transposed/", ""),
+                files,
+            )
+        )
+        create_table = (
+            lambda table, tau: f"create table {table} (q float primary key, {tau})"
+        )
+        insert = lambda table, q, tau, I: (
+            f"insert into {table} values (?, {', '.join(['?']*len(tau))})",
+            map(lambda x: [x[0]] + [*x[1]], zip(q, I)),
+        )
+        for f, name in zip(files, names):
+            q, tau_list, I_q_tau = data_open(f)
+            if tau_list is not None:
+                tau = ", ".join(map(lambda i: f"tau{int(i)} integer", tau_list))
+
+                with conn:
+                    conn.execute(create_table(name, tau))
+                with conn:
+                    conn.executemany(*insert(name, q, tau_list, I_q_tau))
+                input()
+            else:
+                continue
