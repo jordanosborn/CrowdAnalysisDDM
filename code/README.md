@@ -61,3 +61,26 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
 https://elinux.org/Jetson/Installing_ArrayFire#Install
+
+# Darknet
+for comparison work need
+
+install opencv cuda
+
+from code directory
+
+https://github.com/pjreddie/darknet.git
+
+git clone https://github.com/pjreddie/darknet.git
+
+cd darknet
+
+modify makefile to enable CUDA and opencv
+
+wget https://pjreddie.com/media/files/yolov3.weights
+
+make
+
+use from code directory
+
+./analysis_scratch/object_counter.py $video-name$
