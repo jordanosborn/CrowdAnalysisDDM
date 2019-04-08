@@ -81,6 +81,8 @@ def analyse(
     # # Save raw fit data
     conn = sqlite3.connect("crowd.sqlite")
     with conn:
+        conn.execute(f"DROP TABLE IF EXISTS fit_{video_name}")
+    with conn:
         conn.execute(
             f"create table fit_{video_name} (q float primary key, function text, {', '.join(parameters)})"
         )

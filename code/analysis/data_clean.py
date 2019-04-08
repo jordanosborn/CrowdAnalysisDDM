@@ -39,7 +39,7 @@ def plot():
     plt.show()
 
 
-def modify_db(database: str, folder: str, filename: str, prefix: str="video"):
+def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
     conn = sqlite3.connect(database)
     files: List[str] = []
     for (dirpath, _, filenames) in os.walk(folder):
@@ -63,6 +63,8 @@ def modify_db(database: str, folder: str, filename: str, prefix: str="video"):
         q, tau_list, I_q_tau = data_open(f)
         if tau_list is not None:
             tau = ", ".join(map(lambda i: f"tau{int(i)} integer", tau_list))
+            with conn:
+                conn.execute(f"DROP TABLE IF EXISTS {name}")
             with conn:
                 conn.execute(create_table(name, tau))
             with conn:
