@@ -30,7 +30,8 @@
         "vidstream",
         "window",
         "xlabel",
-        "ylabel"
+        "ylabel",
+        "yolov"
     ],
     "files.associations": {
         "clocale": "cpp",

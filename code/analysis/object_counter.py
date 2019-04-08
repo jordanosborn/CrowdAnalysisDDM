@@ -40,14 +40,15 @@ if __name__ == "__main__":
         )
         count = 0
         person_regex = re.compile(r"person: (\d{1,3})%")
-        for i, f in enumerate(img_files):
-            proc = sp.Popen(darknet_commands + [f], stdout=sp.PIPE)
-            count += len(person_regex.findall(str(proc.communicate()[0])))
-            if i % 10 == 0:
-                print(f"{100 * i / len(img_files)}% complete.")
-        print(f"Average number of people in each frame ~ {count / len(img_files)}")
         with open("../person_count.csv", "a") as count_file:
-            count_file.write(f"{name}, {count / len(img_files)}")
+            for i, f in enumerate(img_files):
+                proc = sp.Popen(darknet_commands + [f], stdout=sp.PIPE)
+                count += len(person_regex.findall(str(proc.communicate()[0])))
+                count_file.write(f"{name}-{i}: {count / len(img_files)}")
+                if i % 10 == 0:
+                    print(f"{100 * i / len(img_files)}% complete.")
+            print(f"Average number of people in each frame ~ {count / len(img_files)}")
+            count_file.write(f"{name}-avg: {count / len(img_files)}")
         if os.path.isdir("temp"):
             shutil.rmtree("temp")
         os.chdir("..")

@@ -6,7 +6,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import os
 from twilio.rest import Client
-from typing import Any, List, Callable
+from typing import Any, List, Callable, Dict, Tuple
 import json
 from collections import OrderedDict
 
@@ -40,8 +40,8 @@ def get_fit(f, x, y, bounds):
 
 def analyse(
     path: str,
-    function: Callable[[Any], float],
-    bounds,
+    function: Callable,
+    bounds_dict: Dict[str, Tuple[Any, ...]],
     plot_param: int,
     function_string="a * np.exp(-x / b) + c",
 ):
@@ -49,8 +49,11 @@ def analyse(
     index, x_data, Y = data_open(path + "/radial_Avg.csv")
     x_data = np.array(x_data)
     data = []
-    parameters = list(bounds.keys())
-    bounds = ([v[0] for _, v in bounds.items()], [v[1] for _, v in bounds.items()])
+    parameters = list(bounds_dict.keys())
+    bounds = (
+        [v[0] for _, v in bounds_dict.items()],
+        [v[1] for _, v in bounds_dict.items()],
+    )
     # Save all plots of I vs tau for each q
     for i, v in enumerate(zip(index, Y)):
         q, y = v
@@ -69,7 +72,7 @@ def analyse(
             func(x_data, *fit),
             label=f"fit f(tau) = {function_string.replace('np.', '')} with {', '.join(map(lambda x: f'{x[0]}={x[1]}', zip(parameters, map(lambda s: round(s, 2), fit))))}",
         )
-        plt.legend(loc="upper left")
+        plt.legend(loc="lower right")
         if i % 10 == 0:
             print(f"{round(100 * i/len(index), 0)}% complete.")
         plt.savefig(f"{path}/I_vs_tau_for_q_{q}.png")
@@ -137,11 +140,11 @@ if __name__ == "__main__":
         and argv[2] == "custom"
     ):
         print("Errors are not checked!")
-        params = input(  # nosec
+        params_str = input(  # nosec
             "Comma spaced parameter list with range e.g.  A(0: np.inf)? "
         )
-        params = params.replace(" ", "").replace("\t", "").split(",")
-        bounds = OrderedDict()
+        params = params_str.replace(" ", "").replace("\t", "").split(",")
+        bounds: Dict[str, Tuple[Any, ...]] = OrderedDict()
         for p in params:
             name, values = p.replace(")", "").split("(")
             bounds[name] = tuple(map(eval, values.split(":")))
