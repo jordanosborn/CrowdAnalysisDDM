@@ -22,7 +22,7 @@ pub fn multi_ddm(
     tiling_range: Option<(usize, usize)>,
     filename: Option<String>,
     output_dir: Option<String>,
-) {
+) -> Option<IndexedData> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -31,6 +31,7 @@ pub fn multi_ddm(
     let mut odim: Option<i64> = None;
 
     let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
+    let mut data_out = None;
 
     if let Some(id) = id {
         let output_dir = if let Some(v) = filename {
@@ -42,7 +43,11 @@ pub fn multi_ddm(
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
-        let capacity = if let Some(c) = capacity { c } else { fps };
+        let capacity = if let Some(c) = capacity {
+            c
+        } else {
+            frame_count
+        };
 
         println!(
             "Video is about {} seconds long, containing {} frames!",
@@ -87,8 +92,60 @@ pub fn multi_ddm(
                 break;
             }
         });
-        //TODO:
-        
-    }
 
+        let mut counter_t0 = 0;
+        let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
+        let mut collected_all_frames = false;
+
+        let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
+        loop {
+            match rx.recv() {
+                Ok(value) => {
+                    if let Some(v) = value {
+                        data.push(v);
+                    }
+                }
+                Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
+                    std::sync::mpsc::TryRecvError::Disconnected => {
+                        collected_all_frames = true;
+                    }
+                    std::sync::mpsc::TryRecvError::Empty => {
+                        continue;
+                    }
+                },
+            }
+            #TODO: process them
+            if data.data.len() == capacity {
+
+                counter_t0 += 1;
+                println!("Analysis of t0 = {} done!", counter_t0);
+            }
+
+            if collected_all_frames {
+                if let Some(a) = accumulator {
+                    let accumulator = a
+                        .par_iter()
+                        .map(|x| x / (counter_t0 as f32))
+                        .collect::<Vec<af::Array<RawType>>>();
+                    let annuli = match annuli_rx.recv() {
+                        Ok(v) => v,
+                        Err(e) => {
+                            panic!("Failed to receive annuli - {}!", e);
+                        }
+                    };
+                }
+                break;
+            }
+        }
+        println!("Analysis of {} stream complete!", &filename.unwrap());
+        match stx.send(Signal::KILL) {
+            _ => {
+                stream_thread.join().unwrap();
+                opencv::close_stream_safe(id);
+            }
+        };
+    } else {
+        println!("Invalid arguments supplied!");
+    }
+    data_out
 }
