@@ -47,10 +47,10 @@ pub fn multi_ddm(
             if c < frame_count {
                 c
             } else {
-                frame_count - 1
+                frame_count
             }
         } else {
-            frame_count - 1
+            frame_count
         };
 
         println!(
@@ -68,17 +68,7 @@ pub fn multi_ddm(
                     }
                 },
                 Some(value) => {
-                    if let Some(dim) = odim {
-                        match tx.send(Some(value.data)) {
-                            Ok(_) => {
-                                println!("Image capture {} - complete!", counter);
-                            }
-                            Err(_) => {
-                                println!("Failed to send frame!");
-                            }
-                        }
-                        counter += 1;
-                    } else {
+                    if odim == None {
                         let n = std::cmp::max(value.cols, value.rows);
                         odim = Some(get_closest_power(n as i64));
                         match annuli_tx
@@ -89,6 +79,17 @@ pub fn multi_ddm(
                                 panic!("Failed to generate annuli - {}!", e);
                             }
                         }
+                    }
+                    if let Some(dim) = odim {
+                        match tx.send(Some(value.data)) {
+                            Ok(_) => {
+                                println!("Image capture {} - complete!", counter);
+                            }
+                            Err(_) => {
+                                println!("Failed to send frame!");
+                            }
+                        }
+                        counter += 1;
                     }
                 }
             }
@@ -118,12 +119,6 @@ pub fn multi_ddm(
                     }
                 },
             }
-            //TODO: process them
-            if data.data.len() == capacity {
-                counter_t0 += 1;
-                println!("Analysis of t0 = {} done!", counter_t0);
-            }
-
             if collected_all_frames {
                 if let Some(a) = accumulator {
                     let accumulator = a
@@ -138,6 +133,11 @@ pub fn multi_ddm(
                     };
                 }
                 break;
+            }
+            //TODO: process them before cap
+            if data.data.len() == capacity {
+                counter_t0 += 1;
+                println!("Analysis of t0 = {} done!", counter_t0);
             }
         }
         println!("Analysis of {} stream complete!", &output_dir);

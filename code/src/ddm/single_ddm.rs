@@ -51,10 +51,10 @@ pub fn single_ddm(
             if c < frame_count {
                 c
             } else {
-                frame_count - 1
+                frame_count
             }
         } else {
-            frame_count - 1
+            frame_count
         };
 
         println!(
@@ -72,6 +72,18 @@ pub fn single_ddm(
                     }
                 },
                 Some(value) => {
+                    if odim == None {
+                        let n = std::cmp::max(value.cols, value.rows);
+                        odim = Some(get_closest_power(n as i64));
+                        match annuli_tx
+                            .send(operations::generate_annuli(n as u64, annuli_spacing as u64))
+                        {
+                            Ok(_) => println!("Generated annuli!"),
+                            Err(e) => {
+                                panic!("Failed to generate annuli - {}!", e);
+                            }
+                        }
+                    }
                     if let Some(dim) = odim {
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
                         match tx.send(Some(ft)) {
@@ -83,17 +95,6 @@ pub fn single_ddm(
                             }
                         }
                         counter += 1;
-                    } else {
-                        let n = std::cmp::max(value.cols, value.rows);
-                        odim = Some(get_closest_power(n as i64));
-                        match annuli_tx
-                            .send(operations::generate_annuli(n as u64, annuli_spacing as u64))
-                        {
-                            Ok(_) => println!("Generated annuli!"),
-                            Err(e) => {
-                                panic!("Failed to generate annuli - {}!", e);
-                            }
-                        }
                     }
                 }
             }
@@ -122,12 +123,6 @@ pub fn single_ddm(
                         continue;
                     }
                 },
-            }
-
-            if data.data.len() == capacity {
-                accumulator = ddm(accumulator, &data.data);
-                counter_t0 += 1;
-                println!("Analysis of t0 = {} done!", counter_t0);
             }
 
             if collected_all_frames {
@@ -168,6 +163,12 @@ pub fn single_ddm(
                     data_out = Some((r_avg_transposed_index, r_avg_transposed));
                 }
                 break;
+            }
+
+            if data.data.len() == capacity {
+                accumulator = ddm(accumulator, &data.data);
+                counter_t0 += 1;
+                println!("Analysis of t0 = {} done!", counter_t0);
             }
         }
         println!(
