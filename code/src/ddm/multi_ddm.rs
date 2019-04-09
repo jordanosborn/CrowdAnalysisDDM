@@ -44,7 +44,11 @@ pub fn multi_ddm(
         let frame_count = opencv::frame_count(id);
 
         let capacity = if let Some(c) = capacity {
-            c
+            if c <= frame_count {
+                c
+            } else {
+                frame_count
+            }
         } else {
             frame_count
         };
