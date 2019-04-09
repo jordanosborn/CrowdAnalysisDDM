@@ -48,13 +48,13 @@ pub fn single_ddm(
         let frame_count = opencv::frame_count(id);
 
         let capacity = if let Some(c) = capacity {
-            if c <= frame_count {
+            if c < frame_count {
                 c
             } else {
-                frame_count
+                frame_count - 1
             }
         } else {
-            frame_count
+            frame_count - 1
         };
 
         println!(

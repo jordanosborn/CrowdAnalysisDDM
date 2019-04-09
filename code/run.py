@@ -89,7 +89,14 @@ if __name__ == "__main__":
         files: List[str] = []
         capacity, radial_width = sys.argv[3], sys.argv[4]
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
-            files.extend(map(lambda s: f"./{dirpath}{s}", filenames))
+            files.extend(
+                map(
+                    lambda s: f"./{dirpath}{s}",
+                    filter(
+                        lambda s: s.split(".")[-1] in ["avi", "mp4", "m4v"], filenames
+                    ),
+                )
+            )
         files_filtered = incomplete_filter(files, "./results")
         files_filtered = list(filter_non_videos(files_filtered))
         print(f"{len(files_filtered)}/{len(files)} left to analyse.")
