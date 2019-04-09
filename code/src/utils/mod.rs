@@ -191,7 +191,10 @@ pub fn save_csv<T: std::fmt::Display>(
 }
 
 #[allow(dead_code)]
-pub fn read_csv(filename: &str, has_header: bool) -> Option<Vec<Vec<(f32, f32)>>> {
+pub fn read_csv(
+    filename: &str,
+    has_header: bool,
+) -> Option<Vec<Vec<(crate::RawType, crate::RawType)>>> {
     match std::fs::File::open(filename) {
         Ok(f) => {
             let mut file = f;
@@ -215,12 +218,12 @@ pub fn read_csv(filename: &str, has_header: bool) -> Option<Vec<Vec<(f32, f32)>>
                                     let vector = tmp.split(' ').collect::<Vec<&str>>();
                                     match (vector[0].parse(), vector[1].parse()) {
                                         (Ok(n1), Ok(n2)) => (n1, n2),
-                                        (_, _) => (std::f32::NAN, std::f32::NAN),
+                                        (_, _) => (crate::raw_nan(), crate::raw_nan()),
                                     }
                                 })
-                                .collect::<Vec<(f32, f32)>>()
+                                .collect::<Vec<(crate::RawType, crate::RawType)>>()
                         })
-                        .collect::<Vec<Vec<(f32, f32)>>>(),
+                        .collect::<Vec<Vec<(crate::RawType, crate::RawType)>>>(),
                 )
             } else {
                 None

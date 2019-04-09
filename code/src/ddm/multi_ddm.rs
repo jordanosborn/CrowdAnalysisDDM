@@ -128,7 +128,7 @@ pub fn multi_ddm(
                 if let Some(a) = accumulator {
                     let accumulator = a
                         .par_iter()
-                        .map(|x| x / (counter_t0 as f32))
+                        .map(|x| x / (counter_t0 as crate::RawType))
                         .collect::<Vec<af::Array<RawType>>>();
                     let annuli = match annuli_rx.recv() {
                         Ok(v) => v,

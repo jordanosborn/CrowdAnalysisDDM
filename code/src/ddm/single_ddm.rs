@@ -134,7 +134,7 @@ pub fn single_ddm(
                 if let Some(a) = accumulator {
                     let accumulator = a
                         .par_iter()
-                        .map(|x| x / (counter_t0 as f32))
+                        .map(|x| x / (counter_t0 as crate::RawType))
                         .collect::<Vec<af::Array<RawType>>>();
                     let annuli = match annuli_rx.recv() {
                         Ok(v) => v,
@@ -144,8 +144,8 @@ pub fn single_ddm(
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     let radial_averaged_index = (1..=radial_averaged.len())
-                        .map(|i| i as f32)
-                        .collect::<Vec<f32>>();
+                        .map(|i| i as RawType)
+                        .collect::<Vec<RawType>>();
 
                     let (r_avg_transposed_index, r_avg_transposed) =
                         operations::transpose_2d_array(&radial_averaged);

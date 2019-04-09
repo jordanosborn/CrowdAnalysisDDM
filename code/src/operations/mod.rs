@@ -15,9 +15,9 @@ pub trait As<T> {
     fn from(v: T) -> Self;
 }
 
-impl As<usize> for f32 {
+impl As<usize> for crate::RawType {
     fn from(v: usize) -> Self {
-        v as f32
+        v as crate::RawType
     }
 }
 
@@ -50,7 +50,7 @@ pub fn radial_average(
                 (
                     *q,
                     ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0))
-                        as f32,
+                        as crate::RawType,
                 )
             })
             .collect::<Vec<(RawType, RawType)>>();
@@ -105,7 +105,7 @@ pub fn mean_image(
             arr.iter().fold(
                 arrayfire::Array::new_empty(dims),
                 |acc: af::Array<crate::RawType>, x| acc + x,
-            ) / arr.len() as f32,
+            ) / arr.len() as crate::RawType,
         )
     } else {
         None
@@ -116,7 +116,7 @@ pub fn mean_image(
 fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Array<crate::RawType> {
     let radius2 = radius * radius;
     let radius_plus_dr2 = (radius + thickness) * (radius + thickness);
-    let annulus: Vec<f32> = (0..(dimension * dimension))
+    let annulus: Vec<crate::RawType> = (0..(dimension * dimension))
         .into_par_iter()
         .map(|i| {
             let x = i % dimension;
