@@ -114,9 +114,8 @@ pub fn multi_ddm(
                     }
                 },
             }
-            #TODO: process them
+            //TODO: process them
             if data.data.len() == capacity {
-
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
@@ -137,7 +136,7 @@ pub fn multi_ddm(
                 break;
             }
         }
-        println!("Analysis of {} stream complete!", &filename.unwrap());
+        println!("Analysis of {} stream complete!", &output_dir);
         match stx.send(Signal::KILL) {
             _ => {
                 stream_thread.join().unwrap();

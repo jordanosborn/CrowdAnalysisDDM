@@ -47,7 +47,11 @@ pub fn single_ddm(
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
-        let capacity = if let Some(c) = capacity { c } else { fps };
+        let capacity = if let Some(c) = capacity {
+            c
+        } else {
+            frame_count
+        };
 
         println!(
             "Video is about {} seconds long, containing {} frames!",
