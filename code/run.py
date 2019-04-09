@@ -101,6 +101,21 @@ if __name__ == "__main__":
                     f"Have completed approximately {round((index + len(files) - len(files_filtered)) * 100 / len(files), 2)}%.",
                 )
                 upload()
+
+        print("Producing retranspose")
+        files: List[str] = []
+        for (dirpath, dirnames, filenames) in os.walk("./results"):
+            files.extend(
+                filter(
+                    lambda s: s.find("radial_Avg.csv") != -1,
+                    map(lambda s: f"./{dirpath}/{s}", filenames),
+                )
+            )
+        retranspose(files)
+        upload()
+    elif len(sys.argv) == 3 and sys.argv[1] == "fit" and os.path.isdir(sys.argv[2]):
+        sp.call(["python3", "./analysis/analyse.py", sys.argv[2]])
+
     elif (
         len(sys.argv) == 3
         and sys.argv[1] == "retranspose"
