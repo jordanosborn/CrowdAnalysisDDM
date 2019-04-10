@@ -1,13 +1,12 @@
 # TODO LIST
 
 Tuesday
-Multiddm! Papers - Tuesday
-Edit new_videos - Tuesday - videos should be at 30fps
+Multiddm! Papers - Wednesday
 Upload pngs - Wednesday
 Static crowd - 2jiqimao, 3WalkingStreet, chorus, grandcentralgroup, grandfull, jihadmoving, mecahole, metacrowd, shi2bo, shiNbo, tradingfloor
 Lines - 2manko, 2niurunning, 2monko, 2walkingstreet, 3monko, 3niurunning, dianti, indiastation, jianshacross, marathonround, randomcross, runningstraight, runspreading
 
-The crowds, if in a situation of people moving in lines, should show a tau(q)~1/q regime.   And if the data is clean then the I(q,tau) should show an oscillation.   From either the oscillation timescale, or the prefactor of the tau(q)~1/q,   you should be able to get a velocity of walking. Brownian Tuesday
+The crowds, if in a situation of people moving in lines, should show a tau(q)~1/q regime.   And if the data is clean then the I(q,tau) should show an oscillation.   From either the oscillation timescale, or the prefactor of the tau(q)~1/q,   you should be able to get a velocity of walking. Brownian Wednesday
 
 Wednesday / Thursday / Friday / Saturday / Sunday / Monday
 First few sections of report
@@ -25,7 +24,7 @@ Report writing
 Cargo clean if having linking issues
 install arrayfire.sh
 bashrc
-export AF_PATH=af root dir 
+export AF_PATH=af root dir
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AF_PATH/lib
 
 Must compile OpenCV
