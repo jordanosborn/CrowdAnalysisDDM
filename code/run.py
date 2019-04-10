@@ -124,9 +124,8 @@ if __name__ == "__main__":
         sp.call(["python3", "./analysis/analyse.py", *sys.argv[2:]])
     elif len(sys.argv) == 2 and sys.argv[1] == "plot":
         sp.call(["python3", "./analysis/plotter.py", "search", "video"])
-    elif len(sys.argv) == 6 and sys.argv[1] == "resize" and os.path.isdir(sys.argv[2]):
+    elif len(sys.argv) == 5 and sys.argv[1] == "resize" and os.path.isdir(sys.argv[2]):
         files: List[str] = []
-        root = ""
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(
                 map(
@@ -139,9 +138,15 @@ if __name__ == "__main__":
                     ),
                 )
             )
-        output = list(map(lambda s: os.path.join(root, s), files))
-        print(files, output)
-        # sp.call(["python3", "./analysis/video_resizer.py", *sys.argv[2:]])
+        out_dir = f"{os.path.dirname(sys.argv[2])}_resized"
+        output = list(map(lambda s: os.path.join(out_dir, os.path.basename(s)), files))
+        print("Starting conversion")
+        if not os.path.isdir(out_dir):
+            os.mkdir(out_dir)
+        for filename, out in zip(files, output):
+            sp.call(
+                ["python3", "./analysis/video_resizer.py", filename, out, *sys.argv[3:]]
+            )
     elif len(sys.argv) == 6 and sys.argv[1] == "resize":
         sp.call(["python3", "./analysis/video_resizer.py", *sys.argv[2:]])
     elif (
