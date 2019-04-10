@@ -124,6 +124,24 @@ if __name__ == "__main__":
         sp.call(["python3", "./analysis/analyse.py", *sys.argv[2:]])
     elif len(sys.argv) == 2 and sys.argv[1] == "plot":
         sp.call(["python3", "./analysis/plotter.py", "search", "video"])
+    elif len(sys.argv) == 6 and sys.argv[1] == "resize" and os.path.isdir(sys.argv[2]):
+        files: List[str] = []
+        root = ""
+        for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
+            files.extend(
+                map(
+                    lambda f: os.path.join(dirpath, f),
+                    filter(
+                        lambda f: any(
+                            [f.find(ext) != -1 for ext in ["avi", "mp4", "m4v"]]
+                        ),
+                        filenames,
+                    ),
+                )
+            )
+        output = list(map(lambda s: os.path.join(root, s), files))
+        print(files, output)
+        # sp.call(["python3", "./analysis/video_resizer.py", *sys.argv[2:]])
     elif len(sys.argv) == 6 and sys.argv[1] == "resize":
         sp.call(["python3", "./analysis/video_resizer.py", *sys.argv[2:]])
     elif (
