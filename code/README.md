@@ -25,7 +25,7 @@ Report writing
 Cargo clean if having linking issues
 install arrayfire.sh
 bashrc
-export AF_PATH=af root dir
+export AF_PATH=af root dir 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AF_PATH/lib
 
 Must compile OpenCV
