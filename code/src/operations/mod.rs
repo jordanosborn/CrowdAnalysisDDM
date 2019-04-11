@@ -11,6 +11,28 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+fn mean(arr: &[Option<af::Array<crate::RawType>>]) -> Option<af::Array<crate::RawType>> {
+    let dims = arr[0].clone()?;
+    let dims = dims.dims();
+    let mut array = Vec::with_capacity(arr.len());
+    for v in arr {
+        array.push((v.clone())?);
+    }
+    Some(
+        array
+            .par_iter()
+            .cloned()
+            .reduce(move || af::Array::new_empty(dims), |a, f| a + f)
+            / (array.len() as crate::RawType),
+    )
+}
+
+pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> f64 {
+    let mean_image = mean(arr);
+    
+    0.0
+}
+
 pub fn sub_array<T: af::HasAfEnum>(
     arr: &af::Array<T>,
     top_left: (u64, u64),
