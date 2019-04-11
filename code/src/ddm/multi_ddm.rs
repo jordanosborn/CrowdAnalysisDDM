@@ -10,7 +10,7 @@ use std::sync::mpsc;
 use super::common::*;
 use crate::fft_shift;
 use crate::operations;
-use crate::operations::Data;
+use crate::operations::{sub_array, Data};
 use crate::utils::get_closest_power;
 use crate::wait;
 use crate::{RawFtType, RawType};
@@ -206,6 +206,8 @@ pub fn multi_ddm(
 
             if data.data.len() == capacity {
                 //TODO: process them before cap
+                let f = sub_array(&data.data[0], (0, 0), (2, 3)).unwrap();
+                af::print(&f);
                 println!("{:#?}", box_range);
                 wait!();
                 counter_t0 += 1;

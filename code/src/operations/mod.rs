@@ -11,6 +11,29 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+pub fn sub_array<T: af::HasAfEnum>(
+    arr: &af::Array<T>,
+    top_left: (u64, u64),
+    bottom_right: (u64, u64),
+) -> Option<af::Array<T>> {
+    let dims = arr.dims();
+    if top_left.0 <= bottom_right.0
+        && top_left.1 <= bottom_right.1
+        && bottom_right.0 < dims[0]
+        && bottom_right.1 < dims[1]
+    {
+        let del_row = bottom_right.0 - top_left.0;
+        let del_col = bottom_right.1 - top_left.1;
+        let seq = &[
+            af::Seq::new(top_left.0 as u32, del_row as u32, 1),
+            af::Seq::new(top_left.1 as u32, del_col as u32, 1),
+        ];
+        Some(af::index(arr, seq))
+    } else {
+        None
+    }
+}
+
 pub trait As<T> {
     fn from(v: T) -> Self;
 }
