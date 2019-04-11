@@ -11,6 +11,7 @@ use crate::fft_shift;
 use crate::operations;
 use crate::operations::Data;
 use crate::utils::get_closest_power;
+use crate::wait;
 use crate::{RawFtType, RawType};
 
 //TODO: implement this!
@@ -19,7 +20,7 @@ pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
-    tiling_range: Option<(usize, usize)>,
+    tiling_range: (Option<usize>, Option<usize>, Option<usize>),
     filename: Option<String>,
     output_dir: Option<String>,
 ) -> Option<IndexedData> {
@@ -102,15 +103,16 @@ pub fn multi_ddm(
         let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
 
-
         //TODO: here
-        
+
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
                         data.push(v);
+                        print!("{:#?}", odim);
+                        wait!();
                     }
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
