@@ -151,8 +151,13 @@ pub fn multi_ddm(
                 }
                 break;
             }
-            //TODO: process them before cap
+
             if data.data.len() == capacity {
+                //TODO: process them before cap
+                for box_size in (tiling_min..=tiling_max).rev().step_by(tiling_step) {
+                    println!("{}", box_size);
+                }
+                wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
