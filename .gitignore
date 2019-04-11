@@ -40,3 +40,6 @@ report/src/report-blx.bib
 code/darknet/*
 ddm_for_pietro
 *.mp4
+*.icloud
+*.avi
+*.m4v
