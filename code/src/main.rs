@@ -71,6 +71,8 @@ fn main() {
             capacity,
             annuli_spacing,
             tiling_range,
+            activity_threshold,
+            tile_step,
             filename,
             output_dir,
         })
@@ -79,6 +81,8 @@ fn main() {
             capacity,
             annuli_spacing,
             tiling_range,
+            activity_threshold,
+            tile_step,
             filename,
             output_dir,
         }) => {
@@ -87,6 +91,8 @@ fn main() {
                 capacity,
                 annuli_spacing,
                 tiling_range,
+                activity_threshold,
+                tile_step,
                 filename,
                 output_dir,
             );

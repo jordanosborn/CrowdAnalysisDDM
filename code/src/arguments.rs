@@ -157,6 +157,27 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 output_dir: None,
             })
         }
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, activity_threshold, tile_step, path]
+            if command == "video-multi-ddm" =>
+        {
+            What::MultiDDM(MultiDDMArgs {
+                stream_id: Some(opencv::start_capture_safe(path)),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
+                tiling_range: (
+                    tiling_min.parse().ok(),
+                    tiling_max.parse().ok(),
+                    tiling_size_count.parse().ok(),
+                ),
+                activity_threshold: activity_threshold.parse().ok(),
+                tile_step: tile_step.parse().ok(),
+                filename: match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                output_dir: None,
+            })
+        }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, output_dir]
             if command == "camera-multi-ddm" =>
         {

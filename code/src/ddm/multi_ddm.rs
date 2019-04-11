@@ -37,12 +37,14 @@ fn get_allowed_dimension(
 }
 
 //TODO: implement this!
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::too_many_arguments)]
 pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
     tiling_range: (Option<usize>, Option<usize>, Option<usize>),
+    activity_threshold: Option<usize>,
+    tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
 ) -> Option<IndexedData> {
