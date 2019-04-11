@@ -2,6 +2,7 @@
 use crate::native::opencv;
 use crate::utils::save_csv;
 use arrayfire as af;
+use itertools::Itertools;
 use rayon::prelude::*;
 use std::collections::VecDeque;
 use std::sync::mpsc;
@@ -13,6 +14,27 @@ use crate::operations::Data;
 use crate::utils::get_closest_power;
 use crate::wait;
 use crate::{RawFtType, RawType};
+
+fn get_allowed_dimension(
+    tiling_min: usize,
+    tiling_max: usize,
+    tiling_size_count: usize,
+) -> Vec<usize> {
+    let xf64 = tiling_max as f64;
+    let power2 = f64::log2(xf64).ceil() as i64;
+    let power3 = f64::log(xf64, 3.0f64).ceil() as i64;
+    let power5 = f64::log(xf64, 5.0f64).ceil() as i64;
+    let mut box_range = (0..=power2)
+        .cartesian_product((0..=power3).cartesian_product(0..=power5))
+        .map(|(a, (b, c))| {
+            (2.0f64.powf(a as f64) * 3.0f64.powf(b as f64) * 5.0f64.powf(c as f64)) as usize
+        })
+        .filter(|&value| tiling_min <= value && value <= tiling_max)
+        .collect::<Vec<usize>>();
+    box_range.sort();
+
+    box_range
+}
 
 //TODO: implement this!
 #[allow(unused_variables)]
@@ -41,9 +63,14 @@ pub fn multi_ddm(
             return None;
         }
 
-        let (tiling_min, tiling_max, tiling_step) =
-            if let (Some(min), Some(max), Some(step)) = tiling_range {
-                (min, if max <= width { max } else { width }, step)
+        let (tiling_min, tiling_max, tiling_size_count) =
+            if let (Some(min), Some(max), Some(number)) = tiling_range {
+                if max >= min && number != 0 {
+                    (min, if max <= width { max } else { width }, number)
+                } else {
+                    println!("Invalid tiling range selected!");
+                    return None;
+                }
             } else {
                 println!("Invalid tiling range selected!");
                 return None;
@@ -116,6 +143,7 @@ pub fn multi_ddm(
         let mut counter_t0 = 0;
         let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
+        let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
 
         //TODO: here
 
@@ -154,9 +182,7 @@ pub fn multi_ddm(
 
             if data.data.len() == capacity {
                 //TODO: process them before cap
-                for box_size in (tiling_min..=tiling_max).rev().step_by(tiling_step) {
-                    println!("{}", box_size);
-                }
+                println!("{:#?}", box_range);
                 wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);

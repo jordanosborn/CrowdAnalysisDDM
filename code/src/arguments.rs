@@ -12,6 +12,8 @@ pub struct MultiDDMArgs {
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
     pub tiling_range: (Option<usize>, Option<usize>, Option<usize>),
+    pub activity_threshold: Option<usize>,
+    pub tile_step: Option<usize>,
     pub filename: Option<String>,
     pub output_dir: Option<String>,
 }
@@ -40,7 +42,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
         }
         [_, command, capacity, path] if command == "video-ddm" => What::DDM(DDMArgs {
             stream_id: Some(opencv::start_capture_safe(path)),
-            capacity: Some(capacity.parse::<usize>().unwrap()),
+            capacity: capacity.parse().ok(),
             annuli_spacing: None,
             filename: match std::path::Path::new(path).file_stem() {
                 Some(s) => Some(String::from(s.to_str().unwrap())),
@@ -53,7 +55,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
         {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
                 annuli_spacing: None,
                 filename: match std::path::Path::new(path).file_stem() {
                     Some(s) => Some(String::from(s.to_str().unwrap())),
@@ -65,8 +67,8 @@ pub fn process_arguments(args: Vec<String>) -> What {
         [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
-                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
                 filename: match std::path::Path::new(path).file_stem() {
                     Some(s) => Some(String::from(s.to_str().unwrap())),
                     None => None,
@@ -79,8 +81,8 @@ pub fn process_arguments(args: Vec<String>) -> What {
         {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
-                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
                 filename: match std::path::Path::new(path).file_stem() {
                     Some(s) => Some(String::from(s.to_str().unwrap())),
                     None => None,
@@ -88,18 +90,20 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 output: Some(output.to_string()),
             })
         }
-        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_step, path, output_dir]
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path, output_dir]
             if command == "video-multi-ddm" =>
         {
             What::MultiDDM(MultiDDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
-                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
                 tiling_range: (
                     tiling_min.parse().ok(),
                     tiling_max.parse().ok(),
-                    tiling_step.parse().ok(),
+                    tiling_size_count.parse().ok(),
                 ),
+                activity_threshold: None,
+                tile_step: None,
                 filename: match std::path::Path::new(path).file_stem() {
                     Some(s) => Some(String::from(s.to_str().unwrap())),
                     None => None,
@@ -111,18 +115,20 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 },
             })
         }
-        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_step, path]
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path]
             if command == "video-multi-ddm" =>
         {
             What::MultiDDM(MultiDDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
-                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
                 tiling_range: (
                     tiling_min.parse().ok(),
                     tiling_max.parse().ok(),
-                    tiling_step.parse().ok(),
+                    tiling_size_count.parse().ok(),
                 ),
+                activity_threshold: None,
+                tile_step: None,
                 filename: match std::path::Path::new(path).file_stem() {
                     Some(s) => Some(String::from(s.to_str().unwrap())),
                     None => None,
@@ -130,18 +136,41 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 output_dir: None,
             })
         }
-        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_step, output_dir]
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, activity_threshold, path]
+            if command == "video-multi-ddm" =>
+        {
+            What::MultiDDM(MultiDDMArgs {
+                stream_id: Some(opencv::start_capture_safe(path)),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
+                tiling_range: (
+                    tiling_min.parse().ok(),
+                    tiling_max.parse().ok(),
+                    tiling_size_count.parse().ok(),
+                ),
+                activity_threshold: activity_threshold.parse().ok(),
+                tile_step: None,
+                filename: match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                output_dir: None,
+            })
+        }
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, output_dir]
             if command == "camera-multi-ddm" =>
         {
             What::MultiDDM(MultiDDMArgs {
                 stream_id: Some(opencv::start_camera_capture_safe()),
-                capacity: Some(capacity.parse::<usize>().unwrap()),
-                annuli_spacing: Some(annuli_spacing.parse::<usize>().unwrap()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
                 tiling_range: (
                     tiling_min.parse().ok(),
                     tiling_max.parse().ok(),
-                    tiling_step.parse().ok(),
+                    tiling_size_count.parse().ok(),
                 ),
+                activity_threshold: None,
+                tile_step: None,
                 filename: None,
                 output_dir: if !std::path::Path::new(output_dir).exists() {
                     Some(output_dir.to_owned())
@@ -152,7 +181,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
         }
         [_, command, capacity, output] if command == "camera-ddm" => What::CameraDDM(DDMArgs {
             stream_id: Some(opencv::start_camera_capture_safe()),
-            capacity: Some(capacity.parse::<usize>().unwrap()),
+            capacity: capacity.parse().ok(),
             annuli_spacing: None,
             filename: None,
             output: if !std::path::Path::new(output).exists() {
