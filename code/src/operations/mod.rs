@@ -56,11 +56,9 @@ pub fn sub_array<T: af::HasAfEnum>(
         && bottom_right.0 < dims[0]
         && bottom_right.1 < dims[1]
     {
-        let del_row = bottom_right.0 - top_left.0;
-        let del_col = bottom_right.1 - top_left.1;
         let seq = &[
-            af::Seq::new(top_left.0 as u32, del_row as u32, 1),
-            af::Seq::new(top_left.1 as u32, del_col as u32, 1),
+            af::Seq::new(top_left.0 as u32, bottom_right.0 as u32, 1),
+            af::Seq::new(top_left.1 as u32, bottom_right.1 as u32, 1),
         ];
         Some(af::index(arr, seq))
     } else {

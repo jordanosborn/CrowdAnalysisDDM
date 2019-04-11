@@ -222,8 +222,9 @@ pub fn multi_ddm(
                         .map(|(x, y)| {
                             let time_slices = data
                                 .data
-                                .iter()
+                                .par_iter()
                                 .map(|d| {
+                                    //TODO:
                                     operations::sub_array(
                                         &d,
                                         (*x as u64, (*x + box_size) as u64),

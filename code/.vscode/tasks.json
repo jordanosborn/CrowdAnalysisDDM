@@ -13,6 +13,13 @@
             "problemMatcher": [
                 "$rustc"
             ]
+        },
+        {
+            "type": "cargo",
+            "subcommand": "build",
+            "problemMatcher": [
+                "$rustc"
+            ]
         }
     ]
 }
