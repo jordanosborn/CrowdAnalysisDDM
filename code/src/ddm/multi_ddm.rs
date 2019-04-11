@@ -35,6 +35,20 @@ pub fn multi_ddm(
     let mut data_out = None;
 
     if let Some(id) = id {
+        let (width, height) = opencv::dimension(id);
+        if width != height {
+            println!("Only square videos are supported!");
+            return None;
+        }
+
+        let (tiling_min, tiling_max, tiling_step) =
+            if let (Some(min), Some(max), Some(step)) = tiling_range {
+                (min, if max <= width { max } else { width }, step)
+            } else {
+                println!("Invalid tiling range selected!");
+                return None;
+            };
+
         let output_dir = if let Some(v) = filename {
             v
         } else {
@@ -111,8 +125,6 @@ pub fn multi_ddm(
                 Ok(value) => {
                     if let Some(v) = value {
                         data.push(v);
-                        print!("{:#?}", odim);
-                        wait!();
                     }
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
