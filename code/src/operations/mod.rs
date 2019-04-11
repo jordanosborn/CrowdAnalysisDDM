@@ -27,10 +27,22 @@ fn mean(arr: &[Option<af::Array<crate::RawType>>]) -> Option<af::Array<crate::Ra
     )
 }
 
-pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> f64 {
-    let mean_image = mean(arr);
-    
-    0.0
+pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> Option<f64> {
+    let mean_image = mean(arr)?;
+    let dims = arr[0].clone()?;
+    let dims = dims.dims();
+    let mut array = Vec::with_capacity(arr.len());
+    for v in arr {
+        array.push((v.clone())?);
+    }
+    let a = array.par_iter().cloned().reduce(
+        move || af::Array::new_empty(dims),
+        |a, f| {
+            let m = f - mean_image.clone();
+            a + af::mul(&m, &m, true)
+        },
+    ) / ((array.len() - 1) as crate::RawType);
+    Some(af::sum_all(&a).0)
 }
 
 pub fn sub_array<T: af::HasAfEnum>(

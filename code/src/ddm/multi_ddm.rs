@@ -233,14 +233,17 @@ pub fn multi_ddm(
                                 .collect::<Vec<Option<af::Array<crate::RawType>>>>();
                             (operations::activity(&time_slices), time_slices)
                         })
-                        .collect::<Vec<(f64, Vec<Option<af::Array<crate::RawType>>>)>>();
+                        .collect::<Vec<(Option<f64>, Vec<Option<af::Array<crate::RawType>>>)>>();
                     active_regions.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap()); //Sorts in reverse order maximal activity
                     if let Some(a) = activity_threshold {
                         active_regions = active_regions[..a - 1].to_vec()
                     }
                     println!(
                         "{:?}",
-                        active_regions.iter().map(|(a, _)| *a).collect::<Vec<f64>>()
+                        active_regions
+                            .iter()
+                            .map(|(a, _)| a.unwrap())
+                            .collect::<Vec<f64>>()
                     );
                     wait!();
                 }
