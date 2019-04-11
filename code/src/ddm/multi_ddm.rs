@@ -102,6 +102,9 @@ pub fn multi_ddm(
         let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
 
+
+        //TODO: here
+        
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
