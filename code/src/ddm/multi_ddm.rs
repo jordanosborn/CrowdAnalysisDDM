@@ -18,7 +18,7 @@ use crate::{RawFtType, RawType};
 fn get_allowed_dimension(
     tiling_min: usize,
     tiling_max: usize,
-    tiling_size_count: usize,
+    tiling_size_count: Option<usize>,
 ) -> Vec<usize> {
     let xf64 = tiling_max as f64;
     let power2 = f64::log2(xf64).ceil() as i64;
@@ -32,8 +32,23 @@ fn get_allowed_dimension(
         .filter(|&value| tiling_min <= value && value <= tiling_max)
         .collect::<Vec<usize>>();
     box_range.sort();
-
-    box_range
+    if let Some(tiling_size_count) = tiling_size_count {
+        let tiling_size_count = if tiling_size_count <= box_range.len() {
+            tiling_size_count
+        } else {
+            box_range.len()
+        };
+        let mut new_vec = Vec::with_capacity(tiling_size_count);
+        let length = box_range.len() as f64;
+        for i in 0..(tiling_size_count - 1) {
+            new_vec
+                .push(box_range[((i as f64) * length / (tiling_size_count as f64)).ceil() as usize])
+        }
+        new_vec.push(box_range[box_range.len() - 1]);
+        new_vec
+    } else {
+        box_range
+    }
 }
 
 //TODO: implement this!
@@ -68,7 +83,14 @@ pub fn multi_ddm(
         let (tiling_min, tiling_max, tiling_size_count) =
             if let (Some(min), Some(max), Some(number)) = tiling_range {
                 if max >= min && number != 0 {
-                    (min, if max <= width { max } else { width }, number)
+                    (min, if max <= width { max } else { width }, Some(number))
+                } else {
+                    println!("Invalid tiling range selected!");
+                    return None;
+                }
+            } else if let (Some(min), Some(max), None) = tiling_range {
+                if max >= min {
+                    (min, if max <= width { max } else { width }, None)
                 } else {
                     println!("Invalid tiling range selected!");
                     return None;
