@@ -11,13 +11,68 @@ pub fn difference(
     arrayfire::mul(&abs, &abs, true)
 }
 
+fn mean(arr: &[Option<af::Array<crate::RawType>>]) -> Option<af::Array<crate::RawType>> {
+    let dims = arr[0].clone()?;
+    let dims = dims.dims();
+    let mut array = Vec::with_capacity(arr.len());
+    for v in arr {
+        array.push((v.clone())?);
+    }
+    Some(
+        array
+            .par_iter()
+            .cloned()
+            .reduce(move || af::Array::new_empty(dims), |a, f| a + f)
+            / (array.len() as crate::RawType),
+    )
+}
+
+pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> Option<f64> {
+    let mean_image = mean(arr)?;
+    let dims = arr[0].clone()?;
+    let dims = dims.dims();
+    let mut array = Vec::with_capacity(arr.len());
+    for v in arr {
+        array.push((v.clone())?);
+    }
+    let a = array.par_iter().cloned().reduce(
+        move || af::Array::new_empty(dims),
+        |a, f| {
+            let m = f - mean_image.clone();
+            a + af::mul(&m, &m, true)
+        },
+    ) / ((array.len() - 1) as crate::RawType);
+    Some(af::sum_all(&a).0)
+}
+
+pub fn sub_array<T: af::HasAfEnum>(
+    arr: &af::Array<T>,
+    top_left: (u64, u64),
+    bottom_right: (u64, u64),
+) -> Option<af::Array<T>> {
+    let dims = arr.dims();
+    if top_left.0 <= bottom_right.0
+        && top_left.1 <= bottom_right.1
+        && bottom_right.0 < dims[0]
+        && bottom_right.1 < dims[1]
+    {
+        let seq = &[
+            af::Seq::new(top_left.0 as u32, bottom_right.0 as u32, 1),
+            af::Seq::new(top_left.1 as u32, bottom_right.1 as u32, 1),
+        ];
+        Some(af::index(arr, seq))
+    } else {
+        None
+    }
+}
+
 pub trait As<T> {
     fn from(v: T) -> Self;
 }
 
-impl As<usize> for f32 {
+impl As<usize> for crate::RawType {
     fn from(v: usize) -> Self {
-        v as f32
+        v as crate::RawType
     }
 }
 
@@ -50,7 +105,7 @@ pub fn radial_average(
                 (
                     *q,
                     ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0))
-                        as f32,
+                        as crate::RawType,
                 )
             })
             .collect::<Vec<(RawType, RawType)>>();
@@ -105,7 +160,7 @@ pub fn mean_image(
             arr.iter().fold(
                 arrayfire::Array::new_empty(dims),
                 |acc: af::Array<crate::RawType>, x| acc + x,
-            ) / arr.len() as f32,
+            ) / arr.len() as crate::RawType,
         )
     } else {
         None
@@ -116,7 +171,7 @@ pub fn mean_image(
 fn create_annulus(dimension: u64, radius: u64, thickness: u64) -> arrayfire::Array<crate::RawType> {
     let radius2 = radius * radius;
     let radius_plus_dr2 = (radius + thickness) * (radius + thickness);
-    let annulus: Vec<f32> = (0..(dimension * dimension))
+    let annulus: Vec<crate::RawType> = (0..(dimension * dimension))
         .into_par_iter()
         .map(|i| {
             let x = i % dimension;

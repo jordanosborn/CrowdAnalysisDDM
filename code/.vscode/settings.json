@@ -3,6 +3,10 @@
     "python.unitTest.pyTestEnabled": false,
     "python.unitTest.unittestEnabled": false,
     "python.unitTest.nosetestsEnabled": false,
+    "C_Cpp.default.includePath": [
+        "/usr/local/Cellar/opencv/4.0.1/include/opencv4",
+        "/usr/local/include"
+    ],
     "cSpell.words": [
         "clippy",
         "cmat",
@@ -23,12 +27,15 @@
         "repr",
         "retranspose",
         "scipy",
+        "shutil",
         "twilio",
         "uint",
+        "vidcap",
         "vidstream",
         "window",
         "xlabel",
-        "ylabel"
+        "ylabel",
+        "yolov"
     ],
     "files.associations": {
         "clocale": "cpp",

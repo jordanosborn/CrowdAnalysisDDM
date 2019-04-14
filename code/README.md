@@ -1,3 +1,26 @@
+# TODO LIST
+
+Tuesday
+Multiddm! Papers - Wednesday
+Upload pngs - Wednesday
+Static crowd - 2jiqimao, 3WalkingStreet, chorus, grandcentralgroup, grandfull, jihadmoving, mecahole, metacrowd, shi2bo, shiNbo, tradingfloor
+Lines - 2manko, 2niurunning, 2monko, 2walkingstreet, 3monko, 3niurunning, dianti, indiastation, jianshacross, marathonround, randomcross, runningstraight, runspreading
+
+The crowds, if in a situation of people moving in lines, should show a tau(q)~1/q regime.   And if the data is clean then the I(q,tau) should show an oscillation.   From either the oscillation timescale, or the prefactor of the tau(q)~1/q,   you should be able to get a velocity of walking. Brownian Wednesday
+
+Wednesday / Thursday / Friday / Saturday / Sunday / Monday
+First few sections of report
+Multiddm
+
+Afterwards
+Speed up
+Graphing
+Analysis
+Comparisons
+Report writing
+
+-----------------------------------------
+
 Cargo clean if having linking issues
 install arrayfire.sh
 bashrc
@@ -61,3 +84,30 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
 https://elinux.org/Jetson/Installing_ArrayFire#Install
+
+# Darknet
+for comparison work need
+
+install opencv cuda
+
+from code directory
+
+https://github.com/pjreddie/darknet.git
+
+git clone https://github.com/pjreddie/darknet.git
+
+cd darknet
+
+modify makefile to enable CUDA and opencv
+
+wget https://pjreddie.com/media/files/yolov3.weights
+
+make
+
+use from code directory
+
+./analysis_scratch/object_counter.py $video-name$
+
+# Database
+
+sqlite database table video_name first column is q and rest is tau value

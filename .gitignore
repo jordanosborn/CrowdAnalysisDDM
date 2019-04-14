@@ -18,6 +18,7 @@ gen
 *.log
 *.out
 *.xml
+*.sqlite
 code/target/*
 
 code/*.jpg
@@ -33,3 +34,14 @@ code/secrets.json
 code/.mypy_cache
 *.pyc
 code/analysis_scratch/test
+*.toc
+*.gz
+report/src/report-blx.bib
+code/darknet/*
+ddm_for_pietro
+*.mp4
+*.icloud
+*.avi
+*.m4v
+*.bin
+*.ipch

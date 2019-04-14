@@ -20,6 +20,10 @@ pub mod utils;
 pub mod process;
 
 type RawType = f32;
+#[inline]
+pub fn raw_nan() -> RawType {
+    std::f32::NAN
+}
 type RawFtType = num_complex::Complex32;
 
 fn set_backend() {
@@ -67,6 +71,8 @@ fn main() {
             capacity,
             annuli_spacing,
             tiling_range,
+            activity_threshold,
+            tile_step,
             filename,
             output_dir,
         })
@@ -75,6 +81,8 @@ fn main() {
             capacity,
             annuli_spacing,
             tiling_range,
+            activity_threshold,
+            tile_step,
             filename,
             output_dir,
         }) => {
@@ -83,6 +91,8 @@ fn main() {
                 capacity,
                 annuli_spacing,
                 tiling_range,
+                activity_threshold,
+                tile_step,
                 filename,
                 output_dir,
             );

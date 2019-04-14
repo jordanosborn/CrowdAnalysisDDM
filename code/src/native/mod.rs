@@ -58,8 +58,14 @@ pub mod opencv {
         fn close_stream(stream_id: usize);
         fn get_fps(stream_id: usize) -> usize;
         fn get_frame_count(stream_id: usize) -> usize;
+        fn get_stream_width(stream_id: usize) -> usize;
+        fn get_stream_height(stream_id: usize) -> usize;
     //pub fn write(filename: *const c_char, cmat: *const CMat);
     //pub fn show_next(stream_id: size_t);
+    }
+
+    pub fn dimension(stream_id: usize) -> (usize, usize) {
+        unsafe { (get_stream_width(stream_id), get_stream_height(stream_id)) }
     }
 
     pub fn fps(stream_id: usize) -> usize {

@@ -47,7 +47,15 @@ pub fn single_ddm(
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
-        let capacity = if let Some(c) = capacity { c } else { fps };
+        let capacity = if let Some(c) = capacity {
+            if c < frame_count {
+                c
+            } else {
+                frame_count
+            }
+        } else {
+            frame_count
+        };
 
         println!(
             "Video is about {} seconds long, containing {} frames!",
@@ -64,6 +72,18 @@ pub fn single_ddm(
                     }
                 },
                 Some(value) => {
+                    if odim == None {
+                        let n = std::cmp::max(value.cols, value.rows);
+                        odim = Some(get_closest_power(n as i64));
+                        match annuli_tx
+                            .send(operations::generate_annuli(n as u64, annuli_spacing as u64))
+                        {
+                            Ok(_) => println!("Generated annuli!"),
+                            Err(e) => {
+                                panic!("Failed to generate annuli - {}!", e);
+                            }
+                        }
+                    }
                     if let Some(dim) = odim {
                         let ft = fft_shift!(af::fft2(&value.data, 1.0, dim, dim));
                         match tx.send(Some(ft)) {
@@ -75,17 +95,6 @@ pub fn single_ddm(
                             }
                         }
                         counter += 1;
-                    } else {
-                        let n = std::cmp::max(value.cols, value.rows);
-                        odim = Some(get_closest_power(n as i64));
-                        match annuli_tx
-                            .send(operations::generate_annuli(n as u64, annuli_spacing as u64))
-                        {
-                            Ok(_) => println!("Generated annuli!"),
-                            Err(e) => {
-                                panic!("Failed to generate annuli - {}!", e);
-                            }
-                        }
                     }
                 }
             }
@@ -116,17 +125,11 @@ pub fn single_ddm(
                 },
             }
 
-            if data.data.len() == capacity {
-                accumulator = ddm(accumulator, &data.data);
-                counter_t0 += 1;
-                println!("Analysis of t0 = {} done!", counter_t0);
-            }
-
             if collected_all_frames {
                 if let Some(a) = accumulator {
                     let accumulator = a
                         .par_iter()
-                        .map(|x| x / (counter_t0 as f32))
+                        .map(|x| x / (counter_t0 as crate::RawType))
                         .collect::<Vec<af::Array<RawType>>>();
                     let annuli = match annuli_rx.recv() {
                         Ok(v) => v,
@@ -136,8 +139,8 @@ pub fn single_ddm(
                     };
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     let radial_averaged_index = (1..=radial_averaged.len())
-                        .map(|i| i as f32)
-                        .collect::<Vec<f32>>();
+                        .map(|i| i as RawType)
+                        .collect::<Vec<RawType>>();
 
                     let (r_avg_transposed_index, r_avg_transposed) =
                         operations::transpose_2d_array(&radial_averaged);
@@ -160,6 +163,12 @@ pub fn single_ddm(
                     data_out = Some((r_avg_transposed_index, r_avg_transposed));
                 }
                 break;
+            }
+
+            if data.data.len() == capacity {
+                accumulator = ddm(accumulator, &data.data);
+                counter_t0 += 1;
+                println!("Analysis of t0 = {} done!", counter_t0);
             }
         }
         println!(
