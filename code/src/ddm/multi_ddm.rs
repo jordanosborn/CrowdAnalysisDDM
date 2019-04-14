@@ -10,7 +10,7 @@ use std::sync::mpsc;
 use super::common::*;
 use crate::fft_shift;
 use crate::operations;
-use crate::operations::Data;
+use crate::operations::{sub_array, Data};
 use crate::utils::get_closest_power;
 use crate::wait;
 use crate::{RawFtType, RawType};
@@ -79,18 +79,23 @@ pub fn multi_ddm(
             println!("Only square videos are supported!");
             return None;
         }
+        let dimension = width;
 
         let (tiling_min, tiling_max, tiling_size_count) =
             if let (Some(min), Some(max), Some(number)) = tiling_range {
                 if max >= min && number != 0 {
-                    (min, if max <= width { max } else { width }, Some(number))
+                    (
+                        min,
+                        if max <= width { max } else { dimension },
+                        Some(number),
+                    )
                 } else {
                     println!("Invalid tiling range selected!");
                     return None;
                 }
             } else if let (Some(min), Some(max), None) = tiling_range {
                 if max >= min {
-                    (min, if max <= width { max } else { width }, None)
+                    (min, if max <= width { max } else { dimension }, None)
                 } else {
                     println!("Invalid tiling range selected!");
                     return None;
@@ -99,6 +104,7 @@ pub fn multi_ddm(
                 println!("Invalid tiling range selected!");
                 return None;
             };
+        let tile_step = if let Some(t) = tile_step { t } else { 1 };
 
         let output_dir = if let Some(v) = filename {
             v
@@ -206,7 +212,42 @@ pub fn multi_ddm(
 
             if data.data.len() == capacity {
                 //TODO: process them before cap
-                println!("{:#?}", box_range);
+                for box_size in box_range.iter() {
+                    let indices: Vec<(usize, usize)> = (0..(dimension - box_size))
+                        .step_by(tile_step)
+                        .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
+                        .collect();
+                    let mut active_regions = indices
+                        .par_iter()
+                        .map(|(x, y)| {
+                            let time_slices = data
+                                .data
+                                .par_iter()
+                                .map(|d| {
+                                    //TODO:
+                                    operations::sub_array(
+                                        &d,
+                                        (*x as u64, (*x + box_size) as u64),
+                                        (*y as u64, (*y + box_size) as u64),
+                                    )
+                                })
+                                .collect::<Vec<Option<af::Array<crate::RawType>>>>();
+                            (operations::activity(&time_slices), time_slices)
+                        })
+                        .collect::<Vec<(Option<f64>, Vec<Option<af::Array<crate::RawType>>>)>>();
+                    active_regions.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap()); //Sorts in reverse order maximal activity
+                    if let Some(a) = activity_threshold {
+                        active_regions = active_regions[..a - 1].to_vec()
+                    }
+                    println!(
+                        "{:?}",
+                        active_regions
+                            .iter()
+                            .map(|(a, _)| a.unwrap())
+                            .collect::<Vec<f64>>()
+                    );
+                    wait!();
+                }
                 wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
