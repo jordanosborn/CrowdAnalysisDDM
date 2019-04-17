@@ -41,24 +41,26 @@
 %TODO: Tuesday 16/04
 In this project the technique of Differential Dynamic Microscopy will be applied to videos of crowd motion. This technique provides information about the dynamical behaviour of objects in a video without the use of image segmentation. DDM was first carried out in 2008, to analyse the dynamics of colloidal particles in Brownian motion \cite{ddm0}. A video of colloidal particles will be analysed and will act as a test case for the code developed in this project. Differential Dynamic Microscopy has primarily been used to analyse the motion of microscopic particles \cite{ddm1} \cite{ddm2}. This project was undertaken in order to determine the applicability of DDM to macroscopic motion i.e. crowd motion videos. The code developed as a part of this project is intended to act as a reference for further development (e.g. for real time commercial crowd analysis) and so has been developed with execution speed as well as accuracy as a priority. Certain design decision were undertaken to achieve this. Further discussion about implementation will be carried out in section 3.
 \\\\
-In the figure below we see an outline of how DDM is carried out in the simple case of Brownian Motion. A detailed discussion of the theory behind DDM will occur in section 3.
+In the figure below we see an outline of how DDM is carried out in the simple case of Brownian Motion. A detailed discussion of the theory behind DDM will occur in section 3. The information extractable from a DDM analysis is sensitive to the particular dynamics of the system for example for particles undergoing Brownian motion it is possible to extract the size of the diffusing particle\cite{ddm1}.
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[height=6cm]{images/ddmpic.png}
+\includegraphics[height=5.5cm]{images/ddmpic.png}
 \caption{Provides an overview of the ddm method as applied to the analysis of collective dynamics in ciliated cells.\cite{ddm2}}
+\end{figure}
+
 \begin{enumerate}[label=\alph*]
 \item we take a video of the motion we wish to analyse and convert each frame into a 2D array of gray-scale pixel intensities.
 \item for each starting frame in the video we take the difference between the pixel intensities of that frame and all lagging frames. $ \tau $ 
-denotes the temporal separation of the two frames. ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $) We denote each of these differences $ d(\underline{x}, t_0, \tau) $.
+denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $). We denote each of these differences $ d(\underline{x}, t_0, \tau) $.
 \item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position. $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $I(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
 \item because the system is stationary (power spectrum should be independent of $t_0$ and should only depend on $\tau$) we therefore take the average of the Fourier transforms over each $t_0$. This allows us to remove the dependence of $t_0$ from I and also reduce the effects of experimental uncertainty.
 \item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector q. $I(q, \tau)$
-\item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$.
+\item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of q will yield the diffusion coefficient D. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
 \end{enumerate}
-\end{figure}
 
+%TODO: types of ddm, 
 
 \clearpage
 \section{Literature Review}
