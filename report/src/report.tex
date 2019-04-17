@@ -14,7 +14,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{enumitem}
-\nocite{*}
+
 \addbibresource{report.bib}
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
@@ -60,7 +60,9 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of q will yield the diffusion coefficient D. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
 \end{enumerate}
 
-%TODO: types of ddm, 
+
+
+%TODO: types of ddm, what we can get, future, lit review intro, video data sets
 
 \clearpage
 \section{Literature Review}
