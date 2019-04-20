@@ -55,12 +55,11 @@ DDM has the potential to be used to implement real-time analysis of crowd motion
 
 \clearpage
 \section{Theory}
-%TODO: Saturday
 
 DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm\cite{fft}) of this difference to obtain an image structure function.
 From this function many properties of the motion can be determined.\cite{ddm1}
 An outline of the mathematics is given below:
-\\
+
 \begin{equation}
     d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)
 \end{equation}
@@ -79,13 +78,12 @@ We now have
     d(\textbf{q}, t_0, \tau) ) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
 \end{equation}
 
-Where $\textbf{q}$ is the 2d wave vector $(q_x, q_y)$.
+Where $\textbf{q}$ is the 2D wave vector $(q_x, q_y)$.
 Simplifications can be made if you can make some assumptions about the properties of the image, including isotropy and that motion is indifferent about the reference time (can average for all $t_0$).\cite{ddm1}
-
+\\\\
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
 Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each q changes with the time differences between frames $\tau$.\cite{ddm2}
 \\\\
-% TODO:crowd types, and fits, 
 
 It has been shown in general that the image structure function takes the form given below \cite{ddm1}.
 \begin{equation}
@@ -105,7 +103,7 @@ The Van-Hove equation is the probability distribution for a particle with positi
 \end{equation}
 
 It is easy to see through the definitions above how dynamical information about the system can be extracted from the form of the intermediate scattering function.
-
+\\\\
 Now this is a complicated equation and so has only been solved analytically for a few cases. One of which is Brownian motion. In the case of Brownian motion the ISF has been shown to be
 
 \begin{equation}
@@ -124,10 +122,9 @@ Another solved case is that of Ballistic motion (isotropic motion). The form of 
 \end{equation} \cite{DLSPecora}.
 
 Systems that show similar behaviour to ballistic motion should have a similar ISF, from the ISF we should therefore be able to extract the velocity of the crowd from the first peak in the intensity profile.
-
+\\\\
 A related method called multi-scale DDM (this project will make heavy use of this method) picks up temporal and spatial scales of synchronisation separately (normal single-scale DDM only picks up a combination).
-In multi-scale DDM you perform a normal DDM over a whole series of different tilings of the image.\cite{ddm1}
-These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced)\cite{ddm1}
+In multi-scale DDM you perform a normal DDM over a whole series of different tilings of the image\cite{ddm1}. These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced)\cite{ddm1}.
 To reduce the number of tiles that need to be computed you can select only the tiles showing the most activity, an equation that can determine if a tile exceeds a threshold activity is
 \begin{equation}
     \Sigma_{\textbf{r} \in tile} \sigma(\textbf{r}) = \Sigma_{\textbf{r} \in tile} \sqrt{\frac{\Sigma_{[t_0, t_0 + \tau]} (I(\mathbf{r}, t) - <I(\mathbf{r}, t)>)^2}{N - 1}} > \sigma_{threshold}
@@ -159,6 +156,8 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of q will yield the diffusion coefficient D. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
 \end{enumerate}
 
+\subsection{Types of Crowd}
+In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation [7]). And for Swimmer-like crowds we will try a fit of the expected type for ballistic motion (equation [9]).
 
 \clearpage
 \section{Implementation}
