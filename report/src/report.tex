@@ -161,7 +161,7 @@ In this project we will be focusing primarily on two types of crowd. Crowds whic
 
 \clearpage
 \section{Implementation}
-%TODO: Wednesday 18/04 software best practices rust algo pipeline fitting in python but with time do in rust too
+
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
 \\\\
 Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU\cite{jetson}. The Jetson GPU can be coded with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All)\cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely reimplementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
@@ -189,7 +189,7 @@ Software development best practices were followed throughout development. The pr
 
 \clearpage
 \section{Future}
-%TODO: Saturday/Sunday 20-21/04/2019
+%TODO: Monday Tuesday 22-23/04/2019
 \subsection{Comparisons}
 \subsection{Advantages}
 \subsection{Disadvantages}
