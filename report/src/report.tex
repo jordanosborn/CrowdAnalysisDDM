@@ -84,8 +84,46 @@ Simplifications can be made if you can make some assumptions about the propertie
 
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
 Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each q changes with the time differences between frames $\tau$.\cite{ddm2}
+\\\\
+% TODO:crowd types, and fits, 
 
-% TODO: fitting dls scattering function, brownian motion, beat freq, crowd types, and fits, 
+It has been shown in general that the image structure function takes the form given below \cite{ddm1}.
+\begin{equation}
+	I(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q})
+\end{equation}
+
+Where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for f are known including Brownian motion and Ballistic motion \cite{DLSPecora}. The function f "characterises how quickly structure is lost over length scales ~ 1/q"\cite{ddm1}. The parameters A(\textbf{q}) and B(\textbf{q}) are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. All interesting dynamical properties are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}. The intermediate scattering function f is the spatial Fourier transform of the Van-Hove self space-time correlation function \cite{DLSPecora}.
+
+\begin{equation}
+	f(\textbf{q}, \tau) = \mathscr{F} (G(\textbf{r}, \tau)) = \int d^3 \textbf{r} e^{i \textbf{q} \cdot \textbf{r}} G(\textbf{r}, \tau)
+\end{equation}
+
+The Van-Hove equation is the probability distribution for a particle with position $\textbf{R}_j(t)$ to suffer a displacement $\textbf{r}$ in a time $\tau$\cite{DLSPecora}.
+
+\begin{equation}
+	G(\textbf{r}, \tau) = \left\langle \delta (\textbf{r} - [\textbf{R}_j(t) - \textbf{R}_j(0)]) \right\rangle
+\end{equation}
+
+It is easy to see through the definitions above how dynamical information about the system can be extracted from the form of the intermediate scattering function.
+
+Now this is a complicated equation and so has only been solved analytically for a few cases. One of which is Brownian motion. In the case of Brownian motion the ISF has been shown to be
+
+\begin{equation}
+	f(\textbf{q}, \tau) = e^{- \tau / \tau_c(\textbf{q})} = e^{- \tau / (\frac{1}{D_T |\textbf{q}|^2})}
+\end{equation}
+where $D_T$ is the translational diffusion coefficient\cite{ddm1}. If we then fit this to data from videos behaving in a similar manner to Brownian motion we should then have $\tau_c$ as a function of $|\textbf{q}|$. Plotting this data on a log-log plot we should then see the characteristic form predicted by the equation above
+\begin{equation}
+\log{\tau_c} = -2 \cdot \log{|\textbf{q}|} - \log{D_T}
+\end{equation}
+By comparing the measured gradient to -2 we can see how valid the assumption of Brownian motion is. And from the y-intercept we can also derive a prediction for the translational diffusion coefficient $D_T$.
+\\\\
+Another solved case is that of Ballistic motion (isotropic motion). The form of the intermediate structure function in this case is 
+
+\begin{equation}
+	f(\textbf{q}, \tau) = sinc(|\textbf{q}| \cdot v \cdot \tau) \cdot e^{- \tau / \tau_c(\textbf{q})}
+\end{equation} \cite{DLSPecora}.
+
+Systems that show similar behaviour to ballistic motion should have a similar ISF, from the ISF we should therefore be able to extract the velocity of the crowd from the first peak in the intensity profile.
 
 A related method called multi-scale DDM (this project will make heavy use of this method) picks up temporal and spatial scales of synchronisation separately (normal single-scale DDM only picks up a combination).
 In multi-scale DDM you perform a normal DDM over a whole series of different tilings of the image.\cite{ddm1}
@@ -99,7 +137,7 @@ Which sums all of the standard deviations (computed over the time period $\tau$)
 If it is a valid inequality then that tile is said to be "active" otherwise it is "inactive".\cite{ddm2}
 This is a very rudimentary activity classifying function.
 There are other ways that a tile's activity can be classified which may need to be investigated.
-
+\\\\
 In the cross comparisons between the tiles of different sizes the scale of the collective motion should emerge.\cite{ddm1}
 Other properties of the motion should emerge by studying how tau varies as a function of the wave-vector amplitude.\cite{ddm1}
 
