@@ -14,6 +14,7 @@ macro_rules! wait {
     () => {
         loop {
             println!("Continue? y/n");
+            #[allow(clippy::redundant_closure)]
             let o: char = read!("{}");
             if o == 'y' {
                 break;
