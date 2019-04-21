@@ -57,10 +57,13 @@ DDM is a relatively recent development originating in the paper "Differential dy
 Due to DDMs insensitivity to static features of the sample, DDM has found a use in the analysis of hindered diffusion \cite{nanoposts}. Static nano-posts in a square periodic array were used to confine diffusing particles. Using DDM the diffusion coefficient as a function of confinement strength was determined.
 \\\\
 % ddm2 
-
+Multi-scale DDM has been used to study the collective dynamics of cilia\cite{ddm2}. These cilia beat at a well defined frequency. Through the application of multi-scale DDM temporal and spatial coherence scales of cilia dynamics can be found \cite{ddm1}. In a system that has a spatial scale for collective motion (cilia) we would expect that scale to emerge as a feature when comparing the dynamics across tile sizes \cite{ddm1}. And so by seeing how the intensity profiles vary with respect to tile size it is possible to determine spatial coherence of the collective motion.
+\\\\
 %bacterial_motility
-
+DDM has also been used to analyse bacterial motility \cite{bacterial_motility}. In this paper the motion of isotropic "swimmers" (e-coli) was analysed. DDM was used to extract the swimming speed distribution of the bacteria and also their diffusion properties. In this case the data from DDM is fitted to an intermediate scattering function of a similar form to equation [9], however the fitted form is slightly more complicated in that it takes account of the possibility that only a fraction of "swimmers" are motile and also that the swimmers follow some specified speed distribution \cite{bacterial_motility}.
+\\\\
 % only applied to microscopic motion so far this is entirely new, ddm1 cite for a review of ddm.
+An in-depth literature review of DDM was carried out in 2017 \cite{ddm1}. This review focused on the areas in which DDM has been applied, it found that so far DDM has only been used to analyse microscopic dynamics, specifically biological samples suspended in a liquid medium. Further research yielded no results for DDM being used to analyse macroscopic dynamics. This project therefore offers original research on the method of DDM with no evidence of prior literature on this application. The results from past experiments will be used as test cases (primarily Brownian motion) to verify the validity of the code written. Results from this project could provide the motivation to carry out research on further applications of DDM.
 
 \clearpage
 \section{Theory}
@@ -124,7 +127,7 @@ where $D_T$ is the translational diffusion coefficient\cite{ddm1}. If we then fi
 \end{equation}
 By comparing the measured gradient to -2 we can see how valid the assumption of Brownian motion is. And from the y-intercept we can also derive a prediction for the translational diffusion coefficient $D_T$.
 \\\\
-Another solved case is that of Ballistic motion (isotropic motion). The form of the intermediate structure function in this case is 
+Another solved case is that of Ballistic motion. This form is derived on the assumption of an isotropic collection of motile "swimmers" that also undergo Brownian motion as they travel. The form of the intermediate structure function in this case is 
 
 \begin{equation}
 	f(\textbf{q}, \tau) = sinc(|\textbf{q}| \cdot v \cdot \tau) \cdot e^{- \tau / \tau_c(\textbf{q})}
@@ -146,6 +149,8 @@ There are other ways that a tile's activity can be classified which may need to 
 \\\\
 In the cross comparisons between the tiles of different sizes the scale of the collective motion should emerge.\cite{ddm1}
 Other properties of the motion should emerge by studying how tau varies as a function of the wave-vector amplitude.\cite{ddm1}
+
+DDM can be carried out in a fully automated process, as long as the expected form of the system's dynamics is known beforehand. This means that once a family of dynamics is chosen, the DDM data can be fitted to the expected functional form and dynamical information can be extracted, all without the input of a user. \cite{ddm1}
 
 \subsection{DDM example - Brownian motion}
 
