@@ -71,12 +71,13 @@ An in-depth literature review of DDM was carried out in 2017 \cite{ddm1}. This r
 
 DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
 From this function many properties of the motion can be determined \cite{ddm1}.
-An outline of the mathematics is given below:
 
+\subsection{Mathematics}
+Defining d the image structure function (in position space) as
 \begin{equation}
     d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)
 \end{equation}
-The function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
+Where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
 This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in greyscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
 
 \begin{equation}
@@ -174,6 +175,7 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \end{enumerate}
 
 \subsection{Types of Crowd}
+\label{section:crowdtypes}
 In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for ballistic motion (equation \ref{eqn:BallisticISF}).
 
 \clearpage
@@ -181,6 +183,7 @@ In this project we will be focusing primarily on two types of crowd. Crowds whic
 
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
 \\\\
+\subsection{Tools and Technologies}
 Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU\cite{jetson}. The Jetson GPU can be coded with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All)\cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely reimplementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
 \\\\
 Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a much easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust language bindings for popular libraries are still in their infancy. This required me to create a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQlite database to allow efficient querying of the available data.
@@ -206,6 +209,7 @@ Software development best practices were followed throughout development. The pr
 \subsection{Single-Scale DDM}
 \subsection{Multi-Scale DDM}
 \subsection{Performance}
+\label{section:performance}
 %graphs and data
 
 \clearpage
@@ -223,12 +227,20 @@ Software development best practices were followed throughout development. The pr
 % outline from ddm review and initial report
 \subsection{Applications}
 % crowds stadia, stations, shopping malls, 
+
 \subsection{Further Development}
-Due to the time restrictions imposed on this project, development had to be focused. There are various avenues which could be explored in order to improve the current implementation. Two main areas that could be investigated are algorithm optimisations, and crowd categorisation (the appropriate fits).
+Due to the time restrictions imposed on this project, development had to be focused. There are various avenues which could be explored in order to improve the current implementation. Two main areas that could be investigated are algorithm optimisations, and crowd categorisation (the appropriate intermediate scattering functions for each crowd type).
 
 \subsubsection{Algorithm Optimisations}
-
+Although most of the steps in the algorithm complete in a reasonable time frame, further optimisations could be incorporated. See section \ref{section:performance} for performance data. 
+\\\\
+The main algorithmic slowdown occurs in the radial averaging stage, this stage involves multiplying the intensity array by annuli of varying radii (covering the whole intensity array $\Sigma_{A \in annuli} A_{\alpha \beta} = 1 \forall \alpha, \beta )$. The intensity array is multiplied by each annulus, the resulting array elements are summed then averaged over the number of non-zero array elements of the multiplying annulus, thus providing the radial average of the intensity at the annulus radius. This process involves a significant number of array operations and as a result is the limiting step in the current implementation. The approach taken is a naive one, it is anticipated that this process could be sped up significantly if more time were available to investigate different approaches. Perhaps by reducing the usage of expensive element wise operations (summing all elements), and trying an approach that makes more use of the highly parallelised array operations instead.
+\\\\
+Further algorithmic improvements could be made in the initial and final steps of the implementation. To ease the algorithmic implementation no frames are analysed until a full set of data is available (a sufficient number of frames have arrived from the stream so that the last and first frame are separated by a time difference $tau_max$). This means the analysis thread is waiting in standby until this condition is met. This thread could be doing work on the frames that have arrived (doing DDM on the frames that have arrived then waiting when it needs another frame to arrive). The effect of this should be rather small as the thread will only be waiting during the first start time, all subsequent start times that are analysed will occur straight away (as once the frame cache is full, DDM is performed using the first frame in the cache as the start time, once another frame arrives in to the cache the first frame is popped off of the top and discarded. The frame now at position one in the cache will be used as the new start time). For long videos (large number of frames and therefore start times) this effect will be negligible but could be eradicated with further development. 
+\\\\
+Another issue is that the algorithm waits until the video stream has been exhausted before performing curve fitting and dynamical data extraction. This means that live streams (cameras) must be closed before fitting takes place. A solution to this problem is to add a third worker thread that performs curve fitting on the DDM data as it becomes available. This would permit the live extraction of dynamical data. This is only really necessary for real-time crowd analysis (a small slowdown is expected otherwise) and was not included in the current implementation so as to reduce algorithmic complexity.
 \subsubsection{Crowd Categorisation}
+In the current approach crowds are categorised so that they fit into three groups Brownian-like, Swimmer-like or neither (see section \ref{section:crowdtypes} for definitions). To produce better fits for the computed data it would be desirable to further break these categories down. Not only would this provide more accurate results, it may also allow the extraction of different dynamical information (depending on the crowd type and what variables the dynamics depend on). This however would require a time consuming investigation in to not only the mathematics of the ISF for new types of motion, but also how and what defining features could be used to categorise the crowds? These categories would then need to be assigned the appropriate mathematical form of the intermediate scattering function. In-depth tests would then need to be carried out in order to determine the validity of these assignments. Further investigation in this area might lead to more fine grained categorisation of crowd types and their appropriate fits but due to time constraints this project will restrict itself to just the three mentioned above.
 
 \clearpage
 \section{Conclusion}
