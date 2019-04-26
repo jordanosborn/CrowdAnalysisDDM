@@ -169,6 +169,8 @@ if __name__ == "__main__":
             )
         retranspose(files)
         upload()
+    elif len(sys.argv) == 2 and sys.argv[1] == "add2db":
+        add_to_db()
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"
