@@ -79,6 +79,7 @@ def add_to_db():
 
 
 if __name__ == "__main__":
+    files: List[str] = []
     if (
         len(sys.argv) == 3
         and sys.argv[1] in ["video-multi-ddm", "video-ddm"]
@@ -90,7 +91,7 @@ if __name__ == "__main__":
         and sys.argv[1] in ["video-multi-ddm", "video-ddm"]
         and os.path.isdir(sys.argv[2])
     ):
-        files: List[str] = []
+        files = []
         capacity, radial_width = sys.argv[3], sys.argv[4]
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(
@@ -114,7 +115,7 @@ if __name__ == "__main__":
                 upload()
 
         print("Producing retranspose")
-        files: List[str] = []
+        files = []
         for (dirpath, dirnames, filenames) in os.walk("./results"):
             files.extend(
                 filter(
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     elif len(sys.argv) == 2 and sys.argv[1] == "plot":
         sp.call(["python3", "./analysis/plotter.py", "search", "video"])
     elif len(sys.argv) == 5 and sys.argv[1] == "resize" and os.path.isdir(sys.argv[2]):
-        files: List[str] = []
+        files = []
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(
                 map(
@@ -159,7 +160,7 @@ if __name__ == "__main__":
         and sys.argv[1] == "retranspose"
         and os.path.isdir(sys.argv[2])
     ):
-        files: List[str] = []
+        files = []
         for (dirpath, dirnames, filenames) in os.walk(sys.argv[2]):
             files.extend(
                 filter(
