@@ -43,7 +43,6 @@
 
 \clearpage
 \section{Introduction}
-%TODO: Tuesday 16/04
 In this project the technique of Differential Dynamic Microscopy will be applied to videos of crowd motion. This technique provides information about the dynamical behaviour of objects in a video without the use of image segmentation. DDM was first carried out in 2008, to analyse the dynamics of colloidal particles in Brownian motion \cite{ddm0}. A video of colloidal particles will be analysed and will act as a test case for the code developed in this project. Differential Dynamic Microscopy has primarily been used to analyse the motion of microscopic particles \cite{ddm1} \cite{ddm2}. This project was undertaken in order to determine the applicability of DDM to macroscopic motion i.e. crowd motion videos. A literature review will be carried out in section 2, but this will mainly be centred around the microscopic applications of DDM as prior literature is not available for the application of DDM to macroscopic motion. The code developed as a part of this project is intended to act as a reference for further development (e.g. for real time commercial crowd analysis) and so has been developed with execution speed as well as accuracy as a priority. Certain design decision were undertaken to achieve this. Further discussion about implementation will be carried out in section 3.
 \\\\
 DDM is used to extract dynamical information from videos by analysing the Intensity profile (in k-space) of the differences between a starting frame and lagging frames. This intensity is a function of wave-vector q and $\tau$ the time delay between frames. By fitting this curve to the expected image structure function we can extract dynamical information about the system. A detailed discussion of the theory behind DDM will occur in section 3. (The information extractable from a DDM analysis is sensitive to the particular dynamics of the system for example for particles undergoing Brownian motion it is possible to extract the size of the diffusing particle \cite{ddm1}.)
@@ -56,7 +55,6 @@ DDM has the potential to be used to implement real-time analysis of crowd motion
 
 \clearpage
 \section{Literature Review}
-%TODO: Sunday 21 / 04 / 19
 DDM is a relatively recent development originating in the paper "Differential dynamic microscopy: Probing wave-vector-dependent dynamics with a microscope" in 2008 \cite{ddm0}. In this paper the technique was used to attempt a characterisation of the dynamics of colloidal particles undergoing Brownian motion. DDM was first used to determine the diffusion coefficient of colloidal particles suspended in a liquid medium \cite{ddm0} \cite{ddm_maths}. This is likely due to the known form of the intermediate scattering function for Brownian motion equation \ref{eqn:BrownianISF}. If the viscosity of the liquid is known DDM can also be used to determine the size of the diffusing particles \cite{ddm1} and vice versa. 
 \\\\
 Due to DDMs insensitivity to static features of the sample, DDM has found a use in the analysis of hindered diffusion \cite{nanoposts}. Static nano-posts in a square periodic array were used to confine diffusing particles. Using DDM the diffusion coefficient as a function of confinement strength was determined.
@@ -72,7 +70,6 @@ An in-depth literature review of DDM was carried out in 2017 \cite{ddm1}. This r
 
 \clearpage
 \section{Theory}
-
 DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
 From this function many properties of the motion can be determined \cite{ddm1}.
 
@@ -207,6 +204,9 @@ Software development best practices were followed throughout development. The pr
 \clearpage
 \section{Results}
 %TODO: All multi-ddm and analyse
+\subsection{Data}
+
+\subsection{Graphs}
 
 \clearpage
 \section{Discussion}
@@ -221,20 +221,38 @@ Software development best practices were followed throughout development. The pr
 \subsection{Comparisons}
 There are many methods that can be used to analyse motion within videos. Some examples are outlined and compared with DDM in the sections below.
 \subsubsection{Image Segmentation}
+In image segmentation an image is partition in to a set of segments. The image is split in to segments that have certain characteristics (colour, intensity, etc.) and could be chosen algorithmically or manually. This is carried out in order to simplify the image and hence reduce the complexity of any subsequent analysis. \cite{computer_vision_book} An example of image segmentation would be object detection using the gradient of intensity to detect object boundaries (edges) using a Sobel filter \cite{sobel}. Image segmentation can be carried out using a variety of algorithms including k-means clustering (an unsupervised technique) \cite{segmentation_kmeans}. K-means clustering is carried out by picking k centres (categories) then putting each segment in the category that minimises the difference between the cluster center and the segment. The cluster centres are then re-computed by averaging over all points in the cluster and the previous step is repeated until convergence. Segmentation could be carried out on moving objects by carrying out these techniques on the difference between successive frames (static background should be removed).
+\\\\
+Most image segmentation algorithms are very computationally intensive and some even require manual input. DDM however offers solutions to both of these problems. DDM can offer dramatic speed improvements due to its highly parallel nature and can even be made to run fully autonomously (once an ISF is selected). DDM focuses on more fundamental properties of the motion and is backgrounded in physics (fitting to a derived ISF) whereas with many image segmentation techniques the focus is on a straight analysis of the image intensity field and can be incredibly sensitive to the properties of the video (leading to over-under segmentation etc.) \cite{computer_vision_book}. 
 
 \subsubsection{Neural Networks}
+Neural networks offer some unique benefits over DDM in that they can be trained to find specific objects in an image and so can be used to directly count the number and location of different objects \cite{yolov3}. The main drawback is that these predictions will only be as good as the quality of your dataset. High quality data is often not available and when it is it is usually very expensive to procure. The larger your training dataset the longer it will take to train (usually with the benefit of more accurate predictions). Often training algorithms will require a form of supervised learning, for example the images will need to be tagged with the objects they contain. This is a time consuming process. However once the model is trained it can usually produce predictions in a reasonable time frame. However if detection of a new type of object is required the model will need to be retrained, often with a new dataset. \cite{tensorflow} DDM requires no such training data and can therefore be used with zero training time on any type of motion (once an ISF is selected). These two methods are however not at odds with one another, DDM can't be used to track objects as it doesn't really have a notion of the individual constituents of the system. It is primarily focussed on extracting dynamical information of the entire system or average information about the individual constituents. Neural networks however can be used to locate and track individual objects between frames. It however is not really applicable to the extraction of dynamical information. These two methods could therefore be used in tandem to track and analyse the motion inside crowds.
 
 \subsubsection{Particle Image Velocimetry}
+Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used. 
 
 \subsubsection{Optical Flow}
 
-%  Image segmentation, neural networks, particle image velocimetry, optical flow
+
 \subsection{Advantages}
+\begin{enumerate}
+\item It can be applied without carrying out any special preparations on the system. DDM can therefore be used on pre-recorded footage.
+\item Does not require training data.
+\item Completely autonomous (once an intermediate scattering function is selected).
+\item Highly parallelisable so it could be carried out in real-time (however the required optimisations aren't currently implemented).
+\item Can be applied to a wide range of dynamical systems.
+\item Based on the physical information encoded in the footage, rather than focusing on particular image properties.
+\item Can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
+\end{enumerate}
 
-% outline from ddm review and initial report
 \subsection{Disadvantages}
+\begin{enumerate}
+\item Can't be used to track individual constituents of the system.
+\item Information that can be extracted from the footage is entirely determined by the form of the ISF.
+\item The ISF only has analytic solutions for a small collection of systems. And therefore some research needs to be carried out in order to determine good approximate fits for certain crowd types (the good news is this only needs to be done once for each crowd type).
+\item The form of the ISF must be chosen before fitting can start and so crowds must be classified before this fitting can take place. However fits for multiple ISFs could be produced, and human intervention/cost functions could be used to select the most realistic fits. The dynamical information from the selected fits could then be compared to select a plausible result and so this drawback could be circumvented somewhat.
+\end{enumerate}
 
-% outline from ddm review and initial report
 \subsection{Applications}
 If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems in crowded environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
 
@@ -267,6 +285,6 @@ Code may be found online at \url{https://github.com/jordanosborn/MastersProject}
 \subsection{Videos}
 The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}.
 \subsection{Database}
-The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$video name$\}\_\{$data type$\}$ replacing the curly braces with the name of the video and data type that are desired.
+The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired.
 
 \end{document}
