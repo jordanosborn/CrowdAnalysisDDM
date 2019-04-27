@@ -234,22 +234,23 @@ Is a technique that is more appropriate for comparison with microscopic applicat
 \subsubsection{Optical Flow}
 
 
-%  Image segmentation, neural networks, particle image velocimetry, optical flow
 \subsection{Advantages}
 \begin{enumerate}
-\item It can be applied without any special preparations of the system. Can be used on pre-recorded footage.
+\item It can be applied without carrying out any special preparations on the system. DDM can therefore be used on pre-recorded footage.
 \item Does not require training data.
-\item Is completely autonomous (once an ISF) is selected.
-\item Is highly parallelisable so could be carried out in real-time.
-\item It can be applied to a wide range of dynamical systems.
-\item Is based on the physical information encoded in the footage, rather than focusing on particular image properties.
-\item It can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
+\item Completely autonomous (once an intermediate scattering function is selected).
+\item Highly parallelisable so it could be carried out in real-time (however the required optimisations aren't currently implemented).
+\item Can be applied to a wide range of dynamical systems.
+\item Based on the physical information encoded in the footage, rather than focusing on particular image properties.
+\item Can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
 \end{enumerate}
 
 \subsection{Disadvantages}
 \begin{enumerate}
-
-
+\item Can't be used to track individual constituents of the system.
+\item Information that can be extracted from the footage is entirely determined by the form of the ISF.
+\item The ISF only has analytic solutions for a small collection of systems. And therefore some research needs to be carried out in order to determine good approximate fits for certain crowd types (the good news is this only needs to be done once for each crowd type).
+\item The form of the ISF must be chosen before fitting can start and so crowds must be classified before this fitting can take place. However fits for multiple ISFs could be produced, and human intervention/cost functions could be used to select the most realistic fits. The dynamical information from the selected fits could then be compared to select a plausible result and so this drawback could be circumvented somewhat.
 \end{enumerate}
 
 \subsection{Applications}
