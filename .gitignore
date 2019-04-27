@@ -18,7 +18,6 @@ gen
 *.log
 *.out
 *.xml
-*.sqlite
 code/target/*
 
 code/*.jpg
