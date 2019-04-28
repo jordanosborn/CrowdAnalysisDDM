@@ -100,18 +100,29 @@ pub fn multi_ddm(
                     println!("Invalid tiling range selected!");
                     return None;
                 }
+            } else if let (None, None, None) = tiling_range {
+                ((dimension as f64).log2() as usize, dimension, None)
             } else {
                 println!("Invalid tiling range selected!");
                 return None;
             };
         let tile_step = if let Some(t) = tile_step { t } else { 1 };
 
-        let output_dir = if let Some(v) = filename {
+        let filename = if let Some(v) = filename {
             v
         } else {
             String::from("camera")
         };
-        println!("Analysis of {} stream started!", &output_dir);
+        let output_dir = if let Some(v) = output_dir {
+            v
+        } else {
+            format!("results_multiDDM/{}", filename)
+        };
+
+        println!(
+            "Analysis of {} stream started! Results will be saved in {}",
+            &filename, &output_dir
+        );
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
@@ -237,7 +248,7 @@ pub fn multi_ddm(
                         .collect::<Vec<(Option<f64>, Vec<Option<af::Array<crate::RawType>>>)>>();
                     active_regions.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap()); //Sorts in reverse order maximal activity
                     if let Some(a) = activity_threshold {
-                        active_regions = active_regions[..a - 1].to_vec()
+                        active_regions = active_regions[..a].to_vec()
                     }
                     println!(
                         "{:?}",
