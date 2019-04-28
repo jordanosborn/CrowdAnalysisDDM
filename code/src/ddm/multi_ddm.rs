@@ -196,9 +196,6 @@ pub fn multi_ddm(
             })
             .collect();
 
-        //TODO: here
-        //BOX_size[tau[array]]
-        // ;
         #[allow(clippy::type_complexity)]
         let mut accumulator: HashMap<
             usize,
@@ -221,6 +218,7 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
+                //Radial average and box size average and t0 average
                 // if let Some(a) = accumulator {
                 //     let accumulator = a
                 //         .par_iter()
@@ -291,6 +289,7 @@ pub fn multi_ddm(
                             accumulator.insert(*box_size, h);
                         }
                     }
+                    //TODO:
 
                     println!("Tiled all images for box size {}", box_size);
                 }
