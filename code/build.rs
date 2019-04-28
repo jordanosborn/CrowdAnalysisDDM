@@ -40,8 +40,6 @@ fn build(src_files: Vec<&str>, output: &str) {
         .files(src_files)
         .cpp(true)
         .flag("-std=c++14")
-        .flag("-L/opt/arrayfire/lib")
-        .flag("-L/usr/local/lib")
         .flag(&get_opencv_flags())
         .include("./lib/include")
         .include("/usr/local/include")
