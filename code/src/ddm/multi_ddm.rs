@@ -222,6 +222,7 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
+                //T0 average
                 for (_, v) in accumulator.iter_mut() {
                     for (_, v2) in v.iter_mut() {
                         if let Some(arr) = v2 {
@@ -233,13 +234,14 @@ pub fn multi_ddm(
                         }
                     }
                 }
+                //retrieve all annuli
                 let annuli = match annuli_rx.recv() {
                     Ok(v) => v,
                     Err(e) => {
                         panic!("Failed to receive annuli - {}!", e);
                     }
                 };
-                //Radial average and box size average and t0 average
+                //Radial average and box size average save csv
                 //     //TODO: radial averaging use up to max radius.
                 //Store in data_out
                 break;
