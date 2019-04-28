@@ -296,7 +296,7 @@ pub fn multi_ddm(
 
                     println!("Tiled all images for box size {}", box_size);
                 }
-                println!("{:#?}", accumulator.keys().collect::<Vec<_>>());
+                println!("{:#?}", accumulator[&512usize].keys().collect::<Vec<_>>());
                 wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
