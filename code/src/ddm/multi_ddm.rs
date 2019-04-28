@@ -250,16 +250,11 @@ pub fn multi_ddm(
                             indices
                                 .par_iter()
                                 .map(|(x, y)| {
-                                    println!("{:?}, {}", (x, y), box_size);
-
-                                    let arr = operations::sub_array(
+                                    operations::sub_array(
                                         &im,
-                                        (*x as u64, (*x + box_size) as u64),
-                                        (*y as u64, (*y + box_size) as u64),
-                                    );
-                                    println!("{:?} {:?}", im.dims(), arr.clone().unwrap().dims());
-                                    wait!();
-                                    arr
+                                        (*x as u64, *y as u64),
+                                        ((*x + box_size) as u64, (*y + box_size) as u64),
+                                    )
                                 })
                                 .filter(std::option::Option::is_some)
                                 .map(std::option::Option::unwrap)
