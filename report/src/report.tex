@@ -232,7 +232,22 @@ Neural networks offer some unique benefits over DDM in that they can be trained 
 Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used. 
 
 \subsubsection{Optical Flow}
-todo \cite{optical_flow}
+"Optical flow is the distribution of apparent velocities of movement of brightness patterns in an image" \cite{optical_flow}. It can arise due to relative motion between an observer and the objects in a scene. Optical flow can give information about the spatial positioning of objects and the rate of change of the arrangements of these objects. "Discontinuities in the optical flow can help in segmenting images into regions that correspond to different objects" \cite{optical_flow}. However objects may be moving but exhibit no change in brightness, this method will therefore not be sensitive to this sort of motion. It is possible to determine the velocities of the motion from the brightness gradients computed from the footage.
+\\\\
+The equation that is used to determine these velocities is derived under the assumption that the pixel intensity of a moving object ($x \rightarrow x + dx, y \rightarrow y + dy, t \rightarrow t + dt $) is unchanged and that neighbouring pixels have similar motion \cite{optical_flow_opencv}.
+\begin{equation}
+I(x, y, t) = I(x + dx, y + dy, t + dt)
+\end{equation}
+Taking the Taylor expansion of this equation and only retaining up to first order.
+\begin{equation}
+I(x, y, t) = I(x, y, t) + \frac{\partial I}{\partial x} dx + \frac{\partial I}{\partial y} dy + \frac{\partial I}{\partial t} dt
+\end{equation}
+After rearranging and then taking the time derivative we arrive at the desired equation.
+\begin{equation}
+0 = \nabla I \cdot \textbf{v} + \frac{\partial I}{\partial t}
+\end{equation}
+ 
+There are some notable caveats of this method which are outlined in detail in \cite{optical_flow}. The method therefore requires you to solve a partial differential equation thus necessitating implementation of some constraints in order to fully determine the motion. It also assumes that objects show consistent intensities which may or may not be valid depending on the footage. DDM requires neither of these things.
 
 \subsection{Advantages}
 \begin{enumerate}
@@ -240,7 +255,7 @@ todo \cite{optical_flow}
 \item Does not require training data.
 \item Completely autonomous (once an intermediate scattering function is selected).
 \item Highly parallelisable so it could be carried out in real-time (however the required optimisations aren't currently implemented).
-\item Can be applied to a wide range of dynamical systems.
+\item Can be applied to a wide range of dynamical systems. Has very few requirements.
 \item Based on the physical information encoded in the footage, rather than focusing on particular image properties.
 \item Can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
 \end{enumerate}
