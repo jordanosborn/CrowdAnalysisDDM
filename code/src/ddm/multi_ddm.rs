@@ -189,9 +189,9 @@ pub fn multi_ddm(
         let indices_range: Vec<Vec<(usize, usize)>> = box_range
             .par_iter()
             .map(|box_size| {
-                (0..(dimension - box_size))
+                (0..=(dimension - box_size))
                     .step_by(*box_size) //tile_step)
-                    .cartesian_product((0..(dimension - box_size)).step_by(*box_size)) //tile_step))
+                    .cartesian_product((0..=(dimension - box_size)).step_by(*box_size)) //tile_step))
                     .collect()
             })
             .collect();
@@ -239,6 +239,7 @@ pub fn multi_ddm(
                 //TODO: process them before cap
                 for (box_id, box_size) in box_range.iter().enumerate() {
                     let indices = &indices_range[box_id];
+                    println!("{:?}", indices);
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
