@@ -190,8 +190,8 @@ pub fn multi_ddm(
             .par_iter()
             .map(|box_size| {
                 (0..(dimension - box_size))
-                    .step_by(tile_step)
-                    .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
+                    .step_by(*box_size) //tile_step)
+                    .cartesian_product((0..(dimension - box_size)).step_by(*box_size)) //tile_step))
                     .collect()
             })
             .collect();
@@ -276,6 +276,8 @@ pub fn multi_ddm(
                             (*x, *y, ddmed)
                         })
                         .collect();
+                    println!("Computed FTs of tilings for box size {}", box_size);
+                    wait!();
                     for (x, y, acc) in tiled_images_ddm.iter() {
                         if let Some(v1) = accumulator.get_mut(box_size) {
                             if let Some(v2) = v1.get_mut(&(*x, *y)) {
