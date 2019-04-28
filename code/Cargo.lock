@@ -94,7 +94,7 @@ dependencies = [
 
 [[package]]
 name = "code"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "arrayfire 3.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cc 1.0.35 (registry+https://github.com/rust-lang/crates.io-index)",
