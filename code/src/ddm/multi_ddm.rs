@@ -222,18 +222,6 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
-                //T0 average
-                for (_, v) in accumulator.iter_mut() {
-                    for (_, v2) in v.iter_mut() {
-                        if let Some(arr) = v2 {
-                            *v2 = Some(
-                                arr.iter()
-                                    .map(|a| a / (counter_t0 as crate::RawType))
-                                    .collect(),
-                            );
-                        }
-                    }
-                }
                 //retrieve all annuli
                 let annuli = match annuli_rx.recv() {
                     Ok(v) => v,
@@ -241,6 +229,59 @@ pub fn multi_ddm(
                         panic!("Failed to receive annuli - {}!", e);
                     }
                 };
+                //T0 and radial average
+                // box_size[tau[I(q)]]
+                let mut box_size_map = HashMap::with_capacity(accumulator.len());
+                for (box_size, v) in accumulator.iter_mut() {
+                    let resized_annuli: VecDeque<_> = annuli
+                        .par_iter()
+                        .filter_map(|(q, arr)| {
+                            let resized_arr = operations::sub_array(
+                                arr,
+                                (
+                                    (dimension - box_size) as u64 / 2,
+                                    (dimension - box_size) as u64 / 2,
+                                ),
+                                (
+                                    (dimension + box_size) as u64 / 2,
+                                    (dimension + box_size) as u64 / 2,
+                                ),
+                            )?;
+                            if af::sum_all(&resized_arr).0 != 0.0 {
+                                Some((q, resized_arr))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    //averaged over
+                    let acc_vec: Option<Vec<af::Array<crate::RawType>>> = Some(vec![
+                        af::Array::new_empty(
+                            af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1])
+                        );
+                        capacity - 1
+                    ]);
+                    let acc_vec = v.iter().fold(acc_vec, |acc, ((_, _), arr)| {
+                        let arr = arr.to_owned()?;
+                        let acc = (acc)?;
+                        Some(
+                            acc.par_iter()
+                                .zip(arr.par_iter())
+                                .map(|(a, x)| a + x)
+                                .collect(),
+                        )
+                    });
+                    //Add to box size map
+                    if let Some(a) = acc_vec {
+                        box_size_map.insert(
+                            *box_size,
+                            a.par_iter()
+                                .map(|x| x / (capacity - 1) as crate::RawType)
+                                .collect::<Vec<_>>(),
+                        );
+                    }
+                }
+
                 //Radial average and box size average save csv
                 //     //TODO: radial averaging use up to max radius.
                 //Store in data_out
