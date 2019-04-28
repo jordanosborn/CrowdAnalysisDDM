@@ -62,7 +62,7 @@ pub fn multi_ddm(
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
-) -> Option<IndexedData> {
+) -> Option<Vec<IndexedData>> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -182,19 +182,17 @@ pub fn multi_ddm(
         });
 
         let mut counter_t0 = 0;
-        let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
+        let mut images: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
 
-        println!("{:#?}", box_range);
         //TODO: here
-
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        data.push(v);
+                        images.push(v);
                     }
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
@@ -218,47 +216,37 @@ pub fn multi_ddm(
                             panic!("Failed to receive annuli - {}!", e);
                         }
                     };
+                    //TODO: radial averaging use up to max radius.
                 }
                 break;
             }
 
-            if data.data.len() == capacity {
+            if images.data.len() == capacity {
                 //TODO: process them before cap
-                for box_size in box_range.iter() {
+                for (i, box_size) in box_range.iter().enumerate() {
                     let indices: Vec<(usize, usize)> = (0..(dimension - box_size))
                         .step_by(tile_step)
                         .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
                         .collect();
-                    let mut active_regions = indices
-                        .par_iter()
-                        .map(|(x, y)| {
-                            let time_slices = data
+                    for (i, (x, y)) in indices.iter().enumerate() {
+                        for im in images.data.iter() {
+                            let sub_arrays: Vec<af::Array<crate::RawType>> = images
                                 .data
                                 .par_iter()
                                 .map(|d| {
-                                    //TODO:
                                     operations::sub_array(
                                         &d,
                                         (*x as u64, (*x + box_size) as u64),
                                         (*y as u64, (*y + box_size) as u64),
                                     )
                                 })
-                                .collect::<Vec<Option<af::Array<crate::RawType>>>>();
-                            (operations::activity(&time_slices), time_slices)
-                        })
-                        .collect::<Vec<(Option<f64>, Vec<Option<af::Array<crate::RawType>>>)>>();
-                    active_regions.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap()); //Sorts in reverse order maximal activity
-                    if let Some(a) = activity_threshold {
-                        active_regions = active_regions[..a].to_vec()
+                                .filter(std::option::Option::is_some)
+                                .map(std::option::Option::unwrap)
+                                .collect();
+                            println!("{},{},{}", i, x, y);
+                            println!("{:#?}", sub_arrays.len());
+                        }
                     }
-                    println!(
-                        "{:?}",
-                        active_regions
-                            .iter()
-                            .map(|(a, _)| a.unwrap())
-                            .collect::<Vec<f64>>()
-                    );
-                    wait!();
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);

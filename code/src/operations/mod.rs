@@ -122,6 +122,14 @@ pub struct Data<T: arrayfire::HasAfEnum> {
     pub capacity: Option<usize>,
 }
 
+impl<T: arrayfire::HasAfEnum> IntoIterator for Data<T> {
+    type Item = arrayfire::Array<T>;
+    type IntoIter = ::std::collections::vec_deque::IntoIter<Self::Item>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
+
 impl<T: arrayfire::HasAfEnum> Data<T> {
     pub fn new(fps: usize, capacity: Option<usize>) -> Data<T> {
         if let Some(size) = capacity {
