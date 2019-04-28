@@ -53,7 +53,11 @@ fn get_allowed_dimension(
 }
 
 //TODO: implement this!
-#[allow(unused_variables, clippy::too_many_arguments)]
+#[allow(
+    unused_variables,
+    clippy::too_many_arguments,
+    clippy::cyclomatic_complexity
+)]
 pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
@@ -218,20 +222,26 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
+                for (_, v) in accumulator.iter_mut() {
+                    for (_, v2) in v.iter_mut() {
+                        if let Some(arr) = v2 {
+                            *v2 = Some(
+                                arr.iter()
+                                    .map(|a| a / (counter_t0 as crate::RawType))
+                                    .collect(),
+                            );
+                        }
+                    }
+                }
+                let annuli = match annuli_rx.recv() {
+                    Ok(v) => v,
+                    Err(e) => {
+                        panic!("Failed to receive annuli - {}!", e);
+                    }
+                };
                 //Radial average and box size average and t0 average
-                // if let Some(a) = accumulator {
-                //     let accumulator = a
-                //         .par_iter()
-                //         .map(|x| x / (counter_t0 as crate::RawType))
-                //         .collect::<Vec<af::Array<RawType>>>();
-                //     let annuli = match annuli_rx.recv() {
-                //         Ok(v) => v,
-                //         Err(e) => {
-                //             panic!("Failed to receive annuli - {}!", e);
-                //         }
-                //     };
                 //     //TODO: radial averaging use up to max radius.
-                // }
+                //Store in data_out
                 break;
             }
 
@@ -239,7 +249,6 @@ pub fn multi_ddm(
                 //TODO: process them before cap
                 for (box_id, box_size) in box_range.iter().enumerate() {
                     let indices = &indices_range[box_id];
-                    println!("{:?}", indices);
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
@@ -277,8 +286,6 @@ pub fn multi_ddm(
                             (*x, *y, ddmed)
                         })
                         .collect();
-                    println!("Computed FTs of tilings for box size {}", box_size);
-                    wait!();
                     for (x, y, acc) in tiled_images_ddm.iter() {
                         if let Some(v1) = accumulator.get_mut(box_size) {
                             if let Some(v2) = v1.get_mut(&(*x, *y)) {
