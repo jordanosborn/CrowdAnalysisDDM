@@ -223,29 +223,24 @@ pub fn multi_ddm(
 
             if images.data.len() == capacity {
                 //TODO: process them before cap
-                for (i, box_size) in box_range.iter().enumerate() {
+                for (box_id, box_size) in box_range.iter().enumerate() {
                     let indices: Vec<(usize, usize)> = (0..(dimension - box_size))
                         .step_by(tile_step)
                         .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
                         .collect();
-                    for (i, (x, y)) in indices.iter().enumerate() {
-                        for im in images.data.iter() {
-                            let sub_arrays: Vec<af::Array<crate::RawType>> = images
-                                .data
-                                .par_iter()
-                                .map(|d| {
-                                    operations::sub_array(
-                                        &d,
-                                        (*x as u64, (*x + box_size) as u64),
-                                        (*y as u64, (*y + box_size) as u64),
-                                    )
-                                })
-                                .filter(std::option::Option::is_some)
-                                .map(std::option::Option::unwrap)
-                                .collect();
-                            println!("{},{},{}", i, x, y);
-                            println!("{:#?}", sub_arrays.len());
-                        }
+                    for (im_id, im) in images.data.iter().enumerate() {
+                        let sub_arrays: Vec<_> = indices
+                            .par_iter()
+                            .map(|(x, y)| {
+                                operations::sub_array(
+                                    &im,
+                                    (*x as u64, (*x + box_size) as u64),
+                                    (*y as u64, (*y + box_size) as u64),
+                                )
+                            })
+                            .filter(std::option::Option::is_some)
+                            .map(std::option::Option::unwrap)
+                            .collect();
                     }
                 }
                 counter_t0 += 1;
