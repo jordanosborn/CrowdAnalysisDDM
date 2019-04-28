@@ -28,6 +28,7 @@
         "retranspose",
         "scipy",
         "shutil",
+        "tilings",
         "twilio",
         "uint",
         "vidcap",

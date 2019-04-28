@@ -53,17 +53,32 @@ pub fn sub_array<T: af::HasAfEnum>(
     let dims = arr.dims();
     if top_left.0 <= bottom_right.0
         && top_left.1 <= bottom_right.1
-        && bottom_right.0 < dims[0]
-        && bottom_right.1 < dims[1]
+        && bottom_right.0 <= dims[0]
+        && bottom_right.1 <= dims[1]
     {
         let seq = &[
-            af::Seq::new(top_left.0 as u32, bottom_right.0 as u32, 1),
-            af::Seq::new(top_left.1 as u32, bottom_right.1 as u32, 1),
+            af::Seq::new(top_left.0 as u32, bottom_right.0 as u32 - 1, 1),
+            af::Seq::new(top_left.1 as u32, bottom_right.1 as u32 - 1, 1),
         ];
         Some(af::index(arr, seq))
     } else {
         None
     }
+}
+
+pub fn add_deque(
+    a1: Option<VecDeque<af::Array<crate::RawType>>>,
+    a2: Option<VecDeque<af::Array<crate::RawType>>>,
+) -> Option<VecDeque<af::Array<crate::RawType>>> {
+    let a1_unwrapped = a1?;
+    let a2_unwrapped = a2?;
+    Some(
+        a1_unwrapped
+            .iter()
+            .zip(a2_unwrapped.iter())
+            .map(|(x, y)| x + y)
+            .collect(),
+    )
 }
 
 pub trait As<T> {
@@ -74,6 +89,19 @@ impl As<usize> for crate::RawType {
     fn from(v: usize) -> Self {
         v as crate::RawType
     }
+}
+
+pub fn transpose<T: Clone>(arr: Vec<Vec<T>>) -> Vec<VecDeque<T>> {
+    assert!(!arr.is_empty() && !arr[0].is_empty());
+    let mut output: Vec<VecDeque<T>> = vec![VecDeque::with_capacity(arr.len()); arr[0].len()];
+    for (_, v) in arr.iter().enumerate() {
+        for (i, value) in v.iter().enumerate() {
+            if let Some(x) = output.get_mut(i) {
+                x.push_back(value.clone());
+            }
+        }
+    }
+    output
 }
 
 pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> (Vec<T>, Vec<Vec<(T, T)>>) {
@@ -122,6 +150,14 @@ pub struct Data<T: arrayfire::HasAfEnum> {
     pub capacity: Option<usize>,
 }
 
+impl<T: arrayfire::HasAfEnum> IntoIterator for Data<T> {
+    type Item = arrayfire::Array<T>;
+    type IntoIter = ::std::collections::vec_deque::IntoIter<Self::Item>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
+
 impl<T: arrayfire::HasAfEnum> Data<T> {
     pub fn new(fps: usize, capacity: Option<usize>) -> Data<T> {
         if let Some(size) = capacity {
@@ -154,7 +190,7 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
 pub fn mean_image(
     arr: &VecDeque<arrayfire::Array<crate::RawType>>,
 ) -> Option<arrayfire::Array<crate::RawType>> {
-    if arr.is_empty() {
+    if !arr.is_empty() {
         let dims = arr[0].dims();
         Some(
             arr.iter().fold(

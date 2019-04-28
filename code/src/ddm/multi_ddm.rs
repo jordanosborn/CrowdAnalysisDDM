@@ -4,6 +4,7 @@ use crate::utils::save_csv;
 use arrayfire as af;
 use itertools::Itertools;
 use rayon::prelude::*;
+use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::sync::mpsc;
 
@@ -51,8 +52,14 @@ fn get_allowed_dimension(
     }
 }
 
+type MultiDdmData = HashMap<usize, Vec<Vec<(crate::RawType, crate::RawType)>>>;
+
 //TODO: implement this!
-#[allow(unused_variables, clippy::too_many_arguments)]
+#[allow(
+    unused_variables,
+    clippy::too_many_arguments,
+    clippy::cyclomatic_complexity
+)]
 pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
@@ -62,7 +69,7 @@ pub fn multi_ddm(
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
-) -> Option<IndexedData> {
+) -> Option<MultiDdmData> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -100,18 +107,29 @@ pub fn multi_ddm(
                     println!("Invalid tiling range selected!");
                     return None;
                 }
+            } else if let (None, None, None) = tiling_range {
+                ((dimension as f64).log2() as usize, dimension, None)
             } else {
                 println!("Invalid tiling range selected!");
                 return None;
             };
         let tile_step = if let Some(t) = tile_step { t } else { 1 };
 
-        let output_dir = if let Some(v) = filename {
+        let filename = if let Some(v) = filename {
             v
         } else {
             String::from("camera")
         };
-        println!("Analysis of {} stream started!", &output_dir);
+        let output_dir = if let Some(v) = output_dir {
+            v
+        } else {
+            format!("results_multiDDM/{}", filename)
+        };
+
+        println!(
+            "Analysis of {} stream started! Results will be saved in {}",
+            &filename, &output_dir
+        );
         let fps = opencv::fps(id);
         let frame_count = opencv::frame_count(id);
 
@@ -171,18 +189,29 @@ pub fn multi_ddm(
         });
 
         let mut counter_t0 = 0;
-        let mut data: Data<crate::RawType> = Data::new(fps, Some(capacity));
+        let mut images: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
+        let indices_range: Vec<Vec<(usize, usize)>> = box_range
+            .par_iter()
+            .map(|box_size| {
+                (0..=(dimension - box_size))
+                    .step_by(*box_size) //tile_step)
+                    .cartesian_product((0..=(dimension - box_size)).step_by(*box_size)) //tile_step))
+                    .collect()
+            })
+            .collect();
 
-        //TODO: here
-
-        let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
+        #[allow(clippy::type_complexity)]
+        let mut accumulator: HashMap<
+            usize,
+            HashMap<(usize, usize), Option<VecDeque<af::Array<crate::RawType>>>>,
+        > = HashMap::with_capacity(box_range.len());
         loop {
             match rx.recv() {
                 Ok(value) => {
                     if let Some(v) = value {
-                        data.push(v);
+                        images.push(v);
                     }
                 }
                 Err(e) => match std::sync::mpsc::TryRecvError::from(e) {
@@ -195,59 +224,130 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
-                if let Some(a) = accumulator {
-                    let accumulator = a
+                //retrieve all annuli
+                let annuli = match annuli_rx.recv() {
+                    Ok(v) => v,
+                    Err(e) => {
+                        panic!("Failed to receive annuli - {}!", e);
+                    }
+                };
+                //T0 and radial average
+                // box_size[tau[I(q)]]
+                let mut box_size_map = HashMap::with_capacity(accumulator.len());
+                for (box_size, v) in accumulator.iter_mut() {
+                    let resized_annuli: Vec<_> = annuli
                         .par_iter()
-                        .map(|x| x / (counter_t0 as crate::RawType))
-                        .collect::<Vec<af::Array<RawType>>>();
-                    let annuli = match annuli_rx.recv() {
-                        Ok(v) => v,
-                        Err(e) => {
-                            panic!("Failed to receive annuli - {}!", e);
-                        }
-                    };
+                        .filter_map(|(q, arr)| {
+                            let resized_arr = operations::sub_array(
+                                arr,
+                                (
+                                    (dimension - box_size) as u64 / 2,
+                                    (dimension - box_size) as u64 / 2,
+                                ),
+                                (
+                                    (dimension + box_size) as u64 / 2,
+                                    (dimension + box_size) as u64 / 2,
+                                ),
+                            )?;
+                            if af::sum_all(&resized_arr).0 != 0.0 {
+                                Some((*q, resized_arr))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect();
+                    //averaged over
+                    let acc_vec: Option<Vec<af::Array<crate::RawType>>> = Some(vec![
+                        af::Array::new_empty(
+                            af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1])
+                        );
+                        capacity - 1
+                    ]);
+                    let acc_vec = v.iter().fold(acc_vec, |acc, ((_, _), arr)| {
+                        let arr = arr.to_owned()?;
+                        let acc = (acc)?;
+                        Some(
+                            acc.par_iter()
+                                .zip(arr.par_iter())
+                                .map(|(a, x)| a + x)
+                                .collect(),
+                        )
+                    });
+                    //Add to box size map and perform box averaging and radial averaging
+                    if let Some(a) = acc_vec {
+                        box_size_map.insert(
+                            *box_size,
+                            operations::radial_average(
+                                &a.par_iter()
+                                    .map(|x| x / (capacity - 1) as crate::RawType)
+                                    .collect::<Vec<_>>(),
+                                &resized_annuli,
+                            ),
+                        );
+                    }
                 }
+
+                //TODO: save csv s and transpose, run, upload to db and analyse
+                data_out = Some(box_size_map);
                 break;
             }
 
-            if data.data.len() == capacity {
-                //TODO: process them before cap
-                for box_size in box_range.iter() {
-                    let indices: Vec<(usize, usize)> = (0..(dimension - box_size))
-                        .step_by(tile_step)
-                        .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
-                        .collect();
-                    let mut active_regions = indices
+            if images.data.len() == capacity {
+                for (box_id, box_size) in box_range.iter().enumerate() {
+                    let indices = &indices_range[box_id];
+                    //Ft of Tiles for each of the collected images
+                    let tiled_images: Vec<Vec<_>> = images
+                        .data
                         .par_iter()
-                        .map(|(x, y)| {
-                            let time_slices = data
-                                .data
+                        .enumerate()
+                        .map(|(im_id, im)| {
+                            indices
                                 .par_iter()
-                                .map(|d| {
-                                    //TODO:
+                                .map(|(x, y)| {
                                     operations::sub_array(
-                                        &d,
-                                        (*x as u64, (*x + box_size) as u64),
-                                        (*y as u64, (*y + box_size) as u64),
+                                        &im,
+                                        (*x as u64, *y as u64),
+                                        ((*x + box_size) as u64, (*y + box_size) as u64),
                                     )
                                 })
-                                .collect::<Vec<Option<af::Array<crate::RawType>>>>();
-                            (operations::activity(&time_slices), time_slices)
+                                .filter(std::option::Option::is_some)
+                                .map(std::option::Option::unwrap)
+                                .map(|d| {
+                                    fft_shift!(af::fft2(
+                                        &d,
+                                        1.0,
+                                        *box_size as i64,
+                                        *box_size as i64
+                                    ))
+                                })
+                                .collect()
                         })
-                        .collect::<Vec<(Option<f64>, Vec<Option<af::Array<crate::RawType>>>)>>();
-                    active_regions.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap()); //Sorts in reverse order maximal activity
-                    if let Some(a) = activity_threshold {
-                        active_regions = active_regions[..a - 1].to_vec()
+                        .collect();
+                    let tiled_images_ddm: Vec<_> = operations::transpose(tiled_images)
+                        .par_iter()
+                        .zip(indices.par_iter())
+                        .map(|(arr, (x, y))| {
+                            let ddmed = ddm(None, arr);
+                            //Box_size and x, y
+                            (*x, *y, ddmed)
+                        })
+                        .collect();
+                    for (x, y, acc) in tiled_images_ddm.iter() {
+                        if let Some(v1) = accumulator.get_mut(box_size) {
+                            if let Some(v2) = v1.get_mut(&(*x, *y)) {
+                                *v2 = operations::add_deque(v2.to_owned(), acc.to_owned());
+                            } else {
+                                v1.insert((*x, *y), acc.to_owned());
+                            }
+                        } else {
+                            let mut h = HashMap::new();
+                            h.insert((*x, *y), acc.to_owned());
+                            accumulator.insert(*box_size, h);
+                        }
                     }
-                    println!(
-                        "{:?}",
-                        active_regions
-                            .iter()
-                            .map(|(a, _)| a.unwrap())
-                            .collect::<Vec<f64>>()
-                    );
-                    wait!();
+                    println!("Tiled all images for box size {}", box_size);
                 }
+                println!("{:#?}", accumulator[&512usize].keys().collect::<Vec<_>>());
                 wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);

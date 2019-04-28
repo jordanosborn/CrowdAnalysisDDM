@@ -99,7 +99,7 @@ booktitle = {Dynamic light scattering.~With applications to chemistry, biology, 
 	url={https://arrayfire.com/}, 
 	journal={ArrayFire}, 
 	publisher={ArrayFire}, 
-	note={http://arrayfire.org/arrayfire-rust/arrayfire/index.html}
+	note={\url{http://arrayfire.org/arrayfire-rust/arrayfire/index.html}}
 }
 @misc{rust,
 	 title={Rust programming language}, 
@@ -107,7 +107,9 @@ booktitle = {Dynamic light scattering.~With applications to chemistry, biology, 
 	 journal={Rust programming language}
 }
 
-@misc{jetson, url={https://developer.nvidia.com/embedded/buy/jetson-tx2}, year={2019}, month={Apr}}
+@misc{jetson, 
+title={NVIDIA Jetson TX2},
+url={https://developer.nvidia.com/embedded/buy/jetson-tx2}, year={2019}, month={Apr}}
 
 @misc{scipy_fit, title={SciPy v1.2.1 Reference Guide}, url={https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html}, journal={scipy.optimize.curve_fit - SciPy v1.2.1 Reference Guide}}
 
@@ -197,10 +199,21 @@ doi = {10.1146/annurev.fl.23.010191.001401},
 URL = { 
         https://doi.org/10.1146/annurev.fl.23.010191.001401
     
-},
-eprint = { 
-        https://doi.org/10.1146/annurev.fl.23.010191.001401
+}
+    }}
     
+@article{optical_flow,
+title = "Determining optical flow",
+journal = "Artificial Intelligence",
+volume = "17",
+number = "1",
+pages = "185 - 203",
+year = "1981",
+issn = "0004-3702",
+doi = "https://doi.org/10.1016/0004-3702(81)90024-2",
+url = "http://www.sciencedirect.com/science/article/pii/0004370281900242",
+author = "Berthold K.P. Horn and Brian G. Schunck",
+abstract = "Optical flow cannot be computed locally, since only one independent measurement is available from the image sequence at a point, while the flow velocity has two components. A second constraint is needed. A method for finding the optical flow pattern is presented which assumes that the apparent velocity of the brightness pattern varies smoothly almost everywhere in the image. An iterative implementation is shown which successfully computes the optical flow for a number of synthetic image sequences. The algorithm is robust in that it can handle image sequences that are quantized rather coarsely in space and time. It is also insensitive to quantization of brightness levels and additive noise. Examples are included where the assumption of smoothness is violated at singular points or along lines in the image."
 }
 
-}
+@misc{optical_flow_opencv, title={Optical Flow}, url={https://docs.opencv.org/3.4/d7/d8b/tutorial_py_lucas_kanade.html}, journal={OpenCV}}

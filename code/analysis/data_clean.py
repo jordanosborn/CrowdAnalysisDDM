@@ -77,5 +77,9 @@ def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "plot":
         plot()
-    else:
-        modify_db("crowd.sqlite", "results-transposed", "radial_Avg.csv")
+    elif (
+        len(sys.argv) == 3
+        and sys.argv[1].find(".sqlite") != -1
+        and os.path.exists(sys.argv[1])
+    ):
+        modify_db(sys.argv[1], sys.argv[2], "radial_Avg.csv")
