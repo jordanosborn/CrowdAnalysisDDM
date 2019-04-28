@@ -66,6 +66,21 @@ pub fn sub_array<T: af::HasAfEnum>(
     }
 }
 
+pub fn add_deque(
+    a1: Option<VecDeque<af::Array<crate::RawType>>>,
+    a2: Option<VecDeque<af::Array<crate::RawType>>>,
+) -> Option<VecDeque<af::Array<crate::RawType>>> {
+    let a1_unwrapped = a1?;
+    let a2_unwrapped = a2?;
+    Some(
+        a1_unwrapped
+            .iter()
+            .zip(a2_unwrapped.iter())
+            .map(|(x, y)| x + y)
+            .collect(),
+    )
+}
+
 pub trait As<T> {
     fn from(v: T) -> Self;
 }

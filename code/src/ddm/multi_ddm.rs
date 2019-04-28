@@ -4,6 +4,7 @@ use crate::utils::save_csv;
 use arrayfire as af;
 use itertools::Itertools;
 use rayon::prelude::*;
+use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::sync::mpsc;
 
@@ -197,8 +198,12 @@ pub fn multi_ddm(
 
         //TODO: here
         //BOX_size[tau[array]]
-        let mut accumulator: Vec<Vec<Option<af::Array<RawType>>>> =
-            Vec::with_capacity(box_range.len());
+        // ;
+        #[allow(clippy::type_complexity)]
+        let mut accumulator: HashMap<
+            usize,
+            HashMap<(usize, usize), Option<VecDeque<af::Array<crate::RawType>>>>,
+        > = HashMap::with_capacity(box_range.len());
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -216,26 +221,26 @@ pub fn multi_ddm(
                 },
             }
             if collected_all_frames {
-                if let Some(a) = accumulator {
-                    let accumulator = a
-                        .par_iter()
-                        .map(|x| x / (counter_t0 as crate::RawType))
-                        .collect::<Vec<af::Array<RawType>>>();
-                    let annuli = match annuli_rx.recv() {
-                        Ok(v) => v,
-                        Err(e) => {
-                            panic!("Failed to receive annuli - {}!", e);
-                        }
-                    };
-                    //TODO: radial averaging use up to max radius.
-                }
+                // if let Some(a) = accumulator {
+                //     let accumulator = a
+                //         .par_iter()
+                //         .map(|x| x / (counter_t0 as crate::RawType))
+                //         .collect::<Vec<af::Array<RawType>>>();
+                //     let annuli = match annuli_rx.recv() {
+                //         Ok(v) => v,
+                //         Err(e) => {
+                //             panic!("Failed to receive annuli - {}!", e);
+                //         }
+                //     };
+                //     //TODO: radial averaging use up to max radius.
+                // }
                 break;
             }
 
             if images.data.len() == capacity {
                 //TODO: process them before cap
                 for (box_id, box_size) in box_range.iter().enumerate() {
-                    let indices = indices_range[box_id];
+                    let indices = &indices_range[box_id];
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
@@ -245,20 +250,27 @@ pub fn multi_ddm(
                             indices
                                 .par_iter()
                                 .map(|(x, y)| {
-                                    operations::sub_array(
+                                    println!("{:?}, {}", (x, y), box_size);
+
+                                    let arr = operations::sub_array(
                                         &im,
                                         (*x as u64, (*x + box_size) as u64),
                                         (*y as u64, (*y + box_size) as u64),
-                                    )
+                                    );
+                                    println!("{:?} {:?}", im.dims(), arr.clone().unwrap().dims());
+                                    wait!();
+                                    arr
                                 })
                                 .filter(std::option::Option::is_some)
                                 .map(std::option::Option::unwrap)
                                 .map(|d| {
+                                    println!("{}, {:?}", box_size, d.dims());
+                                    wait!();
                                     fft_shift!(af::fft2(
                                         &d,
                                         1.0,
-                                        dimension as i64,
-                                        dimension as i64
+                                        *box_size as i64,
+                                        *box_size as i64
                                     ))
                                 })
                                 .collect()
@@ -270,12 +282,27 @@ pub fn multi_ddm(
                         .map(|(arr, (x, y))| {
                             let ddmed = ddm(None, arr);
                             //Box_size and x, y
-                            (x, y, ddmed)
+                            (*x, *y, ddmed)
                         })
                         .collect();
+                    for (x, y, acc) in tiled_images_ddm.iter() {
+                        if let Some(v1) = accumulator.get_mut(box_size) {
+                            if let Some(v2) = v1.get_mut(&(*x, *y)) {
+                                *v2 = operations::add_deque(v2.to_owned(), acc.to_owned());
+                            } else {
+                                v1.insert((*x, *y), acc.to_owned());
+                            }
+                        } else {
+                            let mut h = HashMap::new();
+                            h.insert((*x, *y), acc.to_owned());
+                            accumulator.insert(*box_size, h);
+                        }
+                    }
 
                     println!("Tiled all images for box size {}", box_size);
                 }
+                println!("{:#?}", accumulator.keys().collect::<Vec<_>>());
+                wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
