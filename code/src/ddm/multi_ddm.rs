@@ -259,8 +259,6 @@ pub fn multi_ddm(
                                 .filter(std::option::Option::is_some)
                                 .map(std::option::Option::unwrap)
                                 .map(|d| {
-                                    println!("{}, {:?}", box_size, d.dims());
-                                    wait!();
                                     fft_shift!(af::fft2(
                                         &d,
                                         1.0,
