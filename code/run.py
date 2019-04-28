@@ -74,8 +74,8 @@ def retranspose(files: List[str]):
             print(f"Completed {(i+1) * 100 / len(files)}%.")
 
 
-def add_to_db():
-    sp.call(["python3", "analysis/data_clean.py"])
+def add_to_db(db: str, folder: str):
+    sp.call(["python3", "analysis/data_clean.py", db, folder])
 
 
 if __name__ == "__main__":
@@ -124,7 +124,7 @@ if __name__ == "__main__":
                 )
             )
         retranspose(files)
-        add_to_db()
+        add_to_db("crowd.sqlite", "results-transposed")
         upload()
     elif len(sys.argv) == 3 and sys.argv[1] == "fit" and os.path.isdir(sys.argv[2]):
         sp.call(["python3", "./analysis/analyse.py", *sys.argv[2:]])
@@ -171,8 +171,8 @@ if __name__ == "__main__":
             )
         retranspose(files)
         upload()
-    elif len(sys.argv) == 2 and sys.argv[1] == "add_to_db":
-        add_to_db()
+    elif len(sys.argv) == 4 and sys.argv[1] == "add_to_db":
+        add_to_db(sys.argv[2], sys.argv[3])
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"

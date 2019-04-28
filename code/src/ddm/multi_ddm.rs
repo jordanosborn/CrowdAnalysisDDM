@@ -186,6 +186,7 @@ pub fn multi_ddm(
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
 
+        println!("{:#?}", box_range);
         //TODO: here
 
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
@@ -259,7 +260,6 @@ pub fn multi_ddm(
                     );
                     wait!();
                 }
-                wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
