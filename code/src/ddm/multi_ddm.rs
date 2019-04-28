@@ -187,6 +187,7 @@ pub fn multi_ddm(
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
 
         //TODO: here
+        //BOXsize[tau[array]]
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
@@ -228,20 +229,35 @@ pub fn multi_ddm(
                         .step_by(tile_step)
                         .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
                         .collect();
-                    for (im_id, im) in images.data.iter().enumerate() {
-                        let sub_arrays: Vec<_> = indices
-                            .par_iter()
-                            .map(|(x, y)| {
-                                operations::sub_array(
-                                    &im,
-                                    (*x as u64, (*x + box_size) as u64),
-                                    (*y as u64, (*y + box_size) as u64),
-                                )
-                            })
-                            .filter(std::option::Option::is_some)
-                            .map(std::option::Option::unwrap)
-                            .collect();
-                    }
+                    //Ft of Tiles for each of the collected images
+                    let tiled_images: Vec<Vec<_>> = images
+                        .data
+                        .par_iter()
+                        .enumerate()
+                        .map(|(im_id, im)| {
+                            indices
+                                .par_iter()
+                                .map(|(x, y)| {
+                                    operations::sub_array(
+                                        &im,
+                                        (*x as u64, (*x + box_size) as u64),
+                                        (*y as u64, (*y + box_size) as u64),
+                                    )
+                                })
+                                .filter(std::option::Option::is_some)
+                                .map(std::option::Option::unwrap)
+                                .map(|d| {
+                                    fft_shift!(af::fft2(
+                                        &d,
+                                        1.0,
+                                        dimension as i64,
+                                        dimension as i64
+                                    ))
+                                })
+                                .collect()
+                        })
+                        .collect();
+                    
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
