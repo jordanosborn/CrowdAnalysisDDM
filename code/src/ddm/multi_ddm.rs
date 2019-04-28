@@ -187,7 +187,7 @@ pub fn multi_ddm(
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
 
         //TODO: here
-        //BOXsize[tau[array]]
+        //BOX_size[tau[array]]
         let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
         loop {
             match rx.recv() {
@@ -257,7 +257,16 @@ pub fn multi_ddm(
                                 .collect()
                         })
                         .collect();
-                    
+                    let tiled_images_ddm: Vec<_> = operations::transpose(tiled_images)
+                        .par_iter()
+                        .zip(indices.par_iter())
+                        .map(|(arr, (x, y))| {
+                            let ddmed = ddm(None, arr);
+                            //Box_size and x, y
+                        })
+                        .collect();
+
+                    println!("Tiled all images for box size {}", box_size);
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);

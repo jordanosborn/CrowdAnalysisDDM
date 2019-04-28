@@ -76,6 +76,19 @@ impl As<usize> for crate::RawType {
     }
 }
 
+pub fn transpose<T: Clone>(arr: Vec<Vec<T>>) -> Vec<VecDeque<T>> {
+    assert!(!arr.is_empty() && !arr[0].is_empty());
+    let mut output: Vec<VecDeque<T>> = vec![VecDeque::with_capacity(arr.len()); arr[0].len()];
+    for (_, v) in arr.iter().enumerate() {
+        for (i, value) in v.iter().enumerate() {
+            if let Some(x) = output.get_mut(i) {
+                x.push_back(value.clone());
+            }
+        }
+    }
+    output
+}
+
 pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> (Vec<T>, Vec<Vec<(T, T)>>) {
     assert!(!arr.is_empty() && !arr[0].is_empty());
     let mut output: Vec<Vec<(T, T)>> = vec![Vec::with_capacity(arr.len()); arr[0].len()];
