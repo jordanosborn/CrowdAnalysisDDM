@@ -190,7 +190,7 @@ impl<T: arrayfire::HasAfEnum> Data<T> {
 pub fn mean_image(
     arr: &VecDeque<arrayfire::Array<crate::RawType>>,
 ) -> Option<arrayfire::Array<crate::RawType>> {
-    if arr.is_empty() {
+    if !arr.is_empty() {
         let dims = arr[0].dims();
         Some(
             arr.iter().fold(
