@@ -185,10 +185,20 @@ pub fn multi_ddm(
         let mut images: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
+        let indices_range: Vec<Vec<(usize, usize)>> = box_range
+            .par_iter()
+            .map(|box_size| {
+                (0..(dimension - box_size))
+                    .step_by(tile_step)
+                    .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
+                    .collect()
+            })
+            .collect();
 
         //TODO: here
         //BOX_size[tau[array]]
-        let mut accumulator: Option<VecDeque<af::Array<RawType>>> = None;
+        let mut accumulator: Vec<Vec<Option<af::Array<RawType>>>> =
+            Vec::with_capacity(box_range.len());
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -225,10 +235,7 @@ pub fn multi_ddm(
             if images.data.len() == capacity {
                 //TODO: process them before cap
                 for (box_id, box_size) in box_range.iter().enumerate() {
-                    let indices: Vec<(usize, usize)> = (0..(dimension - box_size))
-                        .step_by(tile_step)
-                        .cartesian_product((0..(dimension - box_size)).step_by(tile_step))
-                        .collect();
+                    let indices = indices_range[box_id];
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
@@ -263,6 +270,7 @@ pub fn multi_ddm(
                         .map(|(arr, (x, y))| {
                             let ddmed = ddm(None, arr);
                             //Box_size and x, y
+                            (x, y, ddmed)
                         })
                         .collect();
 
