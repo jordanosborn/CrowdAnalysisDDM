@@ -24,9 +24,32 @@ def send_message(secrets: Any, body: str):
 
 def run(command: str, video: str, capacity: str, radial_width: str):
     print(video)
-    sp.call(
-        ["cargo", "run", "--release", command, str(capacity), str(radial_width), video]
-    )
+    if command == "video-multi-ddm":
+        sp.call(
+            [
+                "cargo",
+                "run",
+                "--release",
+                command,
+                str(capacity),
+                str(radial_width),
+                str(16),
+                str(1024),
+                video,
+            ]
+        )
+    else:
+        sp.call(
+            [
+                "cargo",
+                "run",
+                "--release",
+                command,
+                str(capacity),
+                str(radial_width),
+                video,
+            ]
+        )
 
 
 def upload():
