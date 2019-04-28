@@ -287,7 +287,7 @@ pub fn multi_ddm(
                     }
                 }
 
-                //TODO: save csvs and transpose
+                //TODO: save csv s and transpose, run, upload to db and analyse
                 data_out = Some(box_size_map);
                 break;
             }
