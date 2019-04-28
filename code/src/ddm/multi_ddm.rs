@@ -52,6 +52,8 @@ fn get_allowed_dimension(
     }
 }
 
+type MultiDdmData = HashMap<usize, Vec<Vec<(crate::RawType, crate::RawType)>>>;
+
 //TODO: implement this!
 #[allow(
     unused_variables,
@@ -67,7 +69,7 @@ pub fn multi_ddm(
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
-) -> Option<Vec<IndexedData>> {
+) -> Option<MultiDdmData> {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -285,14 +287,12 @@ pub fn multi_ddm(
                     }
                 }
 
-                //Radial average and box size average save csv
-                //     //TODO: radial averaging use up to max radius.
-                //Store in data_out
+                //TODO: save csvs and transpose
+                data_out = Some(box_size_map);
                 break;
             }
 
             if images.data.len() == capacity {
-                //TODO: process them before cap
                 for (box_id, box_size) in box_range.iter().enumerate() {
                     let indices = &indices_range[box_id];
                     //Ft of Tiles for each of the collected images
@@ -345,8 +345,6 @@ pub fn multi_ddm(
                             accumulator.insert(*box_size, h);
                         }
                     }
-                    //TODO:
-
                     println!("Tiled all images for box size {}", box_size);
                 }
                 println!("{:#?}", accumulator[&512usize].keys().collect::<Vec<_>>());

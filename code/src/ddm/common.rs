@@ -16,8 +16,9 @@ pub fn ddm(
                     .par_iter()
                     .zip(acc.par_iter())
                     .map(|(i, a)| {
-                        //TODO: WTF why does this work when loc is added below???! panics at t0 = 47 ??????
+                        //TODO: WTH why does this work when loc is added below???! panics at t0 = 47 ??????
                         //This works on mac mini
+                        //gpu issues?
                         arrayfire::imin_all(a);
                         a + operations::difference(i, &ft0)
                     })
