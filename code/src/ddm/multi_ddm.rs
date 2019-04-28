@@ -233,7 +233,7 @@ pub fn multi_ddm(
                 // box_size[tau[I(q)]]
                 let mut box_size_map = HashMap::with_capacity(accumulator.len());
                 for (box_size, v) in accumulator.iter_mut() {
-                    let resized_annuli: VecDeque<_> = annuli
+                    let resized_annuli: Vec<_> = annuli
                         .par_iter()
                         .filter_map(|(q, arr)| {
                             let resized_arr = operations::sub_array(
@@ -248,7 +248,7 @@ pub fn multi_ddm(
                                 ),
                             )?;
                             if af::sum_all(&resized_arr).0 != 0.0 {
-                                Some((q, resized_arr))
+                                Some((*q, resized_arr))
                             } else {
                                 None
                             }
@@ -271,13 +271,16 @@ pub fn multi_ddm(
                                 .collect(),
                         )
                     });
-                    //Add to box size map
+                    //Add to box size map and perform box averaging and radial averaging
                     if let Some(a) = acc_vec {
                         box_size_map.insert(
                             *box_size,
-                            a.par_iter()
-                                .map(|x| x / (capacity - 1) as crate::RawType)
-                                .collect::<Vec<_>>(),
+                            operations::radial_average(
+                                &a.par_iter()
+                                    .map(|x| x / (capacity - 1) as crate::RawType)
+                                    .collect::<Vec<_>>(),
+                                &resized_annuli,
+                            ),
                         );
                     }
                 }
