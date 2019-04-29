@@ -6,6 +6,7 @@ use itertools::Itertools;
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::collections::VecDeque;
+use std::iter::FromIterator;
 use std::sync::mpsc;
 
 use super::common::*;
@@ -258,52 +259,51 @@ pub fn multi_ddm(
 
                     //averaged over
                     //TODO: v is valid here
-                    // let x = v.get(&(0, 0)).unwrap().clone().unwrap();
-                    // af::print(&x[4]);
-                    // wait!();
-                    let acc_init: Option<VecDeque<af::Array<crate::RawType>>> =
-                        Some(VecDeque::from(vec![
-                            af::Array::new_empty(af::Dim4::new(&[
-                                *box_size as u64,
-                                *box_size as u64,
-                                1,
-                                1
-                            ]));
-                            capacity - 1
-                        ]));
                     //TODO: GOES wrong in here
-                    let acc_vec = v.iter().fold(acc_init, |acc, (_, x)| {
-                        operations::add_deque(acc, x.clone())
-                    });
-                    for (i, a) in acc_vec.clone().unwrap().iter().enumerate() {
-                        println!("index {}", i);
-                        af::print(a);
-                    }
-
-                    wait!();
+                    //Time average and radial averaging for each x y
+                    let acc_vec = v
+                        .par_iter()
+                        .map(|(key, &x)| {
+                            if let Some(x) = x {
+                                let vec_x = x.iter().map(|x| x / counter_t0).collect::<Vec<_>>();
+                                (
+                                    key,
+                                    Some(operations::radial_average(&vec_x, &resized_annuli)),
+                                )
+                            } else {
+                                (key, None)
+                            }
+                        })
+                        .collect::<Vec<_>>();
+                    // for (i, a) in acc_vec.clone().unwrap().iter().enumerate() {
+                    //     println!("index {}", i);
+                    //     af::print(a);
+                    // }
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
-                    if let Some(acc_vec) = acc_vec {
-                        let average = acc_vec
-                            .into_par_iter()
-                            .map(|x| x / (v.len() * counter_t0) as crate::RawType)
-                            .collect::<Vec<_>>();
-                        //Inserting these print statements prevents crash somehow?
-                        println!("Averaged arrays for constant box_size = {}", box_size);
-                        let radial_average = operations::radial_average(&average, &resized_annuli);
+
+                    //TODO: box averaging
+                    // let average = acc_vec
+                    //     .into_par_iter()
+                    //     .map(|x| x / (v.len()) as crate::RawType)
+                    //     .collect::<Vec<_>>();
+                    //Inserting these print statements prevents crash somehow?
+                    println!("Averaged arrays for constant box_size = {}", box_size);
+
+                    for ((x, y), Some(radial_average)) in acc_vec.iter() {
                         let (val_transposed_index, val_transposed) =
                             operations::transpose_2d_array(&radial_average);
                         let _ = save_csv(
                             &val_transposed_index,
                             &val_transposed,
                             &output_dir,
-                            &format!("data_boxsize_{}.csv", box_size),
+                            &format!("data_boxsize_{}_x_{}_y_{}.csv", box_size, x, y),
                         );
-                        println!("Saved csv for boxsize = {}", box_size);
+                        println!("Saved csv for boxsize = {} x, y = {}, {}", box_size, x, y);
 
                         box_size_map.insert(*box_size, radial_average);
-                        println!("Finished averaging for boxsize = {}", box_size);
                     }
+                    println!("Finished averaging for boxsize = {}", box_size);
                 }
                 //TODO: run, upload to db and analyse
                 println!("Multi-DDM complete!");
