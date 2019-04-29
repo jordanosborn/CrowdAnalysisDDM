@@ -266,7 +266,8 @@ pub fn multi_ddm(
                         .par_iter()
                         .map(|(key, x)| {
                             if let Some(x) = x {
-                                let vec_x = x.iter().map(|x| x / counter_t0).collect::<Vec<_>>();
+                                let vec_x =
+                                    x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>();
                                 (
                                     key,
                                     Some(operations::radial_average(&vec_x, &resized_annuli)),
