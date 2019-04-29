@@ -130,18 +130,16 @@ pub fn radial_average(
     //TODO: this function is a minefield consumes far too many resources
     //crashes often here
     let res = arr
-        .iter()
+        .to_owned()
+        .par_iter()
         .enumerate()
         .map(|(i, a)| {
             let res = annuli
-                .iter()
+                .to_owned()
+                .par_iter()
                 .map(|(q, annulus)| {
                     let multiplied = annulus * a;
-                    println!("{}", multiplied.dims());
-                    //TODO: this is the culprit have to slow down like in t0!
-                    let s = af::mean_all(&multiplied);
-                    println!("{:#?}", s);
-                    (*q, s.0 as crate::RawType)
+                    (*q, af::mean_all(&multiplied).0 as crate::RawType)
                 })
                 .collect();
             println!("Radial averaged tau = {}!", i + 1);

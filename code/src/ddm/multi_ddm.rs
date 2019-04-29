@@ -247,7 +247,7 @@ pub fn multi_ddm(
                                 ),
                             )?;
                             let sum = af::sum_all(&resized_arr).0 as crate::RawType;
-                            if sum != 0.0 {
+                            if sum > 0.0 {
                                 Some((*q, resized_arr))
                             } else {
                                 None
@@ -256,6 +256,11 @@ pub fn multi_ddm(
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
                     //averaged over
+                    //TODO: v is valid here
+                    let x = v.get(&(0, 0)).unwrap().clone().unwrap();
+                    af::print(&x[0]);
+                    wait!();
+                    //GOES wrong in here
                     let acc_vec: Option<Vec<af::Array<crate::RawType>>> = Some(vec![
                         af::Array::new_empty(
                             af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1])
