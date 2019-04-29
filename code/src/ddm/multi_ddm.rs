@@ -271,7 +271,7 @@ pub fn multi_ddm(
                                 .collect(),
                         )
                     });
-                    //Add to box size map and perform box averaging and radial averaging
+                    //Add to box size map and perform box averaging and radial averaging and start time averaging
                     if let Some(a) = acc_vec {
                         let average = &a
                             .par_iter()
