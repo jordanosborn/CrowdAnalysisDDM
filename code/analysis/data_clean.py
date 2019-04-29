@@ -83,3 +83,10 @@ if __name__ == "__main__":
         and os.path.exists(sys.argv[1])
     ):
         modify_db(sys.argv[1], sys.argv[2], "radial_Avg.csv")
+    elif (
+        len(sys.argv) == 5
+        and sys.argv[1].find(".sqlite") != -1
+        and os.path.exists(sys.argv[1])
+        and os.path.exists(sys.argv[2])
+    ):
+        modify_db(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

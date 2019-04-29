@@ -120,7 +120,7 @@ pub fn multi_ddm(
         let output_dir = if let Some(v) = output_dir {
             v
         } else {
-            format!("results_multiDDM/{}", filename)
+            format!("results-multiDDM/{}", filename)
         };
 
         println!(
