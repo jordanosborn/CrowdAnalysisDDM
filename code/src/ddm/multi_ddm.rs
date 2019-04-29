@@ -246,8 +246,9 @@ pub fn multi_ddm(
                                     (dimension + box_size) as u64 / 2,
                                 ),
                             )?;
-                            if af::sum_all(&resized_arr).0 != 0.0 {
-                                Some((*q, resized_arr))
+                            let sum = af::sum_all(&resized_arr).0 as crate::RawType;
+                            if sum != 0.0 {
+                                Some((*q, sum, resized_arr))
                             } else {
                                 None
                             }

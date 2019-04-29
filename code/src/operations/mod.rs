@@ -14,16 +14,16 @@ pub fn difference(
 fn mean(arr: &[Option<af::Array<crate::RawType>>]) -> Option<af::Array<crate::RawType>> {
     let dims = arr[0].clone()?;
     let dims = dims.dims();
-    let mut array = Vec::with_capacity(arr.len());
+    let size = arr.len();
+    let mut array = Vec::with_capacity(size);
     for v in arr {
         array.push((v.clone())?);
     }
     Some(
         array
-            .par_iter()
-            .cloned()
+            .into_par_iter()
             .reduce(move || af::Array::new_empty(dims), |a, f| a + f)
-            / (array.len() as crate::RawType),
+            / (size as crate::RawType),
     )
 }
 
@@ -31,17 +31,18 @@ pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> Option<f64> {
     let mean_image = mean(arr)?;
     let dims = arr[0].clone()?;
     let dims = dims.dims();
-    let mut array = Vec::with_capacity(arr.len());
+    let size = arr.len();
+    let mut array = Vec::with_capacity(size);
     for v in arr {
         array.push((v.clone())?);
     }
-    let a = array.par_iter().cloned().reduce(
+    let a = array.into_par_iter().reduce(
         move || af::Array::new_empty(dims),
         |a, f| {
             let m = f - mean_image.clone();
             a + af::mul(&m, &m, true)
         },
-    ) / ((array.len() - 1) as crate::RawType);
+    ) / ((size - 1) as crate::RawType);
     Some(af::sum_all(&a).0)
 }
 
@@ -119,22 +120,22 @@ pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> (Vec<T>,
     (index, output)
 }
 
-//TODO: this function is a minefield consumes far too many resources
 pub fn radial_average(
     arr: &[arrayfire::Array<RawType>],
-    annuli: &[(RawType, arrayfire::Array<RawType>)],
+    annuli: &[(RawType, RawType, arrayfire::Array<RawType>)],
 ) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: speed this up this is very slow
     let mut vector = Vec::with_capacity(arr.len());
     println!("Started radial averaging!");
+    //TODO: this function is a minefield consumes far too many resources
+    //crashes often here
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
-            .par_iter()
-            .map(|(q, annulus)| {
+            .into_par_iter()
+            .map(|(q, sum, annulus)| {
                 (
                     *q,
-                    ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0))
-                        as crate::RawType,
+                    ((arrayfire::sum_all(&(annulus * a)).0) / f64::from(*sum)) as crate::RawType,
                 )
             })
             .collect::<Vec<(RawType, RawType)>>();
@@ -235,8 +236,8 @@ pub fn generate_annuli(
     let dimension = dimension;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
-    it.par_iter()
-        .map(|&r| {
+    it.into_par_iter()
+        .map(|r| {
             (
                 (2 * r + spacing as usize) as RawType / 2.0 as RawType,
                 create_annulus(dimension, r as u64, spacing),
