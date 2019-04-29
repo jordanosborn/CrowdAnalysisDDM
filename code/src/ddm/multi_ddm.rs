@@ -277,6 +277,7 @@ pub fn multi_ddm(
                             .par_iter()
                             .map(|x| x / (capacity - 1) as crate::RawType)
                             .collect::<Vec<_>>();
+                        //Inserting these print statements prevents crash somehow?
                         println!("Averaged arrays for constant box_size = {}", box_size);
                         box_size_map.insert(
                             *box_size,
