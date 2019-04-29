@@ -18,7 +18,6 @@ pub struct MultiDDMArgs {
     pub output_dir: Option<String>,
 }
 
-#[allow(dead_code)]
 pub enum What {
     DDM(DDMArgs),
     CameraDDM(DDMArgs),
