@@ -139,7 +139,7 @@ pub fn single_ddm(
                     };
                     let annuli = annuli
                         .into_par_iter()
-                        .map(move |(q, a)| (q, af::sum_all(&a).0 as crate::RawType, a))
+                        .map(|(q, a)| (q, a))
                         .collect::<Vec<_>>();
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     let radial_averaged_index = (1..=radial_averaged.len())

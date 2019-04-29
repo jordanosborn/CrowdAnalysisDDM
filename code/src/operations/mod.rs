@@ -1,6 +1,5 @@
 use crate::RawType;
 use arrayfire as af;
-use itertools::Itertools;
 use rayon::prelude::*;
 use std::collections::VecDeque;
 
@@ -123,31 +122,35 @@ pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> (Vec<T>,
 
 pub fn radial_average(
     arr: &[arrayfire::Array<RawType>],
-    annuli: &[(RawType, RawType, arrayfire::Array<RawType>)],
+    annuli: &[(RawType, arrayfire::Array<RawType>)],
 ) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: speed this up this is very slow
     //arr[tau: array] and annuli[radius:(radius, sum, annulus)]
-    let mut vector = Vec::with_capacity(arr.len());
     println!("Started radial averaging!");
     //TODO: this function is a minefield consumes far too many resources
     //crashes often here
+    let res = arr
+        .iter()
+        .enumerate()
+        .map(|(i, a)| {
+            let res = annuli
+                .iter()
+                .map(|(q, annulus)| {
+                    let multiplied = annulus * a;
+                    println!("{}", multiplied.dims());
+                    //TODO: this is the culprit have to slow down like in t0!
+                    let s = af::mean_all(&multiplied);
+                    println!("{:#?}", s);
+                    (*q, s.0 as crate::RawType)
+                })
+                .collect();
+            println!("Radial averaged tau = {}!", i + 1);
+            res
+        })
+        .collect::<Vec<_>>();
 
-    arr.iter().enumerate().for_each(|(i, a)| {
-        let average = annuli
-            .into_par_iter()
-            .map(|(q, sum, annulus)| {
-                let multiplied = annulus * a;
-                (
-                    *q,
-                    ((arrayfire::sum_all(&(multiplied)).0) / f64::from(*sum)) as crate::RawType,
-                )
-            })
-            .collect::<Vec<(RawType, RawType)>>();
-        vector.push(average);
-        println!("Radial averaged tau = {}!", i + 1);
-    });
     println!("Radial averaged all time steps!");
-    vector
+    res
 }
 
 pub struct Data<T: arrayfire::HasAfEnum> {

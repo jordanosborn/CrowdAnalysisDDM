@@ -248,7 +248,7 @@ pub fn multi_ddm(
                             )?;
                             let sum = af::sum_all(&resized_arr).0 as crate::RawType;
                             if sum != 0.0 {
-                                Some((*q, sum, resized_arr))
+                                Some((*q, resized_arr))
                             } else {
                                 None
                             }
