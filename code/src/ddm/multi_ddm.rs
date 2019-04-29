@@ -275,7 +275,7 @@ pub fn multi_ddm(
                     if let Some(a) = acc_vec {
                         let average = &a
                             .par_iter()
-                            .map(|x| x / v.len() as crate::RawType)
+                            .map(|x| x / (v.len() * counter_t0) as crate::RawType)
                             .collect::<Vec<_>>();
                         //Inserting these print statements prevents crash somehow?
                         println!("Averaged arrays for constant box_size = {}", box_size);
