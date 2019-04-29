@@ -266,8 +266,8 @@ pub fn multi_ddm(
                         let arr = arr.to_owned()?;
                         let acc = (acc)?;
                         Some(
-                            acc.par_iter()
-                                .zip(arr.par_iter())
+                            acc.into_par_iter()
+                                .zip(arr.into_par_iter())
                                 .map(|(a, x)| a + x)
                                 .collect(),
                         )
@@ -275,7 +275,7 @@ pub fn multi_ddm(
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
                     if let Some(a) = acc_vec {
                         let average = &a
-                            .par_iter()
+                            .into_par_iter()
                             .map(|x| x / (v.len() * counter_t0) as crate::RawType)
                             .collect::<Vec<_>>();
                         //Inserting these print statements prevents crash somehow?
@@ -333,7 +333,7 @@ pub fn multi_ddm(
                         .collect();
                     let tiled_images_ddm: Vec<_> = operations::transpose(tiled_images)
                         .par_iter()
-                        .zip(indices.par_iter())
+                        .zip(indices.into_par_iter())
                         .map(|(arr, (x, y))| {
                             let ddmed = ddm(None, arr);
                             //Box_size and x, y
