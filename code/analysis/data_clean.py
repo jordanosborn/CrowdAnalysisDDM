@@ -44,7 +44,9 @@ def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
     files: List[str] = []
     for (dirpath, _, filenames) in os.walk(folder):
         files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
-    files = list(filter(lambda s: s.find(filename) != -1, files))
+    files = list(
+        filter(lambda s: s.find(filename) != -1 and s.find(".csv") != -1, files)
+    )
     names = list(
         map(
             lambda s: f"{prefix}_"
