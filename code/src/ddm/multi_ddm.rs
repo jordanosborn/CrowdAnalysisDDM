@@ -53,7 +53,8 @@ fn get_allowed_dimension(
     }
 }
 
-type MultiDdmData = HashMap<usize, Vec<Vec<(crate::RawType, crate::RawType)>>>;
+type MultiDdmData =
+    HashMap<usize, Vec<((usize, usize), Vec<Vec<(crate::RawType, crate::RawType)>>)>>;
 
 //TODO: implement this!
 #[allow(clippy::too_many_arguments, clippy::cyclomatic_complexity)]
@@ -263,7 +264,7 @@ pub fn multi_ddm(
                     //Time average and radial averaging for each x y
                     let acc_vec = v
                         .par_iter()
-                        .map(|(key, &x)| {
+                        .map(|(key, x)| {
                             if let Some(x) = x {
                                 let vec_x = x.iter().map(|x| x / counter_t0).collect::<Vec<_>>();
                                 (
@@ -289,20 +290,23 @@ pub fn multi_ddm(
                     //     .collect::<Vec<_>>();
                     //Inserting these print statements prevents crash somehow?
                     println!("Averaged arrays for constant box_size = {}", box_size);
+                    let mut tally = Vec::with_capacity(acc_vec.len());
+                    for ((x, y), radial_average) in acc_vec.iter() {
+                        if let Some(radial_average) = radial_average {
+                            let (val_transposed_index, val_transposed) =
+                                operations::transpose_2d_array(radial_average);
+                            let _ = save_csv(
+                                &val_transposed_index,
+                                &val_transposed,
+                                &output_dir,
+                                &format!("data_boxsize_{}_x_{}_y_{}.csv", box_size, x, y),
+                            );
+                            println!("Saved csv for boxsize = {} x, y = {}, {}", box_size, x, y);
 
-                    for ((x, y), Some(radial_average)) in acc_vec.iter() {
-                        let (val_transposed_index, val_transposed) =
-                            operations::transpose_2d_array(&radial_average);
-                        let _ = save_csv(
-                            &val_transposed_index,
-                            &val_transposed,
-                            &output_dir,
-                            &format!("data_boxsize_{}_x_{}_y_{}.csv", box_size, x, y),
-                        );
-                        println!("Saved csv for boxsize = {} x, y = {}, {}", box_size, x, y);
-
-                        box_size_map.insert(*box_size, radial_average);
+                            tally.push(((*x, *y), radial_average.to_owned()));
+                        }
                     }
+                    box_size_map.insert(*box_size, tally);
                     println!("Finished averaging for boxsize = {}", box_size);
                 }
                 //TODO: run, upload to db and analyse
