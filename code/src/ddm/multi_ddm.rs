@@ -272,7 +272,12 @@ pub fn multi_ddm(
                         ]));
                     //TODO: GOES wrong in here
                     for (_, v2) in v.iter() {
-                        acc_vec = operations::add_deque(v2.clone(), acc_vec.clone())
+                        acc_vec = operations::add_deque(v2.clone(), acc_vec);
+                    }
+
+                    for (i, a) in acc_vec.clone().unwrap().iter().enumerate() {
+                        println!("index {}", i);
+                        af::print(a);
                     }
 
                     wait!();
