@@ -253,6 +253,7 @@ pub fn multi_ddm(
                             }
                         })
                         .collect();
+                    println!("Resized annuli for boxsize = {}", box_size);
                     //averaged over
                     let acc_vec: Option<Vec<af::Array<crate::RawType>>> = Some(vec![
                         af::Array::new_empty(
@@ -276,11 +277,13 @@ pub fn multi_ddm(
                             .par_iter()
                             .map(|x| x / (capacity - 1) as crate::RawType)
                             .collect::<Vec<_>>();
+                        println!("Averaged arrays for constant box_size = {}", box_size);
                         box_size_map.insert(
                             *box_size,
                             operations::radial_average(average, &resized_annuli),
                         );
                     }
+                    println!("Finished averaging for boxsize = {}", box_size);
                 }
 
                 for (key, val) in box_size_map.iter() {
