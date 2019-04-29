@@ -299,6 +299,7 @@ pub fn multi_ddm(
                 }
 
                 //TODO: run, upload to db and analyse
+                println!("Multi-DDM complete!");
                 data_out = Some(box_size_map);
                 break;
             }
