@@ -140,21 +140,21 @@ if __name__ == "__main__":
                 )
                 upload()
 
-        print("Producing retranspose")
-        files = []
-        for (dirpath, dirnames, filenames) in os.walk("./results"):
-            files.extend(
-                filter(
-                    lambda s: s.find("radial_Avg.csv") != -1,
-                    map(lambda s: f"./{dirpath}/{s}", filenames),
-                )
-            )
-        retranspose(files)
         if sys.argv[1] == "video-multi-ddm":
             add_to_db(
                 "crowd.sqlite", "results-multiDDM", "data_boxsize", "video-multi-ddm"
             )
         else:
+            print("Producing retranspose")
+            files = []
+            for (dirpath, dirnames, filenames) in os.walk("./results"):
+                files.extend(
+                    filter(
+                        lambda s: s.find("radial_Avg.csv") != -1,
+                        map(lambda s: f"./{dirpath}/{s}", filenames),
+                    )
+                )
+            retranspose(files)
             add_to_db("crowd.sqlite", "results-transposed")
         upload()
     elif len(sys.argv) == 3 and sys.argv[1] == "fit" and os.path.isdir(sys.argv[2]):
