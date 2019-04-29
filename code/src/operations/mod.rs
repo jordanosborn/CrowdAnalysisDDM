@@ -71,15 +71,17 @@ pub fn add_deque(
     a1: Option<VecDeque<af::Array<crate::RawType>>>,
     a2: Option<VecDeque<af::Array<crate::RawType>>>,
 ) -> Option<VecDeque<af::Array<crate::RawType>>> {
-    let a1_unwrapped = a1?;
-    let a2_unwrapped = a2?;
-    Some(
-        a1_unwrapped
-            .iter()
-            .zip(a2_unwrapped.iter())
-            .map(|(x, y)| x + y)
-            .collect(),
-    )
+    match (a1, a2) {
+        (Some(a1_unwrapped), Some(a2_unwrapped)) => Some(
+            a1_unwrapped
+                .iter()
+                .zip(a2_unwrapped.iter())
+                .map(|(x, y)| x + y)
+                .collect(),
+        ),
+        (Some(a), None) | (None, Some(a)) => Some(a),
+        _ => None,
+    }
 }
 
 pub trait As<T> {
