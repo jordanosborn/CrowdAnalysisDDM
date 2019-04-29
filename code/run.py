@@ -128,7 +128,7 @@ if __name__ == "__main__":
                     ),
                 )
             )
-        files_filtered = incomplete_filter(files, "./results")
+        files_filtered = incomplete_filter(files, "./results-multiDDM")
         files_filtered = list(filter_non_videos(files_filtered))
         print(f"{len(files_filtered)}/{len(files)} left to analyse.")
         for index, video in enumerate(files_filtered):
