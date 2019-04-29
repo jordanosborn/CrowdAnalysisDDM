@@ -55,17 +55,13 @@ fn get_allowed_dimension(
 type MultiDdmData = HashMap<usize, Vec<Vec<(crate::RawType, crate::RawType)>>>;
 
 //TODO: implement this!
-#[allow(
-    unused_variables,
-    clippy::too_many_arguments,
-    clippy::cyclomatic_complexity
-)]
+#[allow(clippy::too_many_arguments, clippy::cyclomatic_complexity)]
 pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
     tiling_range: (Option<usize>, Option<usize>, Option<usize>),
-    activity_threshold: Option<usize>,
+    _activity_threshold: Option<usize>,
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
@@ -113,6 +109,7 @@ pub fn multi_ddm(
                 println!("Invalid tiling range selected!");
                 return None;
             };
+        #[allow(unused_variables)]
         let tile_step = if let Some(t) = tile_step { t } else { 1 };
 
         let filename = if let Some(v) = filename {
@@ -170,7 +167,7 @@ pub fn multi_ddm(
                             }
                         }
                     }
-                    if let Some(dim) = odim {
+                    if odim.is_some() {
                         match tx.send(Some(value.data)) {
                             Ok(_) => {
                                 println!("Image capture {} - complete!", counter);
