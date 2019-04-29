@@ -1,5 +1,6 @@
 use crate::RawType;
 use arrayfire as af;
+use itertools::Itertools;
 use rayon::prelude::*;
 use std::collections::VecDeque;
 
@@ -125,17 +126,20 @@ pub fn radial_average(
     annuli: &[(RawType, RawType, arrayfire::Array<RawType>)],
 ) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: speed this up this is very slow
+    //arr[tau: array] and annuli[radius:(radius, sum, annulus)]
     let mut vector = Vec::with_capacity(arr.len());
     println!("Started radial averaging!");
     //TODO: this function is a minefield consumes far too many resources
     //crashes often here
+
     arr.iter().enumerate().for_each(|(i, a)| {
         let average = annuli
             .into_par_iter()
             .map(|(q, sum, annulus)| {
+                let multiplied = annulus * a;
                 (
                     *q,
-                    ((arrayfire::sum_all(&(annulus * a)).0) / f64::from(*sum)) as crate::RawType,
+                    ((arrayfire::sum_all(&(multiplied)).0) / f64::from(*sum)) as crate::RawType,
                 )
             })
             .collect::<Vec<(RawType, RawType)>>();
