@@ -287,7 +287,18 @@ pub fn multi_ddm(
                     }
                 }
 
-                //TODO: save csv s and transpose, run, upload to db and analyse
+                for (key, val) in box_size_map.iter() {
+                    let (val_transposed_index, val_transposed) =
+                        operations::transpose_2d_array(&val);
+                    let _ = save_csv(
+                        &val_transposed_index,
+                        &val_transposed,
+                        &output_dir,
+                        &format!("data_boxsize_{}.csv", key),
+                    );
+                }
+
+                //TODO: run, upload to db and analyse
                 data_out = Some(box_size_map);
                 break;
             }
@@ -299,8 +310,7 @@ pub fn multi_ddm(
                     let tiled_images: Vec<Vec<_>> = images
                         .data
                         .par_iter()
-                        .enumerate()
-                        .map(|(im_id, im)| {
+                        .map(|im| {
                             indices
                                 .par_iter()
                                 .map(|(x, y)| {
@@ -347,8 +357,6 @@ pub fn multi_ddm(
                     }
                     println!("Tiled all images for box size {}", box_size);
                 }
-                println!("{:#?}", accumulator[&512usize].keys().collect::<Vec<_>>());
-                wait!();
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
             }
