@@ -14,16 +14,16 @@ pub fn difference(
 fn mean(arr: &[Option<af::Array<crate::RawType>>]) -> Option<af::Array<crate::RawType>> {
     let dims = arr[0].clone()?;
     let dims = dims.dims();
-    let mut array = Vec::with_capacity(arr.len());
+    let size = arr.len();
+    let mut array = Vec::with_capacity(size);
     for v in arr {
         array.push((v.clone())?);
     }
     Some(
         array
-            .par_iter()
-            .cloned()
+            .into_par_iter()
             .reduce(move || af::Array::new_empty(dims), |a, f| a + f)
-            / (array.len() as crate::RawType),
+            / (size as crate::RawType),
     )
 }
 
@@ -31,17 +31,18 @@ pub fn activity(arr: &[Option<af::Array<crate::RawType>>]) -> Option<f64> {
     let mean_image = mean(arr)?;
     let dims = arr[0].clone()?;
     let dims = dims.dims();
-    let mut array = Vec::with_capacity(arr.len());
+    let size = arr.len();
+    let mut array = Vec::with_capacity(size);
     for v in arr {
         array.push((v.clone())?);
     }
-    let a = array.par_iter().cloned().reduce(
+    let a = array.into_par_iter().reduce(
         move || af::Array::new_empty(dims),
         |a, f| {
             let m = f - mean_image.clone();
             a + af::mul(&m, &m, true)
         },
-    ) / ((array.len() - 1) as crate::RawType);
+    ) / ((size - 1) as crate::RawType);
     Some(af::sum_all(&a).0)
 }
 
@@ -70,15 +71,17 @@ pub fn add_deque(
     a1: Option<VecDeque<af::Array<crate::RawType>>>,
     a2: Option<VecDeque<af::Array<crate::RawType>>>,
 ) -> Option<VecDeque<af::Array<crate::RawType>>> {
-    let a1_unwrapped = a1?;
-    let a2_unwrapped = a2?;
-    Some(
-        a1_unwrapped
-            .iter()
-            .zip(a2_unwrapped.iter())
-            .map(|(x, y)| x + y)
-            .collect(),
-    )
+    match (a1, a2) {
+        (Some(a1_unwrapped), Some(a2_unwrapped)) => Some(
+            a1_unwrapped
+                .iter()
+                .zip(a2_unwrapped.iter())
+                .map(|(x, y)| x + y)
+                .collect(),
+        ),
+        (Some(a), None) | (None, Some(a)) => Some(a),
+        _ => None,
+    }
 }
 
 pub trait As<T> {
@@ -124,24 +127,30 @@ pub fn radial_average(
     annuli: &[(RawType, arrayfire::Array<RawType>)],
 ) -> Vec<Vec<(RawType, RawType)>> {
     //TODO: speed this up this is very slow
-    let mut vector = Vec::with_capacity(arr.len());
+    //arr[tau: array] and annuli[radius:(radius, sum, annulus)]
     println!("Started radial averaging!");
-    arr.iter().enumerate().for_each(|(i, a)| {
-        let average = annuli
-            .par_iter()
-            .map(|(q, annulus)| {
-                (
-                    *q,
-                    ((arrayfire::sum_all(&(annulus * a)).0) / (arrayfire::sum_all(annulus).0))
-                        as crate::RawType,
-                )
-            })
-            .collect::<Vec<(RawType, RawType)>>();
-        vector.push(average);
-        println!("Radial averaged tau = {}!", i + 1);
-    });
+    //TODO: this function is a minefield consumes far too many resources
+    //crashes often here
+    let res = arr
+        .to_owned()
+        .par_iter()
+        .enumerate()
+        .map(|(i, a)| {
+            let res = annuli
+                .to_owned()
+                .par_iter()
+                .map(|(q, annulus)| {
+                    let multiplied = annulus * a;
+                    (*q, af::mean_all(&multiplied).0 as crate::RawType)
+                })
+                .collect();
+            println!("Radial averaged tau = {}!", i + 1);
+            res
+        })
+        .collect::<Vec<_>>();
+
     println!("Radial averaged all time steps!");
-    vector
+    res
 }
 
 pub struct Data<T: arrayfire::HasAfEnum> {
@@ -234,8 +243,8 @@ pub fn generate_annuli(
     let dimension = dimension;
     let max = (dimension / 2) as usize;
     let it = (1..max).step_by(spacing as usize).collect::<Vec<usize>>();
-    it.par_iter()
-        .map(|&r| {
+    it.into_par_iter()
+        .map(|r| {
             (
                 (2 * r + spacing as usize) as RawType / 2.0 as RawType,
                 create_annulus(dimension, r as u64, spacing),

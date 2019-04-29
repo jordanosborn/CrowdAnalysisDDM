@@ -8,10 +8,13 @@
         "/usr/local/include"
     ],
     "cSpell.words": [
+        "boxsize",
         "clippy",
         "cmat",
         "consts",
+        "data",
         "dtype",
+        "errored",
         "gp",
         "gplt",
         "highgui",

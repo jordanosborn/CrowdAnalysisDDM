@@ -35,6 +35,7 @@ def run(command: str, video: str, capacity: str, radial_width: str):
                 str(radial_width),
                 str(16),
                 str(1024),
+                str(32),
                 video,
             ]
         )
@@ -97,8 +98,10 @@ def retranspose(files: List[str]):
             print(f"Completed {(i+1) * 100 / len(files)}%.")
 
 
-def add_to_db(db: str, folder: str):
-    sp.call(["python3", "analysis/data_clean.py", db, folder])
+def add_to_db(
+    db: str, folder: str, filename: str = "radial_Avg.csv", prefix: str = "video"
+):
+    sp.call(["python3", "analysis/data_clean.py", db, folder, filename, prefix])
 
 
 if __name__ == "__main__":
@@ -125,7 +128,7 @@ if __name__ == "__main__":
                     ),
                 )
             )
-        files_filtered = incomplete_filter(files, "./results")
+        files_filtered = incomplete_filter(files, "./results-multiDDM")
         files_filtered = list(filter_non_videos(files_filtered))
         print(f"{len(files_filtered)}/{len(files)} left to analyse.")
         for index, video in enumerate(files_filtered):
@@ -137,17 +140,22 @@ if __name__ == "__main__":
                 )
                 upload()
 
-        print("Producing retranspose")
-        files = []
-        for (dirpath, dirnames, filenames) in os.walk("./results"):
-            files.extend(
-                filter(
-                    lambda s: s.find("radial_Avg.csv") != -1,
-                    map(lambda s: f"./{dirpath}/{s}", filenames),
-                )
+        if sys.argv[1] == "video-multi-ddm":
+            add_to_db(
+                "crowd.sqlite", "results-multiDDM", "data_boxsize", "video-multi-ddm"
             )
-        retranspose(files)
-        add_to_db("crowd.sqlite", "results-transposed")
+        else:
+            print("Producing retranspose")
+            files = []
+            for (dirpath, dirnames, filenames) in os.walk("./results"):
+                files.extend(
+                    filter(
+                        lambda s: s.find("radial_Avg.csv") != -1,
+                        map(lambda s: f"./{dirpath}/{s}", filenames),
+                    )
+                )
+            retranspose(files)
+            add_to_db("crowd.sqlite", "results-transposed")
         upload()
     elif len(sys.argv) == 3 and sys.argv[1] == "fit" and os.path.isdir(sys.argv[2]):
         sp.call(["python3", "./analysis/analyse.py", *sys.argv[2:]])
@@ -194,8 +202,8 @@ if __name__ == "__main__":
             )
         retranspose(files)
         upload()
-    elif len(sys.argv) == 4 and sys.argv[1] == "add_to_db":
-        add_to_db(sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 6 and sys.argv[1] == "add_to_db":
+        add_to_db(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"

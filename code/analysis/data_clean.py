@@ -44,7 +44,9 @@ def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
     files: List[str] = []
     for (dirpath, _, filenames) in os.walk(folder):
         files.extend(map(lambda s: f"./{dirpath}/{s}", filenames))
-    files = list(filter(lambda s: s.find(filename) != -1, files))
+    files = list(
+        filter(lambda s: s.find(filename) != -1 and s.find(".csv") != -1, files)
+    )
     names = list(
         map(
             lambda s: f"{prefix}_"
@@ -83,3 +85,10 @@ if __name__ == "__main__":
         and os.path.exists(sys.argv[1])
     ):
         modify_db(sys.argv[1], sys.argv[2], "radial_Avg.csv")
+    elif (
+        len(sys.argv) == 5
+        and sys.argv[1].find(".sqlite") != -1
+        and os.path.exists(sys.argv[1])
+        and os.path.exists(sys.argv[2])
+    ):
+        modify_db(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

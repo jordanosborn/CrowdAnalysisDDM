@@ -11,7 +11,7 @@
       "preLaunchTask": "cargo build",
       "target": "./target/debug/code",
       "cwd": "${workspaceRoot}",
-      "arguments": "video-multi-ddm  80 1 16 1024 4 new_videos_resized/crowd8.mp4"
+      "arguments": "video-multi-ddm  80 1 512 512 1 new_videos_resized/crowd8.mp4"
     },
     {
       "name": "(lldb) Launch",

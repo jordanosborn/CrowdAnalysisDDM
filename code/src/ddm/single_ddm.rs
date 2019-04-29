@@ -128,7 +128,7 @@ pub fn single_ddm(
             if collected_all_frames {
                 if let Some(a) = accumulator {
                     let accumulator = a
-                        .par_iter()
+                        .into_par_iter()
                         .map(|x| x / (counter_t0 as crate::RawType))
                         .collect::<Vec<af::Array<RawType>>>();
                     let annuli = match annuli_rx.recv() {
@@ -137,6 +137,10 @@ pub fn single_ddm(
                             panic!("Failed to receive annuli - {}!", e);
                         }
                     };
+                    let annuli = annuli
+                        .into_par_iter()
+                        .map(|(q, a)| (q, a))
+                        .collect::<Vec<_>>();
                     let radial_averaged = operations::radial_average(&accumulator, &annuli);
                     let radial_averaged_index = (1..=radial_averaged.len())
                         .map(|i| i as RawType)

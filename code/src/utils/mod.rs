@@ -76,7 +76,7 @@ pub fn get_closest_power(x: i64) -> i64 {
 pub fn times() -> Vec<(String, f64)> {
     let spans = fl::spans();
     spans
-        .par_iter()
+        .into_par_iter()
         .map(|x| {
             (
                 String::from(x.name.as_ref()),
