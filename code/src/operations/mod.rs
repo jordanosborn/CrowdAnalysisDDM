@@ -119,6 +119,7 @@ pub fn transpose_2d_array<T: Clone + As<usize>>(arr: &[Vec<(T, T)>]) -> (Vec<T>,
     (index, output)
 }
 
+//TODO: this function is a minefield consumes far too many resources
 pub fn radial_average(
     arr: &[arrayfire::Array<RawType>],
     annuli: &[(RawType, arrayfire::Array<RawType>)],

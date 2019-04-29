@@ -279,25 +279,21 @@ pub fn multi_ddm(
                             .collect::<Vec<_>>();
                         //Inserting these print statements prevents crash somehow?
                         println!("Averaged arrays for constant box_size = {}", box_size);
-                        box_size_map.insert(
-                            *box_size,
-                            operations::radial_average(average, &resized_annuli),
+                        let radial_average = operations::radial_average(average, &resized_annuli);
+                        let (val_transposed_index, val_transposed) =
+                            operations::transpose_2d_array(&radial_average);
+                        let _ = save_csv(
+                            &val_transposed_index,
+                            &val_transposed,
+                            &output_dir,
+                            &format!("data_boxsize_{}.csv", box_size),
                         );
+                        println!("Saved csv for boxsize = {}", box_size);
+
+                        box_size_map.insert(*box_size, radial_average);
                     }
                     println!("Finished averaging for boxsize = {}", box_size);
                 }
-
-                for (key, val) in box_size_map.iter() {
-                    let (val_transposed_index, val_transposed) =
-                        operations::transpose_2d_array(&val);
-                    let _ = save_csv(
-                        &val_transposed_index,
-                        &val_transposed,
-                        &output_dir,
-                        &format!("data_boxsize_{}.csv", key),
-                    );
-                }
-
                 //TODO: run, upload to db and analyse
                 println!("Multi-DDM complete!");
                 data_out = Some(box_size_map);
