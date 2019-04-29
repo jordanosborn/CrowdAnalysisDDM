@@ -257,47 +257,50 @@ pub fn multi_ddm(
                     println!("Resized annuli for boxsize = {}", box_size);
                     //averaged over
                     //TODO: v is valid here
-                    let x = v.get(&(0, 0)).unwrap().clone().unwrap();
-                    af::print(&x[0]);
-                    wait!();
-                    //GOES wrong in here
-                    let acc_vec: Option<Vec<af::Array<crate::RawType>>> = Some(vec![
+                    // let x = v.get(&(0, 0)).unwrap().clone().unwrap();
+                    // af::print(&x[4]);
+                    // wait!();
+                    let mut acc_vec: Vec<af::Array<crate::RawType>> = vec![
                         af::Array::new_empty(
                             af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1])
                         );
                         capacity - 1
-                    ]);
-                    let acc_vec = v.iter().fold(acc_vec, |acc, ((_, _), arr)| {
-                        let arr = arr.to_owned()?;
-                        let acc = (acc)?;
-                        Some(
-                            acc.into_par_iter()
-                                .zip(arr.into_par_iter())
-                                .map(|(a, x)| a + x)
-                                .collect(),
-                        )
-                    });
-                    //Add to box size map and perform box averaging and radial averaging and start time averaging
-                    if let Some(a) = acc_vec {
-                        let average = &a
-                            .into_par_iter()
-                            .map(|x| x / (v.len() * counter_t0) as crate::RawType)
-                            .collect::<Vec<_>>();
-                        //Inserting these print statements prevents crash somehow?
-                        println!("Averaged arrays for constant box_size = {}", box_size);
-                        let radial_average = operations::radial_average(average, &resized_annuli);
-                        let (val_transposed_index, val_transposed) =
-                            operations::transpose_2d_array(&radial_average);
-                        let _ = save_csv(
-                            &val_transposed_index,
-                            &val_transposed,
-                            &output_dir,
-                            &format!("data_boxsize_{}.csv", box_size),
-                        );
-                        println!("Saved csv for boxsize = {}", box_size);
-
-                        box_size_map.insert(*box_size, radial_average);
+                    ];
+                    let mut errored = 0usize;
+                    //TODO: GOES wrong in here
+                    for (key, v2) in v.iter() {
+                        if let Some(v2) = v2.clone() {
+                            for (i, k) in v2.iter().enumerate() {
+                                acc_vec[i] = acc_vec[i].to_owned() + k;
+                                println!("{:#?} {}", key, i);
+                                af::print(&acc_vec[i]);
+                            }
+                        } else {
+                            errored += 1;
+                        }
                     }
+
+                    wait!();
+
+                    //Add to box size map and perform box averaging and radial averaging and start time averaging
+                    let average = acc_vec
+                        .into_par_iter()
+                        .map(|x| x / ((v.len() - errored) * counter_t0) as crate::RawType)
+                        .collect::<Vec<_>>();
+                    //Inserting these print statements prevents crash somehow?
+                    println!("Averaged arrays for constant box_size = {}", box_size);
+                    let radial_average = operations::radial_average(&average, &resized_annuli);
+                    let (val_transposed_index, val_transposed) =
+                        operations::transpose_2d_array(&radial_average);
+                    let _ = save_csv(
+                        &val_transposed_index,
+                        &val_transposed,
+                        &output_dir,
+                        &format!("data_boxsize_{}.csv", box_size),
+                    );
+                    println!("Saved csv for boxsize = {}", box_size);
+
+                    box_size_map.insert(*box_size, radial_average);
                     println!("Finished averaging for boxsize = {}", box_size);
                 }
                 //TODO: run, upload to db and analyse
