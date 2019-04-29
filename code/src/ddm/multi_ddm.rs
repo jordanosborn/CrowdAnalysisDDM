@@ -255,12 +255,13 @@ pub fn multi_ddm(
                         })
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
+
                     //averaged over
                     //TODO: v is valid here
                     // let x = v.get(&(0, 0)).unwrap().clone().unwrap();
                     // af::print(&x[4]);
                     // wait!();
-                    let mut acc_vec: Option<VecDeque<af::Array<crate::RawType>>> =
+                    let acc_init: Option<VecDeque<af::Array<crate::RawType>>> =
                         Some(VecDeque::from(vec![
                             af::Array::new_empty(af::Dim4::new(&[
                                 *box_size as u64,
@@ -271,10 +272,9 @@ pub fn multi_ddm(
                             capacity - 1
                         ]));
                     //TODO: GOES wrong in here
-                    for (_, v2) in v.iter() {
-                        acc_vec = operations::add_deque(v2.clone(), acc_vec);
-                    }
-
+                    let acc_vec = v.iter().fold(acc_init, |acc, (_, x)| {
+                        operations::add_deque(acc, x.clone())
+                    });
                     for (i, a) in acc_vec.clone().unwrap().iter().enumerate() {
                         println!("index {}", i);
                         af::print(a);
