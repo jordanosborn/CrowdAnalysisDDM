@@ -272,14 +272,13 @@ pub fn multi_ddm(
                     });
                     //Add to box size map and perform box averaging and radial averaging
                     if let Some(a) = acc_vec {
+                        let average = &a
+                            .par_iter()
+                            .map(|x| x / (capacity - 1) as crate::RawType)
+                            .collect::<Vec<_>>();
                         box_size_map.insert(
                             *box_size,
-                            operations::radial_average(
-                                &a.par_iter()
-                                    .map(|x| x / (capacity - 1) as crate::RawType)
-                                    .collect::<Vec<_>>(),
-                                &resized_annuli,
-                            ),
+                            operations::radial_average(average, &resized_annuli),
                         );
                     }
                 }
