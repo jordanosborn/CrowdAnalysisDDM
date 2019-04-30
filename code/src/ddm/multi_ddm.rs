@@ -269,7 +269,7 @@ pub fn multi_ddm(
                         Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
                     });
 
-                    acc_vec.and_then(|x| {
+                    acc_vec.to_owned().and_then(|x| {
                         for xx in x.iter() {
                             af::print(xx);
                         }
