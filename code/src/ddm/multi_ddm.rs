@@ -320,6 +320,7 @@ pub fn multi_ddm(
                 for (box_id, box_size) in box_range.iter().enumerate() {
                     let indices = &indices_range[box_id];
                     //Ft of Tiles for each of the collected images
+                    //TODO: avg over box size here
                     let tiled_images: Vec<Vec<_>> = images
                         .data
                         .par_iter()
