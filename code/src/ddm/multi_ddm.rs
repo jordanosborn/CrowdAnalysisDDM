@@ -238,7 +238,7 @@ pub fn multi_ddm(
                 let mut box_size_map = HashMap::with_capacity(accumulator.len());
                 for (box_size, v) in accumulator.iter_mut() {
                     let resized_annuli: Vec<_> = annuli
-                        .par_iter()
+                        .iter()
                         .filter_map(|(q, arr)| {
                             let resized_arr = operations::sub_array(
                                 arr,
@@ -265,9 +265,9 @@ pub fn multi_ddm(
                     //TODO: v is valid here
                     //TODO: GOES wrong in here
                     //Time average
-                    let acc_vec = v.to_owned().and_then(|x| {
-                        Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
-                    });
+                    let acc_vec = v
+                        .to_owned()
+                        .and_then(|x| Some(x.iter().map(|x| x / counter_t0).collect::<Vec<_>>()));
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
@@ -306,10 +306,10 @@ pub fn multi_ddm(
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
-                        .par_iter()
+                        .iter()
                         .map(|im| {
                             indices
-                                .par_iter()
+                                .iter()
                                 .map(|(x, y)| {
                                     operations::sub_array(
                                         &im,
@@ -346,8 +346,8 @@ pub fn multi_ddm(
                             for (i, x) in arr_unwrapped.into_iter().enumerate() {
                                 if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
                                     tiled_images_ddm_acc[i] = Some(a + x);
-                                //This slows it down
-                                af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
+                                    //This slows it down
+                                    af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
                                 } else {
                                     tiled_images_ddm_acc[i] = Some(x);
                                 }
@@ -358,7 +358,7 @@ pub fn multi_ddm(
 
                     let tiled_images_ddm_len = indices.len();
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
-                        .into_par_iter()
+                        .into_iter()
                         .map(|x| x.and_then(|x| Some(x / tiled_images_ddm_len as crate::RawType)))
                         .filter(Option::is_some)
                         .map(Option::unwrap)
@@ -373,8 +373,8 @@ pub fn multi_ddm(
                             for (i, x) in arr.iter().enumerate() {
                                 if let Some(a) = acc[i].to_owned() {
                                     acc[i] = Some(a + x);
-                                //This slows it down
-                                af::print(&acc[i].to_owned().unwrap());
+                                    //This slows it down
+                                    af::print(&acc[i].to_owned().unwrap());
                                 } else {
                                     acc[i] = Some(x.to_owned());
                                 }

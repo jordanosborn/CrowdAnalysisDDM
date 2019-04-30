@@ -30,7 +30,7 @@ pub fn ddm(
             let ft0 = data_slice.pop_front()?;
             Some(
                 data_slice
-                    .into_par_iter()
+                    .into_iter()
                     .enumerate()
                     .map(|(_, x)| operations::difference(&x, &ft0))
                     .collect::<VecDeque<arrayfire::Array<crate::RawType>>>(),
