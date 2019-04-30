@@ -330,6 +330,7 @@ pub fn multi_ddm(
                                 .collect()
                         })
                         .collect();
+                    println!("Produced tiles");
                     //Average over box size
                     let tiled_images_ddm = operations::transpose(tiled_images)
                         .into_iter()
@@ -362,6 +363,7 @@ pub fn multi_ddm(
                         .filter(Option::is_some)
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
+                    println!("Averaged over same size boxes");
                     //TODO: this summing causes crash!!!
                     if let Some(v1) = accumulator.get(box_size) {
                         let mut acc: Vec<Option<af::Array<crate::RawType>>> =
@@ -383,6 +385,7 @@ pub fn multi_ddm(
                             .filter(Option::is_some)
                             .map(Option::unwrap)
                             .collect::<VecDeque<_>>();
+                        println!("Accumulating for each start time");
                         accumulator.insert(*box_size, Some(acc));
                     } else {
                         accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
@@ -391,9 +394,9 @@ pub fn multi_ddm(
                         "Tiled all images and averaged for box size = {} at start time = {}",
                         box_size, counter_t0
                     );
-                    // for a in accumulator[box_size].to_owned().unwrap().iter() {
-                    //     af::print(a);
-                    // }
+                    for a in accumulator[box_size].to_owned().unwrap().iter() {
+                        af::print(a);
+                    }
                     //wait!();
                 }
                 counter_t0 += 1;
