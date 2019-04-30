@@ -133,7 +133,7 @@ pub fn radial_average(
     //crashes often here
     let res = arr
         .to_owned()
-        .iter()
+        .par_iter()
         .enumerate()
         .map(|(i, a)| {
             let res = annuli
