@@ -4,7 +4,37 @@ import sys
 import subprocess as sp  # nosec
 import os
 from twilio.rest import Client
-from typing import Union, Any, List, Iterable
+from typing import Union, Any, List, Iterable, Optional
+from itertools import product
+
+
+def get_allowed_dimension(
+    tiling_min: int, tiling_max: int, tiling_size_count: Optional[int]
+) -> List[int]:
+    power2 = math.ceil(math.log2(tiling_max))
+    power3 = math.ceil(math.log(tiling_max, 3))
+    power5 = math.ceil(math.log(tiling_max, 5))
+    box_range_pre = product(range(power2 + 1), range(power3 + 1), range(power5 + 1))
+    box_range: List[int] = list(
+        filter(
+            lambda x: tiling_min <= x <= tiling_max,
+            map(lambda x: int(2 ** x[0] * 3 ** x[1] * 5 ** x[2]), box_range_pre),
+        )
+    )
+    box_range.sort()
+    if tiling_size_count is not None:
+        length = len(box_range)
+        if not (tiling_size_count <= length):
+            tiling_size_count = length
+
+        new_vec = []
+
+        for i in range(tiling_size_count - 1):
+            new_vec.append(box_range[int(i * length / math.ceil(tiling_size_count))])
+        new_vec.append(box_range[length - 1])
+        return new_vec
+    else:
+        return box_range
 
 
 with open("secrets.json") as f:
@@ -26,7 +56,7 @@ def run(command: str, video: str, capacity: str, radial_width: str):
     print(video)
     if command == "video-multi-ddm":
         # run on range of box sizes to prevent resource starvation
-        size_range = [2 ** x for x in range(4, int(math.log2(1024)))]
+        size_range = get_allowed_dimension(16, 1024, 16)
         for s in size_range[::-1]:
             sp.call(
                 [
