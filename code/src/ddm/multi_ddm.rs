@@ -346,7 +346,7 @@ pub fn multi_ddm(
                                 if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
                                     tiled_images_ddm_acc[i] = Some(a + x);
                                     //This slows it down
-                                    af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
+                                    //af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
                                 } else {
                                     tiled_images_ddm_acc[i] = Some(x);
                                 }
@@ -372,7 +372,7 @@ pub fn multi_ddm(
                                 if let Some(a) = acc[i].to_owned() {
                                     acc[i] = Some(a + x);
                                     //This slows it down
-                                    af::print(&acc[i].to_owned().unwrap());
+                                    //af::print(&acc[i].to_owned().unwrap());
                                 } else {
                                     acc[i] = Some(x.to_owned());
                                 }
@@ -394,7 +394,7 @@ pub fn multi_ddm(
                     for a in accumulator[box_size].to_owned().unwrap().iter() {
                         af::print(a);
                     }
-                    wait!();
+                    //wait!();
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
