@@ -261,13 +261,6 @@ pub fn multi_ddm(
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
 
-                    v.to_owned().and_then(|x| {
-                        for xx in x.iter() {
-                            af::print(xx);
-                        }
-                        wait!();
-                        Some(x)
-                    });
                     //averaged over
                     //TODO: v is valid here
                     //TODO: GOES wrong in here
@@ -344,6 +337,13 @@ pub fn multi_ddm(
                         .map(|arr| ddm(None, &arr))
                         .filter(Option::is_some)
                         .fold(None, operations::add_deque);
+                    tiled_images_ddm.to_owned().and_then(|x| {
+                        for xx in x.iter() {
+                            af::print(xx);
+                        }
+                        wait!();
+                        Some(x)
+                    });
                     let tiled_images_ddm_len = indices.len();
                     let tiled_images_ddm = tiled_images_ddm.and_then(|x| {
                         Some(
