@@ -362,13 +362,35 @@ pub fn multi_ddm(
                         .filter(Option::is_some)
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
+                    //TODO: this summing causes crash!!!
+                    if let Some(v1) = accumulator.get(box_size) {
+                        let mut acc: Vec<Option<af::Array<crate::RawType>>> =
+                            vec![None; capacity - 1];
 
-                    if let Some(v1) = accumulator.get_mut(box_size) {
-                        *v1 = operations::add_deque(v1.to_owned(), Some(tiled_images_ddm_acc));
+                        for arr in v1.iter() {
+                            for (i, x) in arr.iter().enumerate() {
+                                if let Some(a) = acc[i].to_owned() {
+                                    acc[i] = Some(a + x);
+                                    //This slows it down
+                                    af::print(&acc[i].to_owned().unwrap());
+                                } else {
+                                    acc[i] = Some(x.to_owned());
+                                }
+                            }
+                        }
+                        let acc = acc
+                            .into_par_iter()
+                            .filter(Option::is_some)
+                            .map(Option::unwrap)
+                            .collect::<VecDeque<_>>();
+                        accumulator.insert(*box_size, Some(acc));
                     } else {
                         accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
                     }
-                    println!("Tiled all images and averaged for box size {}", box_size);
+                    println!(
+                        "Tiled all images and averaged for box size = {} at start time = {}",
+                        box_size, counter_t0
+                    );
                     for a in accumulator[box_size].to_owned().unwrap().iter() {
                         af::print(a);
                     }
