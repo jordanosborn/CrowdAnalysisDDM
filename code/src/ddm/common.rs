@@ -13,8 +13,8 @@ pub fn ddm(
             let ft0 = data_slice.pop_front()?;
             Some(
                 data_slice
-                    .into_par_iter()
-                    .zip(acc.into_par_iter())
+                    .into_iter()
+                    .zip(acc.into_iter())
                     .map(|(i, a)| {
                         //TODO: WTH why does this work when loc is added below???! panics at t0 = 47 ??????
                         //This works on mac mini
