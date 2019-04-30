@@ -344,23 +344,36 @@ pub fn multi_ddm(
 
                     wait!();
                     //TODO: this summing causes crash!!!
-                    let tiled_images_ddm = tiled_images_ddm
-                        .into_iter()
-                        .fold(None, operations::add_deque);
-
-                    let tiled_images_ddm_len = indices.len();
-                    let tiled_images_ddm = tiled_images_ddm.and_then(|x| {
-                        Some(
-                            x.into_par_iter()
-                                .map(|x| x / tiled_images_ddm_len as crate::RawType)
-                                .collect::<VecDeque<_>>(),
-                        )
+                    let mut tiled_images_ddm_acc = vec![None; capacity - 1];
+                    for arr in tiled_images_ddm.into_iter() {
+                        if let Some(arr_unwrapped) = arr {
+                            for (i, x) in arr_unwrapped.into_iter().enumerate() {
+                                if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
+                                    tiled_images_ddm_acc[i] = Some(a + x);
+                                } else {
+                                    tiled_images_ddm_acc[i] = Some(x);
+                                }
+                            }
+                        }
+                    }
+                    tiled_images_ddm_acc.to_owned().into_iter().for_each(|x| {
+                        af::print(&x.unwrap());
                     });
 
+                    wait!();
+
+                    let tiled_images_ddm_len = indices.len();
+                    let tiled_images_ddm_acc = tiled_images_ddm_acc
+                        .into_par_iter()
+                        .map(|x| x.and_then(|x| Some(x / tiled_images_ddm_len as crate::RawType)))
+                        .filter(Option::is_some)
+                        .map(Option::unwrap)
+                        .collect::<VecDeque<_>>();
+
                     if let Some(v1) = accumulator.get_mut(box_size) {
-                        *v1 = operations::add_deque(v1.to_owned(), tiled_images_ddm);
+                        *v1 = operations::add_deque(v1.to_owned(), Some(tiled_images_ddm_acc));
                     } else {
-                        accumulator.insert(*box_size, tiled_images_ddm);
+                        accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
                     }
                     println!("Tiled all images and averaged for box size {}", box_size);
                 }
