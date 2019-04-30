@@ -341,10 +341,10 @@ pub fn multi_ddm(
                         for xx in x.to_owned().unwrap().iter() {
                             af::print(xx);
                         }
-
                     });
-                    wait!();
 
+                    wait!();
+                    //TODO: this summing causes crash!!!
                     let tiled_images_ddm = tiled_images_ddm
                         .into_iter()
                         .fold(None, operations::add_deque);
