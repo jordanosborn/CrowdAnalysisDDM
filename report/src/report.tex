@@ -36,9 +36,9 @@
 \maketitle
 \section*{Abstract}
 %500 words overview
-This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". A detailed description of the theory behind DDM is included in section \ref{section:theory}. DDM makes heavy use of Fourier transforms of the intensity differences between lagging frames. By transforming the intensity differences into the frequency domain, we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode.  This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for specific types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. 
+This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". A detailed description of the theory behind DDM is included in section \ref{section:theory}. DDM makes heavy use of Fourier transforms of the intensity differences between lagging frames. By transforming the intensity differences into the frequency domain, we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode.  This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for specific types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. This method has a significant level of computational complexity. Particular care was therefore taken in order to produce a satisfactory level of performance. The algorithm was implemented in the Rust programming language \cite{rust}, making heavy use of the GPU array parallelisation library Arrayfire \cite{arrayfire}. Data analysis was carried out using the standard Python science stack (Python, numpy, pandas, matplotlib, scipy and sklearn). The algorithm was tested on simulated videos of Brownian motion in order to test its accuracy before it was run on crowd motion videos (more information can be found in section \ref{section:brownian}. Brownian motion was used as a test case as there is a known analytical form for the ISF (equation \ref{eqn:BrownianISF}). The expected functional form held remarkably well (again see section \ref{section:brownian}) and so the algorithm was most likely correctly implemented.
 
-% multi and single scale ddm, implementation,  mathematical technique that makes heavy use of fourier transforms, future , curve fitting, algo tested against brownian motion, results, sections
+% results, sections, future 
 
 \clearpage
 \tableofcontents
@@ -208,14 +208,35 @@ Software development best practices were followed throughout development. The pr
 \clearpage
 \section{Results}
 %TODO: All multi-ddm and analyse
-\subsection{Data}
+\subsection{Brownian Motion}
 
-\subsection{Graphs}
+\subsection{Single-Scale DDM}
+\subsubsection{Stationary Crowds - Brownian Like}
+
+\subsubsection{Directional Motion - Swimmer Like}
+
+\subsection{Multi-Scale DDM}
+\subsubsection{Stationary Crowds - Brownian Like}
+
+\subsubsection{Directional Motion - Swimmer Like}
+
+\subsection{Performance}
 
 \clearpage
 \section{Discussion}
+\subsection{Brownian Motion}
+\label{section:brownian}
+
 \subsection{Single-Scale DDM}
+\subsubsection{Stationary Crowds - Brownian Like}
+
+\subsubsection{Directional Motion - Swimmer Like}
+
 \subsection{Multi-Scale DDM}
+\subsubsection{Stationary Crowds - Brownian Like}
+
+\subsubsection{Directional Motion - Swimmer Like}
+
 \subsection{Performance}
 \label{section:performance}
 %graphs and data
