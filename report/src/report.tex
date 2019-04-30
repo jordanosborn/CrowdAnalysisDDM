@@ -37,6 +37,7 @@
 \section*{Abstract}
 %500 words overview
 
+
 \clearpage
 \tableofcontents
 % TODO: 5000 Words 
@@ -238,7 +239,7 @@ The equation that is used to determine these velocities is derived under the ass
 \begin{equation}
 I(x, y, t) = I(x + dx, y + dy, t + dt)
 \end{equation}
-Taking the Taylor expansion of this equation and only retaining up to first order.
+Taking the Taylor expansion of this equation and only retaining terms up to first order.
 \begin{equation}
 I(x, y, t) = I(x, y, t) + \frac{\partial I}{\partial x} dx + \frac{\partial I}{\partial y} dy + \frac{\partial I}{\partial t} dt
 \end{equation}
@@ -247,7 +248,7 @@ After rearranging and then taking the time derivative we arrive at the desired e
 0 = \nabla I \cdot \textbf{v} + \frac{\partial I}{\partial t}
 \end{equation}
  
-There are some notable caveats of this method which are outlined in detail in \cite{optical_flow}. The method therefore requires you to solve a partial differential equation thus necessitating implementation of some constraints in order to fully determine the motion. It also assumes that objects show consistent intensities which may or may not be valid depending on the footage. DDM requires neither of these things.
+There are some notable caveats of this method which are outlined in detail in \cite{optical_flow}. The method requires you to solve a partial differential equation thus necessitating implementation of some constraints in order to fully determine the motion. It also assumes that objects show consistent intensities which may or may not be valid depending on the footage. DDM requires neither of these things.
 
 \subsection{Advantages}
 \begin{enumerate}
