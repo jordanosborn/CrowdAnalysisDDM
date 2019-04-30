@@ -336,14 +336,17 @@ pub fn multi_ddm(
                         .into_iter()
                         .map(|arr| ddm(None, &arr))
                         .filter(Option::is_some)
-                        .fold(None, operations::add_deque);
-                    tiled_images_ddm.to_owned().and_then(|x| {
-                        for xx in x.iter() {
+                        .collect::<Vec<_>>();
+                    tiled_images_ddm.to_owned().iter().for_each(|x| {
+                        for xx in x.to_owned().unwrap().iter() {
                             af::print(xx);
                         }
                         wait!();
-                        Some(x)
                     });
+
+                    let tiled_images_ddm = tiled_images_ddm
+                        .into_iter()
+                        .fold(None, operations::add_deque);
                     let tiled_images_ddm_len = indices.len();
                     let tiled_images_ddm = tiled_images_ddm.and_then(|x| {
                         Some(
