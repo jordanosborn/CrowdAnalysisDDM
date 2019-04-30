@@ -55,7 +55,7 @@ def send_message(secrets: Any, body: str):
 def run(command: str, video: str, capacity: str, radial_width: str):
     print(video)
     if command == "video-multi-ddm":
-        # run on range of box sizes to prevent resource starvation
+        # TODO: run on range of box sizes to prevent resource starvation
         size_range = get_allowed_dimension(16, 1024, 16)
         for s in size_range[::-1]:
             sp.call(
