@@ -133,12 +133,12 @@ pub fn radial_average(
     //crashes often here
     let res = arr
         .to_owned()
-        .par_iter()
+        .iter()
         .enumerate()
         .map(|(i, a)| {
             let res = annuli
                 .to_owned()
-                .par_iter()
+                .iter()
                 .map(|(q, annulus)| {
                     let multiplied = annulus * a;
                     (*q, af::mean_all(&multiplied).0 as crate::RawType)

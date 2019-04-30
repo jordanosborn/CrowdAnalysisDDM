@@ -336,13 +336,7 @@ pub fn multi_ddm(
                         .map(|arr| ddm(None, &arr))
                         .filter(Option::is_some)
                         .collect::<Vec<_>>();
-                    tiled_images_ddm.to_owned().iter().for_each(|x| {
-                        for xx in x.to_owned().unwrap().iter() {
-                            af::print(xx);
-                        }
-                    });
 
-                    wait!();
                     //TODO: this summing causes crash!!!
                     let mut tiled_images_ddm_acc = vec![None; capacity - 1];
 
