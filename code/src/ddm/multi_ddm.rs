@@ -363,17 +363,16 @@ pub fn multi_ddm(
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
 
-                    for a in tiled_images_ddm_acc.to_owned().iter() {
-                        af::print(&a);
-                    }
-                    wait!();
-
                     if let Some(v1) = accumulator.get_mut(box_size) {
                         *v1 = operations::add_deque(v1.to_owned(), Some(tiled_images_ddm_acc));
                     } else {
                         accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
                     }
                     println!("Tiled all images and averaged for box size {}", box_size);
+                    for a in accumulator[box_size].to_owned().unwrap().iter() {
+                        af::print(a);
+                    }
+                    wait!();
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
