@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+import json, math
 import sys
 import subprocess as sp  # nosec
 import os
@@ -25,20 +25,23 @@ def send_message(secrets: Any, body: str):
 def run(command: str, video: str, capacity: str, radial_width: str):
     print(video)
     if command == "video-multi-ddm":
-        sp.call(
-            [
-                "cargo",
-                "run",
-                "--release",
-                command,
-                str(capacity),
-                str(radial_width),
-                str(16),
-                str(1024),
-                str(32),
-                video,
-            ]
-        )
+        # run on range of box sizes to prevent resource starvation
+        size_range = [2 ** x for x in range(4, int(math.log2(1024)))]
+        for s in size_range[::-1]:
+            sp.call(
+                [
+                    "cargo",
+                    "run",
+                    "--release",
+                    command,
+                    str(capacity),
+                    str(radial_width),
+                    str(s),
+                    str(s),
+                    str(1),
+                    video,
+                ]
+            )
     else:
         sp.call(
             [
