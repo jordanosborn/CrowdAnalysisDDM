@@ -261,20 +261,19 @@ pub fn multi_ddm(
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
 
+                    v.to_owned().and_then(|x| {
+                        for xx in x.iter() {
+                            af::print(xx);
+                        }
+                        wait!();
+                        Some(x)
+                    });
                     //averaged over
                     //TODO: v is valid here
                     //TODO: GOES wrong in here
                     //Time average
                     let acc_vec = v.to_owned().and_then(|x| {
                         Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
-                    });
-
-                    acc_vec.to_owned().and_then(|x| {
-                        for xx in x.iter() {
-                            af::print(xx);
-                        }
-                        wait!();
-                        Some(x)
                     });
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
