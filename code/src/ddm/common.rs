@@ -10,7 +10,7 @@ pub fn ddm(
     match accumulator {
         Some(acc) => {
             let mut data_slice = data.clone();
-            let ft0 = data_slice.pop_front().unwrap();
+            let ft0 = data_slice.pop_front()?;
             Some(
                 data_slice
                     .into_par_iter()
@@ -27,7 +27,7 @@ pub fn ddm(
         }
         None => {
             let mut data_slice = data.clone();
-            let ft0 = data_slice.pop_front().unwrap();
+            let ft0 = data_slice.pop_front()?;
             Some(
                 data_slice
                     .into_par_iter()
