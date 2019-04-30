@@ -380,6 +380,7 @@ pub fn multi_ddm(
                                 }
                             }
                         }
+                        wait!();
                         let acc = acc
                             .into_par_iter()
                             .filter(Option::is_some)
