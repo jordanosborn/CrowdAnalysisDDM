@@ -341,8 +341,9 @@ pub fn multi_ddm(
                         for xx in x.to_owned().unwrap().iter() {
                             af::print(xx);
                         }
-                        wait!();
+
                     });
+                    wait!();
 
                     let tiled_images_ddm = tiled_images_ddm
                         .into_iter()
