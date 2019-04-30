@@ -269,6 +269,14 @@ pub fn multi_ddm(
                         Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
                     });
 
+                    acc_vec.and_then(|x| {
+                        for xx in x.iter() {
+                            af::print(xx);
+                        }
+                        wait!();
+                        Some(x)
+                    });
+
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
                     //Inserting these print statements prevents crash somehow?
