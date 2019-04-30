@@ -4,7 +4,7 @@
 %%
 
 % Preamble
-\documentclass[10pt]{article}
+\documentclass[11pt]{article}
 
 % Packages
 \usepackage{amsmath, mathrsfs}
@@ -36,9 +36,7 @@
 \maketitle
 \section*{Abstract}
 %500 words overview
-This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". A detailed description of the theory behind DDM is included in section \ref{section:theory}. DDM makes heavy use of Fourier transforms of the intensity differences between lagging frames. By transforming the intensity differences into the frequency domain, we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode.  This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for specific types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. This method has a significant level of computational complexity. Particular care was therefore taken in order to produce a satisfactory level of performance. The algorithm was implemented in the Rust programming language \cite{rust}, making heavy use of the GPU array parallelisation library Arrayfire \cite{arrayfire}. Data analysis was carried out using the standard Python science stack (Python, numpy, pandas, matplotlib, scipy and sklearn). The algorithm was tested on simulated videos of Brownian motion in order to test its accuracy before it was run on crowd motion videos (more information can be found in section \ref{section:brownian}. Brownian motion was used as a test case as there is a known analytical form for the ISF (equation \ref{eqn:BrownianISF}). The expected functional form held remarkably well (again see section \ref{section:brownian}) and so the algorithm was most likely correctly implemented.
-
-% results, sections, future 
+This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms, single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". A detailed description of the theory behind DDM is included in section \ref{section:theory}. DDM makes heavy use of Fourier transforms of the intensity differences between lagging frames. By transforming the intensity differences into the frequency domain, we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode.  This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for specific types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. This method has a significant level of computational complexity. Particular care was therefore taken in order to produce a satisfactory level of performance. The algorithm was implemented in the Rust programming language \cite{rust}, making heavy use of the GPU array parallelisation library Arrayfire \cite{arrayfire}. Data analysis was carried out using the standard Python data science stack (Python, numpy, pandas, matplotlib, scipy and sklearn). The algorithm was tested on simulated videos of Brownian motion before it was run on crowd motion videos in order to test its accuracy (more information can be found in section \ref{section:brownian}. Brownian motion was used as a test case as there is a known analytical form for the ISF (equation \ref{eqn:BrownianISF}). The expected functional form holds remarkably well (again see section \ref{section:brownian}) and so the algorithm was most likely correctly implemented. Analysis was carried out on two particular crowds types, Brownian-like (stationary motion e.g. stadium crowd where motion is constrained to oscillation about seat location) and Swimmer-like (directional crowd motion e.g. marathon running) (see section \ref{section:crowdtypes} for further details). The crowd videos were assigned one of these two categories or left uncategorised. Data was collected for every video but data analysis was only carried out on the Brownian-like and Swimmer-like crowds. This was done as there is at least an approximately known form of the ISF for Brownian/Swimmer like crowds (the microscopic Brownian \ref{eqn:BrownianISF} and Ballistic \ref{eqn:BallisticISF} ISFs) where as for the uncategorised crowds it was not clear what form of ISF should be selected. Other crowd types and the form of their ISFs could be an avenue for further research. The results and their discussion (single-scale and multi-scale DDM) for Brownian and Swimmer like crowds can be found in sections \ref{section:results} and \ref{section:discussion}. It is hoped that this report will demonstrate the suitability of DDM for the analysis of macroscopic motion (crowds). With further research (crowd types and their associated ISFs) and development (focusing on algorithmic optimisation and usability) DDM might find usage in real-time crowd safety monitoring systems at stadiums, in shopping malls, on crowded streets and more.
 
 \clearpage
 \tableofcontents
@@ -207,6 +205,7 @@ Software development best practices were followed throughout development. The pr
  
 \clearpage
 \section{Results}
+\label{section:results}
 %TODO: All multi-ddm and analyse
 \subsection{Brownian Motion}
 
@@ -224,6 +223,7 @@ Software development best practices were followed throughout development. The pr
 
 \clearpage
 \section{Discussion}
+\label{section:discussion}
 \subsection{Brownian Motion}
 \label{section:brownian}
 
