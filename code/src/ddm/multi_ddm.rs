@@ -345,12 +345,13 @@ pub fn multi_ddm(
                     wait!();
                     //TODO: this summing causes crash!!!
                     let mut tiled_images_ddm_acc = vec![None; capacity - 1];
-                    
+
                     for arr in tiled_images_ddm.into_iter() {
                         if let Some(arr_unwrapped) = arr {
                             for (i, x) in arr_unwrapped.into_iter().enumerate() {
                                 if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
                                     tiled_images_ddm_acc[i] = Some(a + x);
+                                    af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
                                 } else {
                                     tiled_images_ddm_acc[i] = Some(x);
                                 }
