@@ -266,16 +266,8 @@ pub fn multi_ddm(
                     //TODO: GOES wrong in here
                     //Time average
                     let acc_vec = v.to_owned().and_then(|x| {
-                        Some(
-                            x.par_iter()
-                                .map(|x| {
-                                    af::print(x);
-                                    x / counter_t0
-                                })
-                                .collect::<Vec<_>>(),
-                        )
+                        Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
                     });
-                    wait!();
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
@@ -370,6 +362,11 @@ pub fn multi_ddm(
                         .filter(Option::is_some)
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
+
+                    for a in tiled_images_ddm_acc.to_owned().iter() {
+                        af::print(&a);
+                    }
+                    wait!();
 
                     if let Some(v1) = accumulator.get_mut(box_size) {
                         *v1 = operations::add_deque(v1.to_owned(), Some(tiled_images_ddm_acc));
