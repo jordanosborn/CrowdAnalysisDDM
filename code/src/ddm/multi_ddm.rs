@@ -266,8 +266,16 @@ pub fn multi_ddm(
                     //TODO: GOES wrong in here
                     //Time average
                     let acc_vec = v.to_owned().and_then(|x| {
-                        Some(x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>())
+                        Some(
+                            x.par_iter()
+                                .map(|x| {
+                                    af::print(x);
+                                    x / counter_t0
+                                })
+                                .collect::<Vec<_>>(),
+                        )
                     });
+                    wait!();
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
@@ -345,6 +353,7 @@ pub fn multi_ddm(
                             for (i, x) in arr_unwrapped.into_iter().enumerate() {
                                 if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
                                     tiled_images_ddm_acc[i] = Some(a + x);
+                                    //This slows it down
                                     af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
                                 } else {
                                     tiled_images_ddm_acc[i] = Some(x);
@@ -353,11 +362,6 @@ pub fn multi_ddm(
                         }
                     }
                     //TODO: END
-                    tiled_images_ddm_acc.to_owned().into_iter().for_each(|x| {
-                        af::print(&x.unwrap());
-                    });
-
-                    wait!();
 
                     let tiled_images_ddm_len = indices.len();
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
