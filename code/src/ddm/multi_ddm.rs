@@ -367,13 +367,16 @@ pub fn multi_ddm(
                             let mut vec: Vec<crate::RawType> =
                                 vec![0 as crate::RawType; tt.elements()];
                             tt.host(&mut vec);
-                            let acc = tiled_images_ddm_acc[i].to_owned();
+                            let acc = tiled_images_ddm_acc[tau].to_owned();
                             tiled_images_ddm_acc[tau] = acc
                                 .into_par_iter()
                                 .zip(vec.into_par_iter())
                                 .map(|(a, b)| a + b)
                                 .collect();
-                            println!("{:?}", tiled_images_ddm_acc[tau].iter().sum::<f32>());
+                            println!(
+                                "{:?}",
+                                tiled_images_ddm_acc[tau].iter().sum::<crate::RawType>()
+                            );
                         }
                     }
 
