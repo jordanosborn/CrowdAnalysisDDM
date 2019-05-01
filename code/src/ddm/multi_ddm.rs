@@ -207,7 +207,7 @@ pub fn multi_ddm(
             .collect();
 
         #[allow(clippy::type_complexity)]
-        let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
+        let mut accumulator: HashMap<usize, Option<Vec<Vec<crate::RawType>>>> =
             HashMap::with_capacity(box_range.len());
         //HERE
         // let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
@@ -356,49 +356,40 @@ pub fn multi_ddm(
                         .map(|arr| ddm(None, &arr))
                         .filter(Option::is_some)
                         .collect::<Vec<_>>();
+                    let mut tiled_images_ddm_acc =
+                        vec![vec![0 as crate::RawType; box_size * box_size]; capacity - 1];
                     let number_boxes = tiled_images_ddm.len();
                     //TODO: this summing causes crash!!!
-                    let mut tiled_images_ddm_acc = vec![None; capacity - 1];
-                    for arr in tiled_images_ddm.into_iter() {
-                        if let Some(a) = arr {
-                            a.iter().enumerate().for_each(|(i, x)| {
-                                let mut vec: Vec<crate::RawType> =
-                                    Vec::with_capacity(box_size * box_size);
-                                x.host(&mut vec);
-                                if tiled_images_ddm_acc[i] == None {
-                                    tiled_images_ddm_acc[i] = Some(vec);
-                                } else {
-                                    tiled_images_ddm_acc[i] =
-                                        if let Some(t) = tiled_images_ddm_acc[i].clone() {
-                                            Some(
-                                                t.into_par_iter()
-                                                    .zip(vec.into_par_iter())
-                                                    .map(|(a, b)| (a + b))
-                                                    .collect(),
-                                            )
-                                        } else {
-                                            Some(vec)
-                                        }
-                                }
-                            });
+                    for ((i, t), acc) in tiled_images_ddm
+                        .clone()
+                        .iter()
+                        .enumerate()
+                        .zip(tiled_images_ddm_acc.iter_mut())
+                    {
+                        for (j, tt) in t.clone().unwrap().iter().enumerate() {
+                            println!("{}, {}", i, j);
+                            let mut vec: Vec<crate::RawType> =
+                                Vec::with_capacity(box_size * box_size);
+                            tt.host(&mut vec);
+                            acc.iter_mut()
+                                .zip(vec.iter())
+                                .for_each(|(a, b)| *a += b);
                         }
                     }
+                    for x in tiled_images_ddm_acc.clone().iter() {
+                        println!("{:?}", x);
+                    }
+
                     //TODO: END
 
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
                         .into_iter()
                         .map(|x| {
-                            x.and_then(|x| {
-                                Some(
-                                    x.into_par_iter()
-                                        .map(|a| a / number_boxes as crate::RawType)
-                                        .collect::<Vec<_>>(),
-                                )
-                            })
+                            x.into_par_iter()
+                                .map(|a| a / number_boxes as crate::RawType)
+                                .collect::<Vec<_>>()
                         })
-                        .filter(Option::is_some)
-                        .map(Option::unwrap)
-                        .collect::<VecDeque<_>>();
+                        .collect::<Vec<_>>();
                     println!("Averaged over same size boxes");
                     //TODO: this summing causes crash!!!
                     if let Some(Some(v1)) = accumulator.get(box_size) {
@@ -411,7 +402,7 @@ pub fn multi_ddm(
                                     .map(|(a, b)| a + b)
                                     .collect()
                             })
-                            .collect::<VecDeque<_>>();
+                            .collect::<Vec<_>>();
                         accumulator.insert(*box_size, Some(acc));
                     } else {
                         accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
