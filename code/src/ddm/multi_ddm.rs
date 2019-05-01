@@ -360,29 +360,28 @@ pub fn multi_ddm(
                         vec![vec![0 as crate::RawType; box_size * box_size]; capacity - 1];
                     let number_boxes = tiled_images_ddm.len();
                     //TODO: this summing causes crash!!!
-                    for ((i, t), acc) in tiled_images_ddm
-                        .clone()
-                        .iter()
-                        .enumerate()
-                        .zip(tiled_images_ddm_acc.iter_mut())
-                    {
-                        for (j, tt) in t.clone().unwrap().iter().enumerate() {
-                            println!("{}, {}", i, j);
+                    for (i, t) in tiled_images_ddm.clone().iter().enumerate() {
+                        for (tau, tt) in t.to_owned().unwrap().iter().enumerate() {
+                            println!("{}, {} moved to host", i, tau);
+                            //wrong size
                             let mut vec: Vec<crate::RawType> =
-                                Vec::with_capacity(box_size * box_size);
+                                vec![0 as crate::RawType; tt.elements()];
                             tt.host(&mut vec);
-                            println!("{:?}", vec);
-                            acc.iter_mut().zip(vec.iter()).for_each(|(a, b)| *a += b);
+                            let acc = tiled_images_ddm_acc[i].to_owned();
+                            tiled_images_ddm_acc[tau] = acc
+                                .into_par_iter()
+                                .zip(vec.into_par_iter())
+                                .map(|(a, b)| a + b)
+                                .collect();
+                            println!("{:?}", tiled_images_ddm_acc[tau].iter().sum::<f32>());
                         }
-                    }
-                    for x in tiled_images_ddm_acc.clone().iter() {
-                        println!("{:?}", x);
                     }
 
                     //TODO: END
 
+                    //Divide all elements by the number of boxes
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
-                        .into_iter()
+                        .into_par_iter()
                         .map(|x| {
                             x.into_par_iter()
                                 .map(|a| a / number_boxes as crate::RawType)
@@ -390,7 +389,7 @@ pub fn multi_ddm(
                         })
                         .collect::<Vec<_>>();
                     println!("Averaged over same size boxes");
-                    //TODO: this summing causes crash!!!
+                    //Sum over each start time
                     if let Some(Some(v1)) = accumulator.get(box_size) {
                         let acc = v1
                             .into_par_iter()
