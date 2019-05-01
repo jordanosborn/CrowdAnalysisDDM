@@ -209,6 +209,9 @@ pub fn multi_ddm(
         #[allow(clippy::type_complexity)]
         let mut accumulator: HashMap<usize, Option<VecDeque<af::Array<crate::RawType>>>> =
             HashMap::with_capacity(box_range.len());
+        //HERE
+        // let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
+        //     HashMap::with_capacity(box_range.len());
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -364,6 +367,10 @@ pub fn multi_ddm(
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
                     println!("Averaged over same size boxes");
+                    for a in tiled_images_ddm_acc.to_owned().iter() {
+                        af::print(a);
+                    }
+                    wait!();
                     //TODO: this summing causes crash!!!
                     if let Some(v1) = accumulator.get(box_size) {
                         let mut acc: Vec<Option<af::Array<crate::RawType>>> =
@@ -395,10 +402,6 @@ pub fn multi_ddm(
                         "Tiled all images and averaged for box size = {} at start time = {}",
                         box_size, counter_t0
                     );
-                    for a in accumulator[box_size].to_owned().unwrap().iter() {
-                        af::print(a);
-                    }
-                    //wait!();
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);
