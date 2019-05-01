@@ -53,10 +53,14 @@ fn get_allowed_dimension(
     }
 }
 
-type MultiDdmData =
-    HashMap<usize, Vec<((usize, usize), Vec<Vec<(crate::RawType, crate::RawType)>>)>>;
+type MultiDdmData = HashMap<
+    usize,
+    (
+        Vec<crate::RawType>,
+        Vec<Vec<(crate::RawType, crate::RawType)>>,
+    ),
+>;
 
-//TODO: implement this!
 #[allow(clippy::too_many_arguments, clippy::cyclomatic_complexity)]
 pub fn multi_ddm(
     id: Option<usize>,
@@ -187,7 +191,7 @@ pub fn multi_ddm(
             }
         });
 
-        let mut counter_t0 = 0;
+        let mut counter_t0: usize = 0;
         let mut images: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
@@ -202,10 +206,11 @@ pub fn multi_ddm(
             .collect();
 
         #[allow(clippy::type_complexity)]
-        let mut accumulator: HashMap<
-            usize,
-            HashMap<(usize, usize), Option<VecDeque<af::Array<crate::RawType>>>>,
-        > = HashMap::with_capacity(box_range.len());
+        let mut accumulator: HashMap<usize, Option<Vec<Vec<crate::RawType>>>> =
+            HashMap::with_capacity(box_range.len());
+        //HERE
+        // let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
+        //     HashMap::with_capacity(box_range.len());
         loop {
             match rx.recv() {
                 Ok(value) => {
@@ -235,7 +240,7 @@ pub fn multi_ddm(
                 let mut box_size_map = HashMap::with_capacity(accumulator.len());
                 for (box_size, v) in accumulator.iter_mut() {
                     let resized_annuli: Vec<_> = annuli
-                        .par_iter()
+                        .iter()
                         .filter_map(|(q, arr)| {
                             let resized_arr = operations::sub_array(
                                 arr,
@@ -258,56 +263,50 @@ pub fn multi_ddm(
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
 
-                    //averaged over
-                    //TODO: v is valid here
-                    //TODO: GOES wrong in here
-                    //Time average and radial averaging for each x y
-                    let acc_vec = v
-                        .par_iter()
-                        .map(|(key, x)| {
-                            if let Some(x) = x {
-                                let vec_x =
-                                    x.par_iter().map(|x| x / counter_t0).collect::<Vec<_>>();
-                                (
-                                    key,
-                                    Some(operations::radial_average(&vec_x, &resized_annuli)),
-                                )
-                            } else {
-                                (key, None)
-                            }
-                        })
-                        .collect::<Vec<_>>();
-                    // for (i, a) in acc_vec.clone().unwrap().iter().enumerate() {
-                    //     println!("index {}", i);
-                    //     af::print(a);
-                    // }
+                    //averaged over start times
+                    let acc_vec = v.to_owned().and_then(|x| {
+                        Some(
+                            x.into_par_iter()
+                                .map(|x| {
+                                    x.into_par_iter()
+                                        .map(|y| y / counter_t0 as crate::RawType)
+                                        .collect::<Vec<crate::RawType>>()
+                                })
+                                .collect::<Vec<_>>(),
+                        )
+                    });
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
-                    //TODO: box averaging
-                    // let average = acc_vec
-                    //     .into_par_iter()
-                    //     .map(|x| x / (v.len()) as crate::RawType)
-                    //     .collect::<Vec<_>>();
                     //Inserting these print statements prevents crash somehow?
-                    println!("Averaged arrays for constant box_size = {}", box_size);
-                    let mut tally = Vec::with_capacity(acc_vec.len());
-                    for ((x, y), radial_average) in acc_vec.iter() {
-                        if let Some(radial_average) = radial_average {
-                            let (val_transposed_index, val_transposed) =
-                                operations::transpose_2d_array(radial_average);
-                            let _ = save_csv(
-                                &val_transposed_index,
-                                &val_transposed,
-                                &output_dir,
-                                &format!("data_boxsize_{}_x_{}_y_{}.csv", box_size, x, y),
-                            );
-                            println!("Saved csv for boxsize = {} x, y = {}, {}", box_size, x, y);
+                    println!(
+                        "Averaged over start time for constant box_size = {}",
+                        box_size
+                    );
+                    let dims = af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1]);
+                    let arrays = acc_vec.and_then(|a| {
+                        Some(
+                            a.iter()
+                                .map(|x| af::Array::new(&x, dims))
+                                .collect::<Vec<_>>(),
+                        )
+                    });
+                    let radial_averaged =
+                        arrays.and_then(|x| Some(operations::radial_average(&x, &resized_annuli)));
 
-                            tally.push(((*x, *y), radial_average.to_owned()));
-                        }
+                    if let Some(radial_average) = radial_averaged {
+                        let (val_transposed_index, val_transposed) =
+                            operations::transpose_2d_array(&radial_average);
+                        let _ = save_csv(
+                            &val_transposed_index,
+                            &val_transposed,
+                            &output_dir,
+                            &format!("data_boxsize_{}.csv", box_size),
+                        );
+                        println!("Saved csv for boxsize = {}", box_size);
+
+                        box_size_map.insert(*box_size, (val_transposed_index, val_transposed));
                     }
-                    box_size_map.insert(*box_size, tally);
                     println!("Finished averaging for boxsize = {}", box_size);
                 }
                 //TODO: run, upload to db and analyse
@@ -322,10 +321,10 @@ pub fn multi_ddm(
                     //Ft of Tiles for each of the collected images
                     let tiled_images: Vec<Vec<_>> = images
                         .data
-                        .par_iter()
+                        .iter()
                         .map(|im| {
                             indices
-                                .par_iter()
+                                .iter()
                                 .map(|(x, y)| {
                                     operations::sub_array(
                                         &im,
@@ -346,29 +345,68 @@ pub fn multi_ddm(
                                 .collect()
                         })
                         .collect();
-                    let tiled_images_ddm: Vec<_> = operations::transpose(tiled_images)
-                        .par_iter()
-                        .zip(indices.into_par_iter())
-                        .map(|(arr, (x, y))| {
-                            let ddmed = ddm(None, arr);
-                            //Box_size and x, y
-                            (*x, *y, ddmed)
-                        })
-                        .collect();
-                    for (x, y, acc) in tiled_images_ddm.iter() {
-                        if let Some(v1) = accumulator.get_mut(box_size) {
-                            if let Some(v2) = v1.get_mut(&(*x, *y)) {
-                                *v2 = operations::add_deque(v2.to_owned(), acc.to_owned());
-                            } else {
-                                v1.insert((*x, *y), acc.to_owned());
-                            }
-                        } else {
-                            let mut h = HashMap::new();
-                            h.insert((*x, *y), acc.to_owned());
-                            accumulator.insert(*box_size, h);
+                    println!("Produced tiles");
+                    //Average over box size
+                    let tiled_images_ddm = operations::transpose(tiled_images)
+                        .into_iter()
+                        .map(|arr| ddm(None, &arr))
+                        .filter(Option::is_some)
+                        .collect::<Vec<_>>();
+                    let mut tiled_images_ddm_acc =
+                        vec![vec![0 as crate::RawType; box_size * box_size]; capacity - 1];
+                    let number_boxes = dimension * dimension / (box_size * box_size);
+
+                    for (i, t) in tiled_images_ddm.clone().iter().enumerate() {
+                        for (tau, tt) in t.to_owned().unwrap().iter().enumerate() {
+                            println!("{}, {} moved to host", i, tau);
+                            let mut vec: Vec<crate::RawType> =
+                                vec![0 as crate::RawType; tt.elements()];
+                            tt.host(&mut vec);
+                            let acc = tiled_images_ddm_acc[tau].to_owned();
+                            tiled_images_ddm_acc[tau] = acc
+                                .into_par_iter()
+                                .zip(vec.into_par_iter())
+                                .map(|(a, b)| a + b)
+                                .collect();
+                            println!(
+                                "Max intensity {:#?}",
+                                tiled_images_ddm_acc[tau].iter().map(|x| *x as i64).max()
+                            );
                         }
                     }
-                    println!("Tiled all images for box size {}", box_size);
+
+                    //Divide all elements by the number of boxes this is wrong
+
+                    let tiled_images_ddm_acc = tiled_images_ddm_acc
+                        .into_par_iter()
+                        .map(|x| {
+                            x.into_par_iter()
+                                .map(|a| a / number_boxes as crate::RawType)
+                                .collect::<Vec<_>>()
+                        })
+                        .collect::<Vec<_>>();
+                    println!("Averaged over same size boxes");
+                    //Sum over each start time
+                    if let Some(Some(v1)) = accumulator.get(box_size) {
+                        let acc = v1
+                            .into_par_iter()
+                            .zip(tiled_images_ddm_acc.into_par_iter())
+                            .map(|(x, y)| {
+                                x.into_par_iter()
+                                    .zip(y.into_par_iter())
+                                    .map(|(a, b)| a + b)
+                                    .collect()
+                            })
+                            .collect::<Vec<_>>();
+                        accumulator.insert(*box_size, Some(acc));
+                    } else {
+                        accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
+                    }
+                    println!(
+                        "Tiled all images and averaged for box size = {} at start time = {}",
+                        box_size,
+                        counter_t0 + 1
+                    );
                 }
                 counter_t0 += 1;
                 println!("Analysis of t0 = {} done!", counter_t0);

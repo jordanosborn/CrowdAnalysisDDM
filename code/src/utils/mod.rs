@@ -233,3 +233,52 @@ pub fn read_csv(
         Err(_) => None,
     }
 }
+
+#[allow(dead_code)]
+pub fn save_array<T: af::HasAfEnum + Clone + From<i32> + std::fmt::Display>(
+    arr: af::Array<T>,
+    output: &str,
+) -> std::io::Result<()> {
+    let dims = arr.dims();
+    let mut slice: Vec<T> = vec![T::from(0); (dims.get()[0] * dims.get()[1]) as usize];
+    arr.host(&mut slice);
+    let mut file = std::fs::File::create(std::path::Path::new(output))?;
+    for v in dims.get().iter() {
+        let s = format!("{},", v);
+        file.write_all(&s.as_bytes())?;
+    }
+    file.write_all(b"\n")?;
+    for (i, item) in slice.iter().enumerate() {
+        let s = format!("{},", item);
+        file.write_all(&s.as_bytes())?;
+        if (i + 1) as u64 % dims.get()[0] == 0 {
+            file.write_all(b"\n")?;
+        }
+    }
+    Ok(())
+}
+
+pub fn read_array<T: af::HasAfEnum + std::str::FromStr>(path: &str) -> std::io::Result<af::Array<T>>
+where
+    T::Err: std::fmt::Debug,
+{
+    let mut file = std::fs::File::open(std::path::Path::new(path))?;
+    let mut contents = String::from("");
+    file.read_to_string(&mut contents)?;
+    let split_contents = contents.split('\n');
+    let head = split_contents.to_owned().take(1).collect::<Vec<_>>()[0]
+        .split(',')
+        .map(str::parse::<u64>)
+        .collect::<Vec<_>>();
+    match head.as_slice() {
+        [Ok(x), Ok(y), Ok(1), Ok(1)] => {
+            let dims = af::Dim4::new(&[*x, *y, 1, 1]);
+            let slice = split_contents
+                .skip(1)
+                .flat_map(|line| line.split(',').map(|x| x.parse::<T>().unwrap()))
+                .collect::<Vec<_>>();
+            Ok(af::Array::new(&slice, dims))
+        }
+        _ => Err(std::io::Error::from(std::io::ErrorKind::InvalidData)),
+    }
+}
