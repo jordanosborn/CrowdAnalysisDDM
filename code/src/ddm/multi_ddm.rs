@@ -264,10 +264,7 @@ pub fn multi_ddm(
                         .collect();
                     println!("Resized annuli for boxsize = {}", box_size);
 
-                    //averaged over
-                    //TODO: v is valid here
-                    //TODO: GOES wrong in here
-                    //Time average
+                    //averaged over start times
                     let acc_vec = v.to_owned().and_then(|x| {
                         Some(
                             x.into_par_iter()
@@ -359,7 +356,7 @@ pub fn multi_ddm(
                     let mut tiled_images_ddm_acc =
                         vec![vec![0 as crate::RawType; box_size * box_size]; capacity - 1];
                     let number_boxes = dimension * dimension / box_size;
-                    //TODO: this summing causes crash!!!
+
                     for (i, t) in tiled_images_ddm.clone().iter().enumerate() {
                         for (tau, tt) in t.to_owned().unwrap().iter().enumerate() {
                             println!("{}, {} moved to host", i, tau);
@@ -409,7 +406,8 @@ pub fn multi_ddm(
                     }
                     println!(
                         "Tiled all images and averaged for box size = {} at start time = {}",
-                        box_size, counter_t0
+                        box_size,
+                        counter_t0 + 1
                     );
                 }
                 counter_t0 += 1;
