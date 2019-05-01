@@ -368,10 +368,6 @@ pub fn multi_ddm(
                                 .zip(vec.into_par_iter())
                                 .map(|(a, b)| a + b)
                                 .collect();
-                            println!(
-                                "Max intensity {:#?}",
-                                tiled_images_ddm_acc[tau].iter().map(|x| *x as i64).max()
-                            );
                         }
                     }
 
