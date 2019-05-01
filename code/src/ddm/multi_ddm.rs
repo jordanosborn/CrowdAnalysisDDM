@@ -355,7 +355,7 @@ pub fn multi_ddm(
                         .collect::<Vec<_>>();
                     let mut tiled_images_ddm_acc =
                         vec![vec![0 as crate::RawType; box_size * box_size]; capacity - 1];
-                    let number_boxes = dimension * dimension / box_size;
+                    let number_boxes = dimension * dimension / (box_size * box_size);
 
                     for (i, t) in tiled_images_ddm.clone().iter().enumerate() {
                         for (tau, tt) in t.to_owned().unwrap().iter().enumerate() {
@@ -370,15 +370,14 @@ pub fn multi_ddm(
                                 .map(|(a, b)| a + b)
                                 .collect();
                             println!(
-                                "{:?}",
-                                tiled_images_ddm_acc[tau].iter().sum::<crate::RawType>()
+                                "Max intensity {:#?}",
+                                tiled_images_ddm_acc[tau].iter().map(|x| *x as i64).max()
                             );
                         }
                     }
 
-                    //TODO: END
+                    //Divide all elements by the number of boxes this is wrong
 
-                    //Divide all elements by the number of boxes
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
                         .into_par_iter()
                         .map(|x| {
