@@ -371,9 +371,8 @@ pub fn multi_ddm(
                             let mut vec: Vec<crate::RawType> =
                                 Vec::with_capacity(box_size * box_size);
                             tt.host(&mut vec);
-                            acc.iter_mut()
-                                .zip(vec.iter())
-                                .for_each(|(a, b)| *a += b);
+                            println!("{:?}", vec);
+                            acc.iter_mut().zip(vec.iter()).for_each(|(a, b)| *a += b);
                         }
                     }
                     for x in tiled_images_ddm_acc.clone().iter() {
