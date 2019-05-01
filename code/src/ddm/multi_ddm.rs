@@ -192,7 +192,7 @@ pub fn multi_ddm(
             }
         });
 
-        let mut counter_t0 = 0;
+        let mut counter_t0: usize = 0;
         let mut images: Data<crate::RawType> = Data::new(fps, Some(capacity));
         let mut collected_all_frames = false;
         let box_range = get_allowed_dimension(tiling_min, tiling_max, tiling_size_count);
@@ -207,7 +207,7 @@ pub fn multi_ddm(
             .collect();
 
         #[allow(clippy::type_complexity)]
-        let mut accumulator: HashMap<usize, Option<VecDeque<af::Array<crate::RawType>>>> =
+        let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
             HashMap::with_capacity(box_range.len());
         //HERE
         // let mut accumulator: HashMap<usize, Option<VecDeque<Vec<crate::RawType>>>> =
@@ -268,9 +268,17 @@ pub fn multi_ddm(
                     //TODO: v is valid here
                     //TODO: GOES wrong in here
                     //Time average
-                    let acc_vec = v
-                        .to_owned()
-                        .and_then(|x| Some(x.iter().map(|x| x / counter_t0).collect::<Vec<_>>()));
+                    let acc_vec = v.to_owned().and_then(|x| {
+                        Some(
+                            x.into_par_iter()
+                                .map(|x| {
+                                    x.into_par_iter()
+                                        .map(|y| y / counter_t0 as crate::RawType)
+                                        .collect::<Vec<crate::RawType>>()
+                                })
+                                .collect::<Vec<_>>(),
+                        )
+                    });
 
                     //Add to box size map and perform box averaging and radial averaging and start time averaging
 
@@ -279,8 +287,16 @@ pub fn multi_ddm(
                         "Averaged over start time for constant box_size = {}",
                         box_size
                     );
+                    let dims = af::Dim4::new(&[*box_size as u64, *box_size as u64, 1, 1]);
+                    let arrays = acc_vec.and_then(|a| {
+                        Some(
+                            a.iter()
+                                .map(|x| af::Array::new(&x, dims))
+                                .collect::<Vec<_>>(),
+                        )
+                    });
                     let radial_averaged =
-                        acc_vec.and_then(|x| Some(operations::radial_average(&x, &resized_annuli)));
+                        arrays.and_then(|x| Some(operations::radial_average(&x, &resized_annuli)));
 
                     if let Some(radial_average) = radial_averaged {
                         let (val_transposed_index, val_transposed) =
@@ -340,60 +356,62 @@ pub fn multi_ddm(
                         .map(|arr| ddm(None, &arr))
                         .filter(Option::is_some)
                         .collect::<Vec<_>>();
-
+                    let number_boxes = tiled_images_ddm.len();
                     //TODO: this summing causes crash!!!
                     let mut tiled_images_ddm_acc = vec![None; capacity - 1];
-
                     for arr in tiled_images_ddm.into_iter() {
-                        if let Some(arr_unwrapped) = arr {
-                            for (i, x) in arr_unwrapped.into_iter().enumerate() {
-                                if let Some(a) = tiled_images_ddm_acc[i].to_owned() {
-                                    tiled_images_ddm_acc[i] = Some(a + x);
-                                    //This slows it down
-                                    af::print(&tiled_images_ddm_acc[i].to_owned().unwrap());
+                        if let Some(a) = arr {
+                            a.iter().enumerate().for_each(|(i, x)| {
+                                let mut vec: Vec<crate::RawType> =
+                                    Vec::with_capacity(box_size * box_size);
+                                x.host(&mut vec);
+                                if tiled_images_ddm_acc[i] == None {
+                                    tiled_images_ddm_acc[i] = Some(vec);
                                 } else {
-                                    tiled_images_ddm_acc[i] = Some(x);
+                                    tiled_images_ddm_acc[i] =
+                                        if let Some(t) = tiled_images_ddm_acc[i].clone() {
+                                            Some(
+                                                t.into_par_iter()
+                                                    .zip(vec.into_par_iter())
+                                                    .map(|(a, b)| (a + b))
+                                                    .collect(),
+                                            )
+                                        } else {
+                                            Some(vec)
+                                        }
                                 }
-                            }
+                            });
                         }
                     }
                     //TODO: END
 
-                    let tiled_images_ddm_len = indices.len();
                     let tiled_images_ddm_acc = tiled_images_ddm_acc
                         .into_iter()
-                        .map(|x| x.and_then(|x| Some(x / tiled_images_ddm_len as crate::RawType)))
+                        .map(|x| {
+                            x.and_then(|x| {
+                                Some(
+                                    x.into_par_iter()
+                                        .map(|a| a / number_boxes as crate::RawType)
+                                        .collect::<Vec<_>>(),
+                                )
+                            })
+                        })
                         .filter(Option::is_some)
                         .map(Option::unwrap)
                         .collect::<VecDeque<_>>();
                     println!("Averaged over same size boxes");
-                    for a in tiled_images_ddm_acc.to_owned().iter() {
-                        af::print(a);
-                    }
-                    wait!();
                     //TODO: this summing causes crash!!!
-                    if let Some(v1) = accumulator.get(box_size) {
-                        let mut acc: Vec<Option<af::Array<crate::RawType>>> =
-                            vec![None; capacity - 1];
-
-                        for arr in v1.iter() {
-                            for (i, x) in arr.iter().enumerate() {
-                                if let Some(a) = acc[i].to_owned() {
-                                    acc[i] = Some(a + x);
-                                    //This slows it down
-                                    af::print(&acc[i].to_owned().unwrap());
-                                } else {
-                                    acc[i] = Some(x.to_owned());
-                                }
-                            }
-                        }
-                        wait!();
-                        let acc = acc
+                    if let Some(Some(v1)) = accumulator.get(box_size) {
+                        let acc = v1
                             .into_par_iter()
-                            .filter(Option::is_some)
-                            .map(Option::unwrap)
+                            .zip(tiled_images_ddm_acc.into_par_iter())
+                            .map(|(x, y)| {
+                                x.into_par_iter()
+                                    .zip(y.into_par_iter())
+                                    .map(|(a, b)| a + b)
+                                    .collect()
+                            })
                             .collect::<VecDeque<_>>();
-                        println!("Accumulating for each start time");
                         accumulator.insert(*box_size, Some(acc));
                     } else {
                         accumulator.insert(*box_size, Some(tiled_images_ddm_acc));
