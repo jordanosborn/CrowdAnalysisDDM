@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
         if sys.argv[1] == "video-multi-ddm":
             add_to_db(
-                "crowd.sqlite", "results-multiDDM", "data_boxsize", "video-multi-ddm"
+                "crowd.sqlite", "results-multiDDM", "data_boxsize", "video_multi_ddm"
             )
         else:
             print("Producing retranspose")
