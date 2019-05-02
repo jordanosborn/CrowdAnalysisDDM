@@ -56,8 +56,6 @@ def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
             files,
         )
     )
-    print(names)
-    input()
     create_table = (
         lambda table, tau: f"create table {table} (q float primary key, {tau})"
     )
