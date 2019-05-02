@@ -14,6 +14,8 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \let\oldhref\href
 \renewcommand{\href}[2]{\oldhref{#1}{\bfseries#2}}
@@ -199,7 +201,7 @@ Due to the selection of Arrayfire (availability of language bindings), the focus
 \\\\
 Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and data exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, sqlite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust codebase so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
 \\\\
-Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a mac OS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
+Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a macOS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
 \\\\
 \subsection{Algorithm Pipeline}
 \begin{figure}[H]
@@ -214,6 +216,23 @@ Software development best practices were followed throughout development. The pr
 \label{section:results}
 %TODO: All multi-ddm and analyse
 \subsection{Brownian Motion}
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{images/brownian_37_5.png}
+  \caption{A subfigure}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{images/brownian_67_5.png}
+  \caption{A subfigure}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{A figure with two subfigures}
+\label{fig:test}
+\end{figure}
 
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
