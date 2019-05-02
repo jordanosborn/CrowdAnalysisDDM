@@ -67,7 +67,6 @@ pub fn multi_ddm(
     capacity: Option<usize>,
     annuli_spacing: Option<usize>,
     tiling_range: (Option<usize>, Option<usize>, Option<usize>),
-    _activity_threshold: Option<usize>,
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
@@ -115,8 +114,6 @@ pub fn multi_ddm(
                 println!("Invalid tiling range selected!");
                 return None;
             };
-        #[allow(unused_variables)]
-        let tile_step = if let Some(t) = tile_step { t } else { 1 };
 
         let filename = if let Some(v) = filename {
             v
@@ -198,9 +195,14 @@ pub fn multi_ddm(
         let indices_range: Vec<Vec<(usize, usize)>> = box_range
             .par_iter()
             .map(|box_size| {
+                let step = if let Some(t) = tile_step {
+                    t
+                } else {
+                    *box_size
+                };
                 (0..=(dimension - box_size))
-                    .step_by(*box_size) //tile_step)
-                    .cartesian_product((0..=(dimension - box_size)).step_by(*box_size)) //tile_step))
+                    .step_by(step)
+                    .cartesian_product((0..=(dimension - box_size)).step_by(step))
                     .collect()
             })
             .collect();

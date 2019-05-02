@@ -20,7 +20,6 @@ pub fn single_ddm(
             annuli_spacing,
             (Some(dimension), Some(dimension), Some(1)),
             None,
-            None,
             filename,
             output,
         );
