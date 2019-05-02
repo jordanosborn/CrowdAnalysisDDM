@@ -218,21 +218,52 @@ Software development best practices were followed throughout development. The pr
 \subsection{Brownian Motion}
 \begin{figure}[H]
 \centering
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}[t]{.47\textwidth}
   \centering
-  \includegraphics[width=1.0\linewidth]{images/brownian_37_5.png}
-  \caption{A subfigure}
-  \label{fig:sub1}
+  \includegraphics[width=\linewidth]{images/brownian_37_5.png}
+  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 37.5/pixel width.}
+  \label{fig:simulated_brownian1_37_5}
 \end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
   \centering
-  \includegraphics[width=1.0\linewidth]{images/brownian_67_5.png}
-  \caption{A subfigure}
-  \label{fig:sub2}
+  \includegraphics[width=\linewidth]{images/brownian_67_5.png}
+  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 67.5/pixel width.}
+ \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{A figure with two subfigures}
-\label{fig:test}
+\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm.}
+\label{fig:simulated_brownian1}
 \end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{.47\textwidth}
+\includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
+\caption{stuff about why regions are messed up}
+\label{fig:simulated_brownian_tauc_whole}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_critical_tau_linear_region.png}
+  \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data.}
+ \label{fig:simulated_brownian_tauc_linear_region}
+\end{subfigure}
+\caption{log log scale}
+\label{fig:simulated_brownian_tauc}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Type & Gradient & Intercept & R-value & Standard Error \\ 
+ \hline
+ Geometric Brownian Motion & -1.272 & 6.736 & -0.996 & 0.008 \\ 
+ Brownian Motion $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
+ Brownian Motion $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
+ \hline
+\end{tabular}
+\end{center}
 
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
