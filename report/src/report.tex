@@ -14,6 +14,8 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \let\oldhref\href
 \renewcommand{\href}[2]{\oldhref{#1}{\bfseries#2}}
@@ -22,7 +24,11 @@
 \addbibresource{report.bib}
 
 \title{A new video analysis algorithm for the study of crowd dynamics}
-\author{Jordan Osborn (jo357) Supervisor: Professor Pietro Cicuta (pc245)}
+\author{Jordan Osborn (jo357)
+\\\\
+Candidate Number: 8230W
+\\\\
+Supervisor: Professor Pietro Cicuta (pc245)}
 % Document
 \begin{document}
 \begin{titlingpage}
@@ -32,7 +38,9 @@
 
 \clearpage
 \title{A new video analysis algorithm for the study of crowd dynamics}
-\author{Supervisor: Professor Pietro Cicuta (pc245)}
+\author{Candidate Number: 8230W
+\\\\
+Supervisor: Professor Pietro Cicuta (pc245)}
 \maketitle
 \section*{Abstract}
 %500 words overview
@@ -193,7 +201,7 @@ Due to the selection of Arrayfire (availability of language bindings), the focus
 \\\\
 Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and data exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, sqlite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust codebase so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
 \\\\
-Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a mac OS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
+Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a macOS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
 \\\\
 \subsection{Algorithm Pipeline}
 \begin{figure}[H]
@@ -208,6 +216,55 @@ Software development best practices were followed throughout development. The pr
 \label{section:results}
 %TODO: All multi-ddm and analyse
 \subsection{Brownian Motion}
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_37_5.png}
+  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 37.5/pixel width.}
+  \label{fig:simulated_brownian1_37_5}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_67_5.png}
+  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 67.5/pixel width.}
+ \label{fig:simulated_brownian1_67_5}
+\end{subfigure}
+\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm.}
+\label{fig:simulated_brownian1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{.47\textwidth}
+\includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
+\caption{TODO stuff about why regions are messed up}
+\label{fig:simulated_brownian_tauc_whole}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_critical_tau_linear_region.png}
+  \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data.}
+ \label{fig:simulated_brownian_tauc_linear_region}
+\end{subfigure}
+\caption{Here we see plots of the parameter $\tau_c$ (as found by fitting the data to the Brownian ISF (equation \ref{eqn:BrownianISF})) vs wave-vector q. They are plotted on a log-log scale to make the q-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. By extracting the linear region and performing linear regression we determine how well the expected relationship holds (gradient ~ -2), thus demonstrating that the algorithm works as intended. Geometric Brownian motion when fitted to the Brownian ISF shows the expected decay but with a different gradient, this is okay as the dynamics of Geometric Brownian motion are slightly different to normal Brownian motion and so a different form of the ISF should be expected. Both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
+\label{fig:simulated_brownian_tauc}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c| } 
+ \hline
+ Type & Gradient & Intercept & R-value & Standard Error \\ 
+ \hline
+ Geometric Brownian Motion & -1.272 & 6.736 & -0.996 & 0.008 \\ 
+ Brownian Motion $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
+ Brownian Motion $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
+ \hline
+\end{tabular}
+\label{table:simulated_brownian_table}
+\end{center}
 
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}

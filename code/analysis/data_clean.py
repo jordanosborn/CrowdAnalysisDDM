@@ -50,7 +50,9 @@ def modify_db(database: str, folder: str, filename: str, prefix: str = "video"):
     names = list(
         map(
             lambda s: f"{prefix}_"
-            + s.replace(f"/{filename}", "").replace(f"./{folder}/", "").split(".")[0],
+            + os.path.basename(s)
+            .replace(filename, os.path.basename(os.path.dirname(s)))
+            .replace(".csv", ""),
             files,
         )
     )
