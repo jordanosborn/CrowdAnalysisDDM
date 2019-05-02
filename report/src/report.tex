@@ -239,7 +239,7 @@ Software development best practices were followed throughout development. The pr
 \centering
 \begin{subfigure}[t]{.47\textwidth}
 \includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
-\caption{stuff about why regions are messed up}
+\caption{TODO stuff about why regions are messed up}
 \label{fig:simulated_brownian_tauc_whole}
 \end{subfigure}%
 \hfill
@@ -249,7 +249,7 @@ Software development best practices were followed throughout development. The pr
   \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data.}
  \label{fig:simulated_brownian_tauc_linear_region}
 \end{subfigure}
-\caption{log log scale}
+\caption{Here we see plots of the parameter $\tau_c$ (as found by fitting the data to the Brownian ISF (equation \ref{eqn:BrownianISF})) vs wave-vector q. They are plotted on a log-log scale to make the q-dependence of $\tau_c = D_T q^{-2}$ explicit. By extracting the linear region and performing linear regression we determine how well the expected relationship holds (gradient ~ -2), thus demonstrating that the algorithm works as intended. Geometric Brownian motion when fitted to the Brownian ISF shows the expected decay but with a different gradient, this is okay as the dynamics of Geometric Brownian motion are slightly different to normal Brownian motion and so a different form of the ISF should be expected. Both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
 \label{fig:simulated_brownian_tauc}
 \end{figure}
 
@@ -263,6 +263,7 @@ Software development best practices were followed throughout development. The pr
  Brownian Motion $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
  \hline
 \end{tabular}
+\label{table:simulated_brownian_table}
 \end{center}
 
 \subsection{Single-Scale DDM}
