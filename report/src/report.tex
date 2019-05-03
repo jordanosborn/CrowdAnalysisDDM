@@ -194,7 +194,17 @@ In this project we will be focusing primarily on two types of crowd. Crowds whic
 \begin{figure}[H]
 \centering
 \centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
-\caption{TODO: here}
+\captionsetup{singlelinecheck=off}
+\caption[]{
+In the figure above we see a typical plot of $\tau_c$ vs  q. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus.
+    \begin{enumerate}[label=(\Alph*)]
+      \item In this region q takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small q.
+      \item In this region q takes on large values, which means the associated length is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of 1 / pixel size. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well at arbitrarily small length scales. This therefore contributes to the erratic fits we arrive at when working in the region of large q.
+      \item In this region the timescale $\tau_c$ takes on large values 
+      \item purple: 3.5 +
+      \item this is only viable region due to apparatus limitations
+    \end{enumerate}
+}
 \end{figure}
 
 
