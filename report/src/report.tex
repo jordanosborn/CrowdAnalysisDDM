@@ -254,17 +254,35 @@ Software development best practices were followed throughout development. The pr
 \end{figure}
 
 \begin{center}
-\begin{tabular}{ |c|c|c|c|c| } 
+\begin{tabular*}{\textwidth} {@{\extracolsep{\fill}}|c|c|c|c|c|} 
  \hline
- Type & Gradient & Intercept & R-value & Standard Error \\ 
+ Motion Type & Gradient & Intercept & R-value & Standard Error \\ 
  \hline
- Geometric Brownian Motion & -1.272 & 6.736 & -0.996 & 0.008 \\ 
- Brownian Motion $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
- Brownian Motion $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
+ Geometric Brownian & -1.272 & 6.736 & -0.996 & 0.008 \\ 
+ Brownian $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
+ Brownian $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
  \hline
-\end{tabular}
+\end{tabular*}
 \label{table:simulated_brownian_table}
 \end{center}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{.47\textwidth}
+\includegraphics[width=\linewidth]{images/500colloid_fit.png}
+\caption{TODO stuff about why regions are messed up}
+\label{fig:colloid_brownian_whole}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/500colloid_linear_region_fit.png}
+  \caption{After extracting the linear region of the data, linear regression is performed and plotted on top of the data.}
+ \label{fig:colloid_brownian_linear_region}
+\end{subfigure}
+\caption{.}
+\label{fig:colloid_brownian}
+\end{figure}
 
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
