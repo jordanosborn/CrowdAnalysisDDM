@@ -236,6 +236,8 @@ if __name__ == "__main__":
         upload()
     elif len(sys.argv) == 6 and sys.argv[1] == "add_to_db":
         add_to_db(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    elif len(sys.argv) == 2 and sys.argv[1] == "multiDDM_add_to_db":
+        add_to_db("crowd.sqlite", "results-multiDDM/", "data_boxsize", "video_multiDDM")
     else:
         print(
             f"Arguments supplied are incorrect (_, directory, capacity, radial_width) - {sys.argv}"

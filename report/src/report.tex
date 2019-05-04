@@ -189,6 +189,29 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \label{section:crowdtypes}
 In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for ballistic motion (equation \ref{eqn:BallisticISF}).
 
+\subsection{Apparatus Limitations}
+\label{section:fitting_issues}
+\begin{figure}[H]
+\centering
+\centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
+\caption{
+In the figure above we see a typical plot of $\tau_c$ vs  q. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus.
+}
+\end{figure}
+
+
+\begin{enumerate}[label=(\Alph*)]
+\item In this region q takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small q.
+     
+\item In this region q takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of 1 / pixel size. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well at arbitrarily small length scales. This therefore contributes to the erratic fits we arrive at when working in the region of large q.
+
+\item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
+
+\item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
+
+\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
+\end{enumerate}
+
 \clearpage
 \section{Implementation}
 
@@ -216,6 +239,7 @@ Software development best practices were followed throughout development. The pr
 \label{section:results}
 %TODO: All multi-ddm and analyse
 \subsection{Brownian Motion}
+\label{section:brownian}
 \begin{figure}[H]
 \centering
 \begin{subfigure}[t]{.47\textwidth}
@@ -239,14 +263,14 @@ Software development best practices were followed throughout development. The pr
 \centering
 \begin{subfigure}[t]{.47\textwidth}
 \includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
-\caption{TODO stuff about why regions are messed up}
+\caption{Here we can see $\tau_c$ plotted as a function of q for each type of motion. For mid-range q values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of q we see behaviour unexpected for an ideal system. The terrible fits for extreme values of q are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
 \label{fig:simulated_brownian_tauc_whole}
 \end{subfigure}%
 \hfill
 \begin{subfigure}[t]{.47\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/brownian_critical_tau_linear_region.png}
-  \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data.}
+  \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data. We see the characteristic gradient ~ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}.}
  \label{fig:simulated_brownian_tauc_linear_region}
 \end{subfigure}
 \caption{Here we see plots of the parameter $\tau_c$ (as found by fitting the data to the Brownian ISF (equation \ref{eqn:BrownianISF})) vs wave-vector q. They are plotted on a log-log scale to make the q-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. By extracting the linear region and performing linear regression we determine how well the expected relationship holds (gradient ~ -2), thus demonstrating that the algorithm works as intended. Geometric Brownian motion when fitted to the Brownian ISF shows the expected decay but with a different gradient, this is okay as the dynamics of Geometric Brownian motion are slightly different to normal Brownian motion and so a different form of the ISF should be expected. Both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
@@ -254,15 +278,44 @@ Software development best practices were followed throughout development. The pr
 \end{figure}
 
 \begin{center}
-\begin{tabular}{ |c|c|c|c|c| } 
+\begin{tabular*}{\textwidth} {@{\extracolsep{\fill}}|c|c|c|c|c|} 
  \hline
- Type & Gradient & Intercept & R-value & Standard Error \\ 
+ Motion Type & Gradient & Intercept & R-value & Standard Error \\ 
  \hline
- Geometric Brownian Motion & -1.272 & 6.736 & -0.996 & 0.008 \\ 
- Brownian Motion $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
- Brownian Motion $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
+ Geometric Brownian & -1.272 & 6.736 & -0.996 & 0.008 \\ 
+ Brownian $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
+ Brownian $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
  \hline
-\end{tabular}
+\end{tabular*}
+\label{table:simulated_brownian_table}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{.47\textwidth}
+\includegraphics[width=\linewidth]{images/500colloid_fit.png}
+\caption{Here we see plots of the fitted Brownian motion ISF parameters as a function of q (log-log scale). We are only interested in the $\tau_c$ curve as the other parameters are related to the properties of the filming apparatus (can extract useful information from them but this is not our focus). Again we see non-linear regions at high and low q values these regions can be neglected (see section \ref{section:fitting_issues}). And so we take only the the linear section at mid-range q values.}
+\label{fig:colloid_brownian_whole}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/500colloid_linear_region_fit.png}
+  \caption{After extracting the linear region of the data, linear regression is performed and plotted on top of the data. We see the characteristic gradient of ~ -2 that is expected using the Brownian ISF. Indicating that the colloidal particles are undergoing Brownian motion.}
+ \label{fig:colloid_brownian_linear_region}
+\end{subfigure}
+\caption{Here we see plots of data extracted from a system containing 500nm colloids suspended in solution. As we can see the linear region shows the characteristic gradient ~ -2 of the Brownian ISF. And so the colloids seem to be undergoing Brownian motion. Unfortunately properties of the camera that was used to film this are unknown and so it is impossible to relate the extracted Diffusion coefficient (in terms of pixel sizes and frame rates) to a real world value. }
+\label{fig:colloid_brownian}
+\end{figure}
+
+\begin{center}
+\begin{tabular*}{\textwidth} {@{\extracolsep{\fill}}|c|c|c|c|c|} 
+ \hline
+ Gradient & Std Error & Intercept & Std Error & D / $(fps \cdot pixel^2)$ \\ 
+ \hline
+  -1.933 & 0.007 & 10.56 & 0.03 & $2.59\cdot 10^{-5}$ \\ 
+ \hline
+\end{tabular*}
 \label{table:simulated_brownian_table}
 \end{center}
 
@@ -281,9 +334,6 @@ Software development best practices were followed throughout development. The pr
 \clearpage
 \section{Discussion}
 \label{section:discussion}
-\subsection{Brownian Motion}
-\label{section:brownian}
-
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
 
@@ -378,9 +428,9 @@ In the current approach crowds are categorised so that they fit into three group
 \clearpage
 \section{Appendices}
 \subsection{Code}
-Code may be found online at \url{https://github.com/jordanosborn/MastersProject}.
+Code is stored in a GitHub repository which can be found at \url{https://github.com/jordanosborn/MastersProject}.
 \subsection{Videos}
-The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}.
+The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}. Three of the videos used to test the algorithm under Brownian motion were generated by a simulation and are available in the GitHub repository linked above (as well as the code used to generate them), the remaining Brownian motion test videos are available at \url{http://people.bss.phy.cam.ac.uk/~pc245/out/40X_T73_muc18_i4_BSA_AfterWash_day10.20Mar2017_22.17.06.zip} and \url{http://people.bss.phy.cam.ac.uk/~pc245/out/500nm_colloids_40x.16May2014_18.46.44.zip}.
 \subsection{Database}
 The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired.
 
