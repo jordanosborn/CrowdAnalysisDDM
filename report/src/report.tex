@@ -62,7 +62,7 @@ Each type of analysis will yield different pieces of dynamical information. Both
 \\\\
 DDM has the potential to be used to implement real-time analysis of crowd motion without the use of image segmentation, or the use of machine learning (expensive datasets and long training periods). Section 7 contains an in depth discussion about the future of DDM as applied to the analysis of crowd motion. The hope is that DDM might one day be used to help implement real-time crowd safety/monitoring systems in environments such as public transportation, stadiums, city centres etc.
 
-\clearpage
+
 \section{Literature Review}
 DDM is a relatively recent development originating in the paper "Differential dynamic microscopy: Probing wave-vector-dependent dynamics with a microscope" in 2008 \cite{ddm0}. In this paper the technique was used to attempt a characterisation of the dynamics of colloidal particles undergoing Brownian motion. DDM was first used to determine the diffusion coefficient of colloidal particles suspended in a liquid medium \cite{ddm0} \cite{ddm_maths}. This is likely due to the known form of the intermediate scattering function for Brownian motion equation \ref{eqn:BrownianISF}. If the viscosity of the liquid is known DDM can also be used to determine the size of the diffusing particles \cite{ddm1} and vice versa. 
 \\\\
@@ -77,19 +77,52 @@ DDM has also been used to analyse bacterial motility \cite{bacterial_motility}. 
 % only applied to microscopic motion so far this is entirely new, ddm1 cite for a review of ddm.
 An in-depth literature review of DDM was carried out in 2017 \cite{ddm1}. This review focused on the areas in which DDM has been applied, it found that so far DDM has only been used to analyse microscopic dynamics, specifically biological samples suspended in a liquid medium. Further research yielded no results for DDM being used to analyse macroscopic dynamics. This project therefore offers original research on the method of DDM with no evidence of prior literature on this application. The results from past experiments will be used as test cases (primarily Brownian motion) to verify the validity of the code written. Results from this project could provide the motivation to carry out research on further applications of DDM.
 
-\clearpage
+ 
 \section{Theory}
 \label{section:theory}
 DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
 From this function many properties of the motion can be determined \cite{ddm1}.
 
 \subsection{Brownian Motion}
-%todo dXt = mu dt + sigma dWt (wiener process normally distributed with mean 0 and variance 1
+Brownian motion (the random motion of particles suspended in a fluid, where the random motion is the result of collisions with microscopic particles) is a stochastic process. It is defined using the Wiener process which is the process described by the stochastic variable $W_t$. Where $dW_t$ is continuous, independent (at different times) and normally distributed with a mean of 0, and a variance $dW_t^2 = dt$ \cite{sde}. A particle undergoing Brownian motion with an mean speed $\mu$ and variance $\sigma^2$ will therefore follow the stochastic differential equation
+\begin{equation}
+\label{eqn:brownianSDE}
+dX_t = \mu dt + \sigma dW_t.
+\end{equation}
+Where $dX_t$ is the position change of the particle at a time t. The equation above can be solved using the standard techniques of Itô calculus, or can be used to simulate a particle undergoing Brownian motion. (The form of the ISF for particles undergoing Brownian motion has been shown to follow equation \ref{eqn:BrownianISF}).
+\\\\
+Geometric Brownian motion is a related process and is described by the stochastic differential equation 
+\begin{equation}
+\label{eqn:geometric_brownianSDE}
+\frac{dS_t}{S_t} = \mu dt + \sigma dW_t.
+\end{equation}
+This SDE is primarily used in the world of finance to predict stock prices in the Black-Scholes model (used for option pricing) \cite{sde}. But we will make use of it as a test case for the implemented DDM algorithm. To solve this SDE we make use of the standard techniques of Itô calculus. We can expand the differential of the general function f($S_t$, t) to arrive at
+\begin{equation}
+df(S_t, t) = \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial S_t} dS_t + \frac{1}{2} \frac{\partial^2 f}{\partial S_t^2} dS_t^2.
+\end{equation}
+We retain a term to second order in $dS_t$ as the Wiener process $dW_t$ varies on the order of $\sqrt{dt}$. To solve equation \ref{eqn:geometric_brownianSDE} we make the substitution f = $ln(s_t)$. After making this substitution we have
+\begin{equation}
+dln(S_t) = \frac{1}{S_t}dS_t  - \frac{1}{S_t^2}dS_t^2.
+\end{equation}
+We then substitute the definition of $dS_t$ (equation \ref{eqn:geometric_brownianSDE}) to find
+\begin{equation}
+dln(S_t) = \mu dt + \sigma dW_t - \frac{1}{2} \sigma^2 dW_t^2 + O(dt^2).
+\end{equation}
+Using $dW_t^2 = dt$ from the definition of the Wiener process and neglecting $O(dt^2)$ we arrive at
+\begin{equation}
+dln(S_t) = (\mu - \frac{1}{2} \sigma^2) dt + \sigma dW_t.
+\end{equation}
+For constant $\mu$ and $\sigma$ we can solve this SDE exactly (for an arbitrary starting value $S_0$). Integrating the expression above we find
+\begin{equation}
+\label{eqn:geometric_brownian_equation}
+S(t) = S_0 e^{(\mu - \frac{1}{2} \sigma^2) t + \sigma W_t}.
+\end{equation}
+This formula can therefore be used to simulate a particle undergoing Geometric Brownian motion (where $W_t$ is a Wiener process and follows a normal distribution with a mean of 0 and a variance $dt$).
 
 \subsection{Mathematics}
 Defining d the image structure function (in position space) as
 \begin{equation}
-    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)
+    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0).
 \end{equation}
 Where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
 This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in greyscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
@@ -215,7 +248,7 @@ In the figure above we see a typical plot of $\tau_c$ vs  q. This figure aims to
 \item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
 \end{enumerate}
 
-\clearpage
+
 \section{Implementation}
 
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
@@ -237,7 +270,7 @@ Software development best practices were followed throughout development. The pr
 \caption{Flow chart of the algorithm structure used in this project.}
 \end{figure}
  
-\clearpage
+
 \section{Results}
 \label{section:results}
 %TODO: All multi-ddm and analyse
@@ -334,7 +367,7 @@ Software development best practices were followed throughout development. The pr
 
 \subsection{Performance}
 
-\clearpage
+
 \section{Discussion}
 \label{section:discussion}
 \subsection{Single-Scale DDM}
@@ -351,7 +384,7 @@ Software development best practices were followed throughout development. The pr
 \label{section:performance}
 %graphs and data
 
-\clearpage
+
 \section{Future}
 \subsection{Comparisons}
 There are many methods that can be used to analyse motion within videos. Some examples are outlined and compared with DDM in the sections below.
@@ -420,7 +453,7 @@ Another issue is that the algorithm waits until the video stream has been exhaus
 \subsubsection{Crowd Categorisation}
 In the current approach crowds are categorised so that they fit into three groups Brownian-like, Swimmer-like or neither (see section \ref{section:crowdtypes} for definitions). To produce better fits for the computed data it would be desirable to further break these categories down. Not only would this provide more accurate results, it may also allow the extraction of different dynamical information (depending on the crowd type and what variables the dynamics depend on). This however would require a time consuming investigation in to not only the mathematics of the ISF for new types of motion, but also how and what defining features could be used to categorise the crowds? These categories would then need to be assigned the appropriate mathematical form of the intermediate scattering function. In-depth tests would then need to be carried out in order to determine the validity of these assignments. Further investigation in this area might lead to more fine grained categorisation of crowd types and their appropriate fits but due to time constraints this project will restrict itself to just the three mentioned above.
 
-\clearpage
+
 \section{Conclusion}
 
 
