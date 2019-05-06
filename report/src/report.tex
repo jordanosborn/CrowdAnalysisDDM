@@ -342,22 +342,27 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 %TODO: All multi-ddm and analyse
 \subsection{Brownian Motion}
 \label{section:brownian}
+\subsubsection{Simulated Brownian Motion}
 \begin{figure}[H]
-\centering
+  \centering
+  \includegraphics[width=0.5\textwidth]{images/brownian_screenshot.png}
+  \caption{Shows a screen capture of a typical frame in the simulated Brownian motion footage.}
+  \label{fig:simulated_brownian_screenshot}
+\end{figure}
+
+\begin{figure}[H]
 \begin{subfigure}[t]{.47\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/brownian_37_5.png}
-  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 37.5/pixel width.}
   \label{fig:simulated_brownian1_37_5}
 \end{subfigure}%
 \hfill
 \begin{subfigure}[t]{.47\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/brownian_67_5.png}
-  \caption{Pixel difference intensity for simulated Brownian motion ($\mu$ = 0, $\sigma$ = 1) at q = 67.5/pixel width.}
  \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm.}
+\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion ($\mu = 0$, $\sigma = 1$) (equation \ref{eqn:brownianSDE}) at two different values of \textit{q}. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm. A typical screenshot of the simulated footage is shown in figure \ref{fig:simulated_brownian_screenshot}.}
 \label{fig:simulated_brownian1}
 \end{figure}
 
@@ -365,7 +370,7 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \centering
 \begin{subfigure}[t]{.47\textwidth}
 \includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
-\caption{Here we can see $\tau_c$ plotted as a function of q for each type of motion. For mid-range q values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of q we see behaviour unexpected for an ideal system. The terrible fits for extreme values of q are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
+\caption{Here we can see $\tau_c$ plotted as a function of \textit{q} for each type of motion. For mid-range \textit{q} values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of \textit{q} we see behaviour unexpected for an ideal system. The terrible fits for extreme values of \textit{q} are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
 \label{fig:simulated_brownian_tauc_whole}
 \end{subfigure}%
 \hfill
@@ -382,16 +387,16 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \begin{center}
 \begin{tabular*}{\textwidth} {@{\extracolsep{\fill}}|c|c|c|c|c|} 
  \hline
- Motion Type & Gradient & Intercept & R-value & Standard Error \\ 
+ Motion Type & Gradient & Intercept & R-value & Std Error \\ 
  \hline
  Geometric Brownian & -1.272 & 6.736 & -0.996 & 0.008 \\ 
- Brownian $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
- Brownian $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
+ Brownian $\mu = 0$, $\sigma=1$ & -2.016 & 8.364 & -0.997 & 0.023 \\ 
+ Brownian $\mu = 0$, $\sigma=5$ & -2.13 & 6.65 & -0.994 & 0.05 \\ 
  \hline
 \end{tabular*}
 \label{table:simulated_brownian_table}
 \end{center}
-
+\subsubsection{Colloidal Brownian Motion}
 \begin{figure}[H]
 \centering
 \begin{subfigure}[t]{.47\textwidth}
