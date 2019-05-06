@@ -43,7 +43,7 @@ Supervisor: Professor Pietro Cicuta (pc245)}
 Supervisor: Professor Pietro Cicuta (pc245)}
 \maketitle
 \section*{Abstract}
-%500 words overview should be about 1/3 the length 
+%500 words overview should be about 1/3 the length  summarise key points only
 This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms, single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately which allows you to determine a length for the coherence of the dynamics \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". A detailed description of the theory behind DDM is included in section \ref{section:theory}. DDM makes heavy use of Fourier transforms of the intensity differences between lagging frames. By transforming the intensity differences into the frequency domain, we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode.  This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for specific types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. This method has a significant level of computational complexity. Particular care was therefore taken in order to produce a satisfactory level of performance. The algorithm was implemented in the Rust programming language \cite{rust}, making heavy use of the GPU array parallelisation library Arrayfire \cite{arrayfire}. Data analysis was carried out using the standard Python data science stack (Python, numpy, pandas, matplotlib, scipy and sklearn). The algorithm was tested on simulated videos of Brownian motion before it was run on crowd motion videos in order to test its accuracy (more information can be found in section \ref{section:brownian}. Brownian motion was used as a test case as there is a known analytical form for the ISF (equation \ref{eqn:BrownianISF}). The expected functional form holds remarkably well (again see section \ref{section:brownian}) and so the algorithm was most likely correctly implemented. Analysis was carried out on two particular crowds types, Brownian-like (stationary motion e.g. stadium crowd where motion is constrained to oscillation about seat location) and Swimmer-like (ballistic crowd motion e.g. marathon running) (see section \ref{section:crowdtypes} for further details). The crowd videos were assigned one of these two categories or left uncategorised. Data was collected for every video but data analysis was only carried out on the Brownian-like and Swimmer-like crowds. This was done as there is at least an approximately known form of the ISF for Brownian/Swimmer like crowds (the microscopic Brownian \ref{eqn:BrownianISF} and Ballistic \ref{eqn:BallisticISF} ISFs) where as for the uncategorised crowds it was not clear what form of ISF should be selected. Other crowd types and the form of their ISFs could be an avenue for further research. The results and their discussion (single-scale and multi-scale DDM) for Brownian and Swimmer like crowds can be found in sections \ref{section:results} and \ref{section:discussion}. It is hoped that this report will demonstrate the suitability of DDM for the analysis of macroscopic motion (crowds). With further research (crowd types and their associated ISFs) and development (focusing on algorithmic optimisation and usability) DDM might find usage in real-time crowd safety monitoring systems at stadiums, in shopping malls, on crowded streets and more.
 
 \clearpage
@@ -129,19 +129,23 @@ There are some notable caveats of this method which are outlined in detail in \c
 \item The form of the ISF must be chosen before fitting can start and so crowds must be classified before this fitting can take place. However fits for multiple ISFs could be produced, and human intervention/cost functions could be used to select the most realistic fits. The dynamical information from the selected fits could then be compared to select a plausible result and so this drawback could be circumvented somewhat.
 \end{enumerate}
  
-\section{Theory}
+\section{The Theory of Differential Dynamic Microscopy}
 \label{section:theory}
-DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking a difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
-From this function many properties of the motion can be determined \cite{ddm1}.
+DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking the difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
+From this function many properties of the motion can be determined \cite{ddm1}. 
+\\\\
+We model the dynamical system as a collection of stochastic particles (i.e particles whose behaviour is not exactly predictable). A crowd consists of a collection of autonomous agents (people) which means we can only predict probabilistically what any one agent will do after each time step. Crowds can therefore be modelled (to at least a first approximation) as a collection of stochastic particles, which each follow some particular form of stochastic process.
 
-\subsection{Brownian Motion}
+\subsection{Stochastic Processes}
+\subsubsection{Brownian Motion}
 Brownian motion (the random motion of particles suspended in a fluid, where the random motion is the result of collisions with microscopic particles) is a stochastic process. It is defined using the Wiener process which is the process described by the stochastic variable $W_t$. Where $dW_t$ is continuous, independent (at different times) and normally distributed with a mean of 0, and a variance $dW_t^2 = dt$ \cite{sde}. A particle undergoing Brownian motion with an mean speed $\mu$ and variance $\sigma^2$ will therefore follow the stochastic differential equation
 \begin{equation}
 \label{eqn:brownianSDE}
 dX_t = \mu dt + \sigma dW_t.
 \end{equation}
 Where $dX_t$ is the position change of the particle at a time t. The equation above can be solved using the standard techniques of Itô calculus, or can be used to simulate a particle undergoing Brownian motion. (The form of the ISF for particles undergoing Brownian motion has been shown to follow equation \ref{eqn:BrownianISF}).
-\\\\
+
+\subsubsection{Geometric Brownian Motion}
 Geometric Brownian motion is a related process and is described by the stochastic differential equation 
 \begin{equation}
 \label{eqn:geometric_brownianSDE}
@@ -169,74 +173,88 @@ For constant $\mu$ and $\sigma$ we can solve this SDE exactly (for an arbitrary 
 S(t) = S_0 e^{(\mu - \frac{1}{2} \sigma^2) t + \sigma W_t}.
 \end{equation}
 This formula can therefore be used to simulate a particle undergoing Geometric Brownian motion (where $W_t$ is a Wiener process and follows a normal distribution with a mean of 0 and a variance $dt$).
+\subsubsection{Other Processes}
+There are other forms of Stochastic processes that could have been chosen to model crowds. However we will only be modelling based on Brownian motion in order to determine a first approximation. We will also use a related process called Ballistic motion which models an isotropically moving collection of particles, where each particle undergoes Brownian motion about its average direction. A significant advantage of using just these two models is that exact forms of the intermediate scattering functions are known for both Brownian and Ballistic motion \ref{eqn:BrownianISF} \ref{eqn:BallisticISF}. 
 
-\subsection{Mathematics}
-Defining d the image structure function (in position space) as
+\subsection{DDM Algorithm}
+Defining \textit{d} the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
 \begin{equation}
-    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0).
+    d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0),
 \end{equation}
-Where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time.
-This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in greyscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Greyscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
+where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time. This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in grayscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Grayscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
+\\\\
+After taking the Fourier transform denoted $ \mathscr{F}$ of the image structure function we arrive at
 
 \begin{equation}
-    \mathscr{F} (d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
+    \mathscr{F} (d(\textbf{r}, t_0, \tau) ) = \mathscr{F} (I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0)) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0)).
 \end{equation}
 
 The second equality results from the linearity of the Fourier transform and reduces computational complexity as it allows you to cache Fourier transforms at each time and then compute their difference.
 This reduces the number of Fourier transforms you need to compute, hence provides a computational optimisation.\cite{ddm2}
-We now have
+The Fourier transform takes the image structure function from its position-space representation to its momentum-space counterpart. We now have the image structure function in terms of the 2D wave-vector $\textbf{q} =  (q_x, q_y)$,
 
 \begin{equation}
-    d(\textbf{q}, t_0, \tau) ) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0))
+    d(\textbf{q}, t_0, \tau) ) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0)).
 \end{equation}
 
-Where $\textbf{q}$ is the 2D wave vector $(q_x, q_y)$.
-Simplifications can be made if you can make some assumptions about the properties of the image, including isotropy and that motion is indifferent about the reference time (can average for all $t_0$) \cite{ddm1}.
+If you can make some assumptions about the properties of the footage, including isotropy and that motion is "stationary" (indifferent about the start time) \cite{ddm1} then you can simplify this function so that it only depends on $\tau$ and $|\textbf{q}|$ (through radial and start time averaging). This reduces the complexity significantly, as it reduces the degrees of freedom of the image structure function from five down to two (making it significantly easier to plot and fit to).
 \\\\
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
 Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each q changes with the time differences between frames $\tau$ \cite{ddm2}.
 \\\\
-
-It has been shown in general that the image structure function takes the form given below \cite{ddm1}.
+The image structure function \textit{d} is complex. We therefore take the square magnitude of this to find a power spectrum \textit{F} (hereafter referred to as just the image structure function) which takes the form
 \begin{equation}
-	I(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q})
+F(\textbf{q}, t_0, \tau) = d(\textbf{q}, t_0, \tau)) \cdot d(\textbf{q}, t_0, \tau) )^{*} = |d(\textbf{q}, t_0, \tau) )|^2.
 \end{equation}
 
-Where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for f are known including Brownian motion and Ballistic motion \cite{DLSPecora}. The function f "characterises how quickly structure is lost over length scales ~ 1/q"\cite{ddm1}. The parameters A(\textbf{q}) and B(\textbf{q}) are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. All interesting dynamical properties are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}. The intermediate scattering function f is the spatial Fourier transform of the Van-Hove self space-time correlation function \cite{DLSPecora}.
+It has been shown that the ("stationary") image structure function takes the general form given below \cite{ddm1}
+\begin{equation}
+	F(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q}),
+\end{equation}
+
+where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for \textit{f} are known including Brownian motion and Ballistic motion \cite{DLSPecora}. The function \textit{f} "characterises how quickly structure is lost over length scales $~1/q$"\ cite{ddm1}. The parameters \textit{A(\textbf{q})} and \textit{B(\textbf{q})} are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. The interesting dynamical properties of the system are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}.
+\\\\
+DDM can be carried out as a fully automated process, as long as the expected form of the system's dynamics is known beforehand. This means that once a family of dynamics is chosen, the DDM data can be fitted to the expected functional form and dynamical information can be extracted, all without the input of a user \cite{ddm1}.
+
+\subsubsection{The Intermediate Scattering Function - Van-Hove Equation}
+The intermediate scattering function \textit{f} is the spatial Fourier transform of the Van-Hove self space-time correlation function \cite{DLSPecora}.
 
 \begin{equation}
-	f(\textbf{q}, \tau) = \mathscr{F} (G(\textbf{r}, \tau)) = \int d^3 \textbf{r} e^{i \textbf{q} \cdot \textbf{r}} G(\textbf{r}, \tau)
+	f(\textbf{q}, \tau) = \mathscr{F} (G(\textbf{r}, \tau)) = \int d^3 \textbf{r} e^{i \textbf{q} \cdot \textbf{r}} G(\textbf{r}, \tau).
 \end{equation}
 
 The Van-Hove equation is the probability distribution for a particle with position $\textbf{R}_j(t)$ to suffer a displacement $\textbf{r}$ in a time $\tau$ \cite{DLSPecora}.
 
 \begin{equation}
-	G(\textbf{r}, \tau) = \left\langle \delta (\textbf{r} - [\textbf{R}_j(t) - \textbf{R}_j(0)]) \right\rangle
+	G(\textbf{r}, \tau) = \left\langle \delta (\textbf{r} - [\textbf{R}_j(t) - \textbf{R}_j(0)]) \right\rangle.
 \end{equation}
 
 It is easy to see through the definitions above how dynamical information about the system can be extracted from the form of the intermediate scattering function.
-\\\\
+
+\subsubsection{Intermediate Scattering Function for Brownian Motion}
 Now this is a complicated equation and so has only been solved analytically for a few cases. One of which is Brownian motion. In the case of Brownian motion the ISF has been shown to be
 
 \begin{equation}
 \label{eqn:BrownianISF}
-	f(\textbf{q}, \tau) = e^{- \tau / \tau_c(\textbf{q})} = e^{- \tau / (\frac{1}{D_T |\textbf{q}|^2})}
+	f(\textbf{q}, \tau) = e^{- \tau / \tau_c(\textbf{q})} = e^{- \tau / (\frac{1}{D_T |\textbf{q}|^2})},
 \end{equation}
 where $D_T$ is the translational diffusion coefficient \cite{ddm1}. If we then fit this to data from videos behaving in a similar manner to Brownian motion we should then have $\tau_c$ as a function of $|\textbf{q}|$. Plotting this data on a log-log plot we should then see the characteristic form predicted by the equation above
 \begin{equation}
-\log{\tau_c} = -2 \cdot \log{|\textbf{q}|} - \log{D_T}
+\log{\tau_c} = -2 \cdot \log{|\textbf{q}|} - \log{D_T}.
 \end{equation}
 By comparing the measured gradient to -2 we can see how valid the assumption of Brownian motion is. And from the y-intercept we can also derive a prediction for the translational diffusion coefficient $D_T$.
-\\\\
+
+\subsubsection{Intermediate Scattering Function for Ballistic Motion}
 Another solved case is that of Ballistic motion. This form is derived on the assumption of an isotropic collection of motile "swimmers" that also undergo Brownian motion as they travel. The form of the intermediate structure function in this case is 
 
 \begin{equation}
 \label{eqn:BallisticISF}
-	f(\textbf{q}, \tau) = sinc(|\textbf{q}| \cdot v \cdot \tau) \cdot e^{- \tau / \tau_c(\textbf{q})}
+	f(\textbf{q}, \tau) = sinc(|\textbf{q}| \cdot v \cdot \tau) \cdot e^{- \tau / \tau_c(\textbf{q})}.
 \end{equation} \cite{DLSPecora}.
 
 Systems that show similar behaviour to ballistic motion should have a similar ISF, from the ISF we should therefore be able to extract the velocity of the crowd from the first peak in the intensity profile.
-\\\\
+
+\subsubsection{Multi-Scale Differential Dynamic Microscopy}
 A related method called multi-scale DDM (this project will make heavy use of this method) picks up temporal and spatial scales of synchronisation separately (normal single-scale DDM only picks up a combination).
 In multi-scale DDM you perform a single-scale DDM over a whole series of different tilings of the image \cite{ddm1}. These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced) \cite{ddm1}.
 To reduce the number of tiles that need to be computed you can select only the tiles showing the most activity, an equation that can determine if a tile exceeds a threshold activity is
@@ -245,20 +263,18 @@ To reduce the number of tiles that need to be computed you can select only the t
 \end{equation}
 
 Which sums all of the standard deviations (computed over the time period $\tau$) of the intensities at each position in the tile and then checks if this sum is greater than some threshold standard deviation.
-If it is a valid inequality then that tile is said to be "active" otherwise it is "inactive".\cite{ddm2}
+If it is a valid inequality then that tile is said to be "active" otherwise it is "inactive" \cite{ddm2}.
 This is a very rudimentary activity classifying function.
 There are other ways that a tile's activity can be classified which may need to be investigated.
 \\\\
 In the cross comparisons between the tiles of different sizes the scale of the collective motion should emerge \cite{ddm1}.
 Other properties of the motion should emerge by studying how tau varies as a function of the wave-vector amplitude \cite{ddm1}.
-\\\\
-DDM can be carried out as a fully automated process, as long as the expected form of the system's dynamics is known beforehand. This means that once a family of dynamics is chosen, the DDM data can be fitted to the expected functional form and dynamical information can be extracted, all without the input of a user  \cite{ddm1}.
 
-\subsection{DDM Example - Brownian Motion}
+\subsection{Differential Dynamic Microscopy Example - Brownian Motion}
 
 \begin{figure}[H]
 \centering
-\includegraphics[height=4.5cm]{images/ddmpic.png}
+\includegraphics[width=\textwidth]{images/ddmpic.png}
 \caption{Provides an overview of the DDM method as applied to the analysis of collective dynamics in ciliated cells.\cite{ddm2}}
 \end{figure}
 
@@ -266,7 +282,7 @@ DDM can be carried out as a fully automated process, as long as the expected for
 \item we take a video of the motion we wish to analyse and convert each frame into a 2D array of gray-scale pixel intensities.
 \item for each starting frame in the video we take the difference between the pixel intensities of that frame and all lagging frames. $ \tau $ 
 denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $). We denote each of these differences $ d(\underline{x}, t_0, \tau) $.
-\item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position. $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $I(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
+\item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position. $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $F(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
 \item because the system is stationary (power spectrum should be independent of $t_0$ and should only depend on $\tau$) we therefore take the average of the Fourier transforms over each $t_0$. This allows us to remove the dependence of $t_0$ from I and also reduce the effects of experimental uncertainty.
 \item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector q. $I(q, \tau)$
 \item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of q will yield the diffusion coefficient D. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
@@ -300,7 +316,7 @@ In the figure above we see a typical plot of $\tau_c$ vs  q. This figure aims to
 \end{enumerate}
 
 
-\section{Implementation}
+\section{Implementation Details}
 
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
 \\\\
