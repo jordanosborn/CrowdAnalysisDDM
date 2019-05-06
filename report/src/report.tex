@@ -240,6 +240,7 @@ Now this is a complicated equation and so has only been solved analytically for 
 \end{equation}
 where $D_T$ is the translational diffusion coefficient \cite{ddm1}. If we then fit this to data from videos behaving in a similar manner to Brownian motion we should then have $\tau_c$ as a function of $|\textbf{q}|$. Plotting this data on a log-log plot we should then see the characteristic form predicted by the equation above
 \begin{equation}
+\label{eqn:brownian_diffusion_relation}
 \log{\tau_c} = -2 \cdot \log{|\textbf{q}|} - \log{D_T}.
 \end{equation}
 By comparing the measured gradient to -2 we can see how valid the assumption of Brownian motion is. And from the y-intercept we can also derive a prediction for the translational diffusion coefficient $D_T$.
@@ -333,7 +334,7 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \begin{figure}[H]
 %algorithm pipeline	
 \centering
-\includegraphics[width=0.97\textwidth]{images/algo-pipeline.png}
+\includegraphics[width=0.95\textwidth]{images/algo-pipeline.png}
 \caption{Flow chart of the algorithm structure used in this project.}
 \end{figure}
 
@@ -367,21 +368,33 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \end{figure}
 
 \begin{figure}[H]
-\centering
-\begin{subfigure}[t]{.47\textwidth}
-\includegraphics[width=\linewidth]{images/brownian_critical_tau_whole.png}
-\caption{Here we can see $\tau_c$ plotted as a function of \textit{q} for each type of motion. For mid-range \textit{q} values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of \textit{q} we see behaviour unexpected for an ideal system. The terrible fits for extreme values of \textit{q} are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
-\label{fig:simulated_brownian_tauc_whole}
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_287_5.png}
+  \label{fig:simulated_brownian1_37_5}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{.47\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{images/brownian_critical_tau_linear_region.png}
-  \caption{After extracting the linear region of each plot, linear regression is performed and plotted on top of the data. We see the characteristic gradient ~ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}.}
- \label{fig:simulated_brownian_tauc_linear_region}
+  \includegraphics[width=\linewidth]{images/brownian_399_5.png}
+ \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{Here we see plots of the parameter $\tau_c$ (as found by fitting the data to the Brownian ISF (equation \ref{eqn:BrownianISF})) vs wave-vector q. They are plotted on a log-log scale to make the q-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. By extracting the linear region and performing linear regression we determine how well the expected relationship holds (gradient ~ -2), thus demonstrating that the algorithm works as intended. Geometric Brownian motion when fitted to the Brownian ISF shows the expected decay but with a different gradient, this is okay as the dynamics of Geometric Brownian motion are slightly different to normal Brownian motion and so a different form of the ISF should be expected. Both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
-\label{fig:simulated_brownian_tauc}
+\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
+\label{fig:simulated_brownian_troubled}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{images/brownian_critical_tau_whole.png}
+\caption{Here we can see $\tau_c$ plotted as a function of \textit{q} for each type of motion. For mid-range \textit{q} values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of \textit{q} we see behaviour unexpected for an ideal system. The terrible fits for extreme values of \textit{q} are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
+\label{fig:simulated_brownian_tauc_whole}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+\includegraphics[width=0.75\textwidth]{images/brownian_critical_tau_linear_region.png}
+  \caption{After extracting the linear region of each plot from figure \ref{fig:simulated_brownian_tauc_whole}, linear regression is performed and best fits are plotted on top of the data. The data is plotted on a log-log scale to make the q-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. We see the characteristic gradient ~ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}. For Geometric Brownian motion (equation \ref{eqn:geometric_brownianSDE}) we see a slight deviation from the expected decay (a slightly different gradient), this is okay as the dynamics of Geometric Brownian motion follow a different stochastic differential equation to normal Brownian motion and so a different form of the ISF should be expected. As predicted both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
+ \label{fig:simulated_brownian_tauc_linear_region}
 \end{figure}
 
 \begin{center}
@@ -397,22 +410,25 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \label{table:simulated_brownian_table}
 \end{center}
 \subsubsection{Colloidal Brownian Motion}
+
 \begin{figure}[H]
 \centering
-\begin{subfigure}[t]{.47\textwidth}
-\includegraphics[width=\linewidth]{images/500colloid_fit.png}
-\caption{Here we see plots of the fitted Brownian motion ISF parameters as a function of q (log-log scale). We are only interested in the $\tau_c$ curve as the other parameters are related to the properties of the filming apparatus (can extract useful information from them but this is not our focus). Again we see non-linear regions at high and low q values these regions can be neglected (see section \ref{section:fitting_issues}). And so we take only the the linear section at mid-range q values.}
+\includegraphics[width=0.3\textwidth]{images/colloid_screenshot.png}
+\caption{Here we see a screenshot of a typical frame from the 500nm colloid footage.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{images/500colloid_fit.png}
+\caption{Here we see plots of the fitted Brownian motion ISF parameters for colloidal particles (500nm diameter) suspended in solution as a function of \textit{q} (log-log scale). We are only interested in the $\tau_c$ curve as the other parameters are related to the properties of the filming apparatus (can extract useful information from them but this is not our focus). Again we see non-linear regions at high and low q values these regions can be neglected (see section \ref{section:fitting_issues}). And so we take only the the linear section at mid-range \textit{q} values.}
 \label{fig:colloid_brownian_whole}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.47\textwidth}
+\end{figure}
+
+\begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{images/500colloid_linear_region_fit.png}
-  \caption{After extracting the linear region of the data, linear regression is performed and plotted on top of the data. We see the characteristic gradient of ~ -2 that is expected using the Brownian ISF. Indicating that the colloidal particles are undergoing Brownian motion.}
+  \caption{After extracting the linear region of the data in figure \ref{fig:colloid_brownian_whole}, linear regression is performed and a best fit is plotted on top of the data. We see the characteristic gradient of ~ -2 that is expected using the Brownian ISF. Indicating that the colloidal particles are undergoing Brownian motion. The diffusion coefficient is related to the intercept of this curve (equation \ref{eqn:brownian_diffusion_relation}) but unfortunately the properties of the camera that was used to film the colloids is unknown and so it is impossible to relate the extracted Diffusion coefficient (in terms of pixel sizes and frame rates) to a real world value.}
  \label{fig:colloid_brownian_linear_region}
-\end{subfigure}
-\caption{Here we see plots of data extracted from a system containing 500nm colloids suspended in solution. As we can see the linear region shows the characteristic gradient ~ -2 of the Brownian ISF. And so the colloids seem to be undergoing Brownian motion. Unfortunately properties of the camera that was used to film this are unknown and so it is impossible to relate the extracted Diffusion coefficient (in terms of pixel sizes and frame rates) to a real world value. }
-\label{fig:colloid_brownian}
 \end{figure}
 
 \begin{center}
@@ -437,24 +453,7 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \subsubsection{Directional Motion - Swimmer Like}
 
 \subsection{Performance}
-
-
-\section{Discussion}
-\label{section:discussion}
-\subsection{Single-Scale DDM}
-\subsubsection{Stationary Crowds - Brownian Like}
-
-\subsubsection{Directional Motion - Swimmer Like}
-
-\subsection{Multi-Scale DDM}
-\subsubsection{Stationary Crowds - Brownian Like}
-
-\subsubsection{Directional Motion - Swimmer Like}
-
-\subsection{Performance}
 \label{section:performance}
-%graphs and data
-
 
 \section{Future}
 
