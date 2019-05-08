@@ -172,9 +172,10 @@ S(t) = S_0 e^{(\mu - \frac{1}{2} \sigma^2) t + \sigma W_t}.
 \end{equation}
 This formula can therefore be used to simulate a particle undergoing Geometric Brownian motion (where $W_t$ is a Wiener process and follows a normal distribution with a mean of 0 and a variance $dt$).
 \subsubsection{Other Processes}
-There are other forms of Stochastic processes that could have been chosen to model crowds. However we will only be modelling based on Brownian motion in order to determine a first approximation. We will also use a related process called Ballistic motion which models an isotropically moving collection of particles, where each particle undergoes Brownian motion about its average direction. A significant advantage of using just these two models is that exact forms of the intermediate scattering functions are known for both Brownian and Ballistic motion \ref{eqn:BrownianISF} \ref{eqn:BallisticISF}. 
+There are other forms of Stochastic processes that could have been chosen to model crowds. However we will only be modelling based on Brownian motion in order to determine a first approximation. We will also use a related process called Ballistic motion which models an isotropically moving collection of particles, where each particle undergoes Brownian motion about its average direction. A significant advantage of using just these two models is that exact forms of the intermediate scattering functions are known for both Brownian and Ballistic motion (equations \ref{eqn:BrownianISF} \ref{eqn:BallisticISF}). 
 
-\subsection{DDM Algorithm}
+\subsection{Differential Dynamic Microscopy}
+\subsubsection{DDM Algorithm}
 Defining \textit{d} the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
 \begin{equation}
     d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0),
@@ -312,7 +313,7 @@ In the figure above we see a typical plot of $\tau_c$ vs  \textit{q} on a log-lo
 
 \item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
 \end{enumerate}
-
+\clearpage
 \section{Implementation Details}
 \label{section:implementation}
 
@@ -443,23 +444,79 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 
 \subsection{Single-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
+% show stills from video examples, tauc plots and their fits at 1024px (for good cases) location of bad fits (compare brownian and ballistic) what info we find is it approx brownian, diffusion , A B plots
+
+%stills of videos
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_287_5.png}
+  \label{fig:simulated_brownian1_37_5}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_399_5.png}
+ \label{fig:simulated_brownian1_67_5}
+\end{subfigure}
+\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
+\label{fig:simulated_brownian_troubled}
+\end{figure}
+
 
 \subsubsection{Directional Motion - Swimmer Like}
+% show stills from video examples, tauc plots and their fits at 1024px (for good cases) location of bad fits (compare brownian and ballistic fits) what info we find is it approx brownian, diffusion, velocity, A, B plots
+%stills of videos
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_287_5.png}
+  \label{fig:simulated_brownian1_37_5}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/brownian_399_5.png}
+ \label{fig:simulated_brownian1_67_5}
+\end{subfigure}
+\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
+\label{fig:simulated_brownian_troubled}
+\end{figure}
 
 \subsection{Multi-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
+% show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff, tauc vs box size at fixed q
 
 \subsubsection{Directional Motion - Swimmer Like}
+% show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff velocity, tauc vs box size at fixed q
 
 \subsection{Performance}
 \label{section:performance}
 
-\section{Future}
+
+\section{Conclusion}
+
+
+\clearpage
+\section{References}
+\printbibliography[heading=none]
+
+\clearpage
+\section{Appendices}
+\subsection{Appendix 0: Downloads}
+\subsubsection{Code}
+Code is stored in a GitHub repository which can be found at \url{https://github.com/jordanosborn/MastersProject}.
+\subsubsection{Videos}
+The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}. Three of the videos used to test the algorithm under Brownian motion were generated by a simulation and are available in the GitHub repository linked above (as well as the code used to generate them), the remaining Brownian motion test videos are available at \url{http://people.bss.phy.cam.ac.uk/~pc245/out/40X_T73_muc18_i4_BSA_AfterWash_day10.20Mar2017_22.17.06.zip} and \url{http://people.bss.phy.cam.ac.uk/~pc245/out/500nm_colloids_40x.16May2014_18.46.44.zip}. Multi-scale DDM was carried out on the videos titled running(1-12) and crowd(1-19) only (due to time constraints). Single-scale DDM was carried out on all available videos.
+\subsubsection{Database}
+The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired.
+
+\subsection{Appendix 1: Future}
 \label{section:future}
-\subsection{Applications}
+\subsubsection{Applications}
 If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems in crowded environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
 
-\subsection{Further Development}
+\subsubsection{Further Development}
 Due to the time restrictions imposed on this project, development had to be focused. There are various avenues which could be explored in order to improve the current implementation. Two main areas that could be investigated are algorithm optimisations, and crowd categorisation (the appropriate intermediate scattering functions for each crowd type).
 
 \subsubsection{Algorithm Optimisations}
@@ -473,21 +530,5 @@ Another issue is that the algorithm waits until the video stream has been exhaus
 \subsubsection{Crowd Categorisation}
 In the current approach crowds are categorised so that they fit into three groups Brownian-like, Swimmer-like or neither (see section \ref{section:crowdtypes} for definitions). To produce better fits for the computed data it would be desirable to further break these categories down. Not only would this provide more accurate results, it may also allow the extraction of different dynamical information (depending on the crowd type and what variables the dynamics depend on). This however would require a time consuming investigation in to not only the mathematics of the ISF for new types of motion, but also how and what defining features could be used to categorise the crowds? These categories would then need to be assigned the appropriate mathematical form of the intermediate scattering function. In-depth tests would then need to be carried out in order to determine the validity of these assignments. Further investigation in this area might lead to more fine grained categorisation of crowd types and their appropriate fits but due to time constraints this project will restrict itself to just the three mentioned above.
 
-
-\section{Conclusion}
-
-
-\clearpage
-\section{References}
-\printbibliography[heading=none]
-
-\clearpage
-\section{Appendices}
-\subsection{Code}
-Code is stored in a GitHub repository which can be found at \url{https://github.com/jordanosborn/MastersProject}.
-\subsection{Videos}
-The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}. Three of the videos used to test the algorithm under Brownian motion were generated by a simulation and are available in the GitHub repository linked above (as well as the code used to generate them), the remaining Brownian motion test videos are available at \url{http://people.bss.phy.cam.ac.uk/~pc245/out/40X_T73_muc18_i4_BSA_AfterWash_day10.20Mar2017_22.17.06.zip} and \url{http://people.bss.phy.cam.ac.uk/~pc245/out/500nm_colloids_40x.16May2014_18.46.44.zip}. Multi-scale DDM was carried out on the videos titled running(1-12) and crowd(1-19) only (due to time constraints). Single-scale DDM was carried out on all available videos.
-\subsection{Database}
-The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired.
 
 \end{document}
