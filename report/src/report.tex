@@ -43,7 +43,7 @@ Supervisor: Professor Pietro Cicuta (pc245)}
 Supervisor: Professor Pietro Cicuta (pc245)}
 \maketitle
 \section*{Abstract}
-This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms, single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately which allows you to determine a length-scale for the coherence of the dynamics \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". DDM is carried out by transforming the intensity differences between lagging frames into the frequency domain (Fourier Transform), from these transforms we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode. This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for only a few types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. Analysis was carried out on two particular crowd types, Brownian-like ("stationary" motion e.g. motion is constrained to oscillation about an average location) and Swimmer-like (ballistic crowd motion e.g. marathon running). These two crowd types were selected as there is at least an approximately known form of the ISF for Brownian/Swimmer like crowds (the microscopic Brownian and Ballistic ISFs, equations \ref{eqn:BrownianISF} and \ref{eqn:BallisticISF}) where as for other crowd types it is not clear what form of ISF should be selected. Other crowd types and the form of their ISFs could be an avenue for further research. The data shows good agreement with the Brownian form of the intermediate scattering function (allowing us to extract a time-scale of synchronisation as a function of wave-vector), less so with the Ballistic ISF (section \ref{section:results}). It is hoped that this report will demonstrate that DDM is suitable for the analysis of macroscopic motion (crowds). With further research (crowd types and their associated ISFs) and development (focusing on algorithmic optimisation and usability) DDM might find usage in real-time crowd safety monitoring systems at stadiums, in shopping malls, on crowded streets and more.
+This project focuses on a new application of a technique called differential dynamic microscopy. DDM first appeared in 2008 \cite{ddm0} and has primarily found usage in the analysis of motion on a microscopic scale \cite{ddm1}. This project will make use of DDM to analyse macroscopic motion, specifically that of crowds. DDM has two primary forms, single-scale and multi-scale. Both will find usage in this project, single-scale DDM is used to analyse overall spatio-temporal dynamics, where-as multi-scale DDM can pick up temporal and spatial scales of synchronisation separately which allows you to determine a length-scale for the coherence of the dynamics \cite{ddm1}. Multi-scale DDM achieves this separation by running single-scale DDM on multiple sub-sections of the footage at a range of "box sizes". DDM is carried out by transforming the intensity differences between lagging frames into the frequency domain (Fourier Transform), from these transforms we can determine how the intensity decays as a function of the time lag between frames for each Fourier mode. This data is then fitted to an intermediate scattering function (ISF) (analytical forms are known for only a few types of motion), the functional form of the ISF determines what dynamical variables can be extracted from the data. Analysis was carried out on two particular crowd types, Brownian-like ("stationary" motion e.g. motion is constrained to oscillation about an average location) and Swimmer-like (ballistic crowd motion e.g. marathon running). These two crowd types were selected as there is at least an approximately known form of the ISF for Brownian/Swimmer like crowds (the microscopic Brownian and Ballistic ISFs, equations \ref{eqn:BrownianISF} and \ref{eqn:BallisticISF}) where as for other crowd types it is not clear what form of ISF should be selected. Other crowd types and the form of their ISFs could be an avenue for further research. The data shows good agreement with the Brownian form of the intermediate scattering function (when analysing "stationary" crowds) (allowing us to extract a time-scale of synchronisation as a function of wave-vector), less so with the Ballistic ISF (section \ref{section:results}) and other crowd types. It is hoped that this report will demonstrate that DDM is suitable for the analysis of macroscopic motion (crowds). With further research (crowd types and their associated ISFs) and development (focusing on algorithmic optimisation and usability) DDM might find usage in real-time crowd safety monitoring systems at stadiums, in shopping malls, on crowded streets and more.
 
 \clearpage
 \tableofcontents
@@ -448,40 +448,194 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 
 %stills of videos
 \begin{figure}[H]
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/crowd4.png}
+  \label{fig:crowd4_screenshot}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/crowd5.png}
+  \label{fig:crowd5_screenshot}
+  \caption{}
+\end{subfigure}
+\par\bigskip
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/crowd10.png}
+  \label{fig:crowd10_screenshot}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/crowd17.png}
+  \label{fig:crowd17_screenshot}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see typical frames from four Brownian like videos. They each show a "stationary" crowd inside a stadium. The screenshots were captured from the 10th frame of the videos (a) crowd4, (b) crowd5, (c) crowd10 and (d) crowd17. All other Brownian like crowd videos contain footage of crowds similar to these.}
+\label{fig:crowd_screenshots}
+\end{figure}
+
+\clearpage
+\paragraph{Brownian ISF}
+
+\begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{images/brownian_287_5.png}
-  \label{fig:simulated_brownian1_37_5}
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_2.5_box_size_1024}.png}
+  \caption{}
 \end{subfigure}%
 \hfill
 \begin{subfigure}[t]{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{images/brownian_399_5.png}
- \label{fig:simulated_brownian1_67_5}
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_497.5_box_size_1024}.png}
+  \caption{}
 \end{subfigure}
-\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
-\label{fig:simulated_brownian_troubled}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_86.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_157.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} values for the video crowd4. The data was collected by running single-scale DDM (box-size = full frame). We see troubling fits at low and high \textit{q}, whose origins are explained in section \ref{section:fitting_issues}, we will neglect these fits in our discussion. However at mid-range \textit{q} we see that the data fits incredibly well to the Brownian ISF (indicating that the crowd behaves in an approximately Brownian manner). The overall trend of the data (mid-range \textit{q}) follows that predicted by the Brownian ISF, however there is additional substructure to the curves which causes them to deviate slightly from the ideal fit. This is as expected as the crowds won't exactly follow Brownian motion and we do not have perfect footage. (A link to all data is available in section \ref{section:database})}
+\label{fig:crowd4_brownian_fits}
 \end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_1.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_76.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_363.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_510.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame). (A link to all data is available in section \ref{section:database})}
+\label{fig:crowd4_brownian_fits}
+\end{figure}
+
+\paragraph{Ballistic ISF}
+
 
 
 \subsubsection{Directional Motion - Swimmer Like}
 % show stills from video examples, tauc plots and their fits at 1024px (for good cases) location of bad fits (compare brownian and ballistic fits) what info we find is it approx brownian, diffusion, velocity, A, B plots
 %stills of videos
 \begin{figure}[H]
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/running4.png}
+  \label{fig:running4_screenshot}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/running5.png}
+  \label{fig:running5_screenshot}
+  \caption{}
+\end{subfigure}
+\par\bigskip
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/running6.png}
+  \label{fig:running6_screenshot}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.49\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/screenshots/running7.png}
+  \label{fig:running7_screenshot}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see typical frames from four Swimmer like videos. They each show a "Ballistic" crowd moving in some direction. The screenshots were captured from the 10th frame of the videos (a) running4, (b) running5, (c) running6 and (d) running7. All other Swimmer like crowd videos contain footage of crowds similar to these.}
+\label{fig:running_screenshots}
+\end{figure}
+
+\clearpage
+\paragraph{Brownian ISF}
+\begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{images/brownian_287_5.png}
-  \label{fig:simulated_brownian1_37_5}
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_2.5_box_size_1024}.png}
+  \caption{}
 \end{subfigure}%
 \hfill
 \begin{subfigure}[t]{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{images/brownian_399_5.png}
- \label{fig:simulated_brownian1_67_5}
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_32.5_box_size_1024}.png}
+  \caption{}
 \end{subfigure}
-\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
-\label{fig:simulated_brownian_troubled}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_332.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_499.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature after the first peak and are better fitted to a Ballistic ISF (or another with some oscillatory component).  (A link to all data is available in section \ref{section:database})}
+\label{fig:crowd4_brownian_fits}
 \end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_2.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_59.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_218.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_353.5_box_size_1024}.png}
+  \caption{}
+\end{subfigure}%
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame). (A link to all data is available in section \ref{section:database})}
+\label{fig:crowd4_brownian_fits}
+\end{figure}
+
+\paragraph{Ballistic ISF}
 
 \subsection{Multi-Scale DDM}
 \subsubsection{Stationary Crowds - Brownian Like}
@@ -509,6 +663,7 @@ Code is stored in a GitHub repository which can be found at \url{https://github.
 \subsubsection{Videos}
 The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu.hk/projects/collectiveness/dataset.htm} \cite{crowdMotionDB}. The remaining videos (which were then hand edited to conform to the desired format) can be found at \href{https://www.youtube.com/watch?v=nrST7C_mDT8}{crowd 1-19}, \href{https://www.youtube.com/watch?v=lpEF1uyCH44}{nightclub crowd static},  \href{https://www.youtube.com/watch?v=sj2er0LPlH0}{running 1-12}, and \href{https://www.youtube.com/watch?v=AQdZ2OTF7VA}{football crowd static}. Three of the videos used to test the algorithm under Brownian motion were generated by a simulation and are available in the GitHub repository linked above (as well as the code used to generate them), the remaining Brownian motion test videos are available at \url{http://people.bss.phy.cam.ac.uk/~pc245/out/40X_T73_muc18_i4_BSA_AfterWash_day10.20Mar2017_22.17.06.zip} and \url{http://people.bss.phy.cam.ac.uk/~pc245/out/500nm_colloids_40x.16May2014_18.46.44.zip}. Multi-scale DDM was carried out on the videos titled running(1-12) and crowd(1-19) only (due to time constraints). Single-scale DDM was carried out on all available videos.
 \subsubsection{Database}
+\label{section:database}
 The raw data from DDM is stored inside an Sqlite database which can be found at \url{https://github.com/jordanosborn/MastersProject/blob/master/code/crowd.sqlite?raw=true}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired.
 
 \subsection{Appendix 1: Future}
