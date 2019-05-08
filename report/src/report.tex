@@ -208,6 +208,7 @@ F(\textbf{q}, t_0, \tau) = d(\textbf{q}, t_0, \tau)) \cdot d(\textbf{q}, t_0, \t
 
 It has been shown that the ("stationary") image structure function takes the general form given below \cite{ddm1}
 \begin{equation}
+\label{eqn:power_spectrum}
 	F(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q}),
 \end{equation}
 
@@ -340,7 +341,8 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 
 \section{Results}
 \label{section:results}
-%TODO: All multi-ddm and analyse
+In this section we will only provide data for a small selection of the crowds that were analysed. This is in order to keep this discussion brief, see section \ref{section:database} for information on how to obtain all of the analysed data.
+
 \subsection{Brownian Motion}
 \label{section:brownian}
 \subsubsection{Simulated Brownian Motion}
@@ -504,7 +506,7 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_157.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} values for the video crowd4. The data was collected by running single-scale DDM (box-size = full frame). We see troubling fits at low and high \textit{q}, whose origins are explained in section \ref{section:fitting_issues}, we will neglect these fits in our discussion. However at mid-range \textit{q} we see that the data fits incredibly well to the Brownian ISF (indicating that the crowd behaves in an approximately Brownian manner). The overall trend of the data (mid-range \textit{q}) follows that predicted by the Brownian ISF, however there is additional substructure to the curves which causes them to deviate slightly from the ideal fit. This is as expected as the crowds won't exactly follow Brownian motion and we do not have perfect footage. (A link to all data is available in section \ref{section:database})}
+\caption{Here we see typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} values for the video crowd4. The data was collected by running single-scale DDM (box-size = full frame). We see troubling fits at low and high \textit{q}, whose origins are explained in section \ref{section:fitting_issues}, we will neglect these fits in our discussion. However at mid-range \textit{q} we see that the data fits incredibly well to the Brownian ISF (indicating that the crowd behaves in an approximately Brownian manner). The overall trend of the data (mid-range \textit{q}) follows that predicted by the Brownian ISF, however there is additional substructure to the curves which causes them to deviate slightly from the ideal fit. This is as expected as the crowds won't exactly follow Brownian motion and we do not have perfect footage.}
 \label{fig:crowd4_brownian_fits}
 \end{figure}
 
@@ -532,7 +534,7 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_510.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame). (A link to all data is available in section \ref{section:database})}
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame).}
 \label{fig:crowd4_brownian_fits}
 \end{figure}
 
@@ -712,7 +714,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_499.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and are better fitted to a Ballistic ISF (or another ISF with an oscillatory component).  (A link to all data is available in section \ref{section:database})}
+\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and are better fitted to a Ballistic ISF (or another ISF with an oscillatory component).}
 \label{fig:running5_brownian_fits}
 \end{figure}
 
@@ -740,7 +742,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_353.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the Swimmer like group. (A link to all data is available in section \ref{section:database})}
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the Swimmer like group.}
 \label{fig:running6_brownian_fits}
 \end{figure}
 
@@ -761,7 +763,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_q/tauc/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we can see two figures showing $\tau_c$ as a function of $q$ on a log-log scale (makes any power law dependence explicit) for each swimmer-like crowd fitted to a Brownian ISF. We can see regions where fitting is poor, but there is also an (approximately) linear region at the low end of the $q$ range. A fit to a Brownian ISF is therefore at least approximately a valid form for the ISF of swimmer-like crowds.}
 \label{fig:running_brownian_fits_tauc}
 \end{figure}
 
@@ -790,7 +792,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_q/B/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{These figures show the q dependence of the parameters $A$ and $B$ for two swimmer-like crowds fitted to a Brownian ISF. They are included for completeness only.}
 \label{fig:running_brownian_fits_B}
 \end{figure}
 
@@ -799,7 +801,6 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \paragraph{Ballistic ISF}
 
 In this section we will show how the fitted parameters for swimmer-like crowds vary with \textit{q} for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
-
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
@@ -812,7 +813,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{The figures above show $\tau_c$ as a function of $q$ for two swimmer-like crowds fitted to a Ballistic ISF. The fits are very noisy and are quite poor like in the "stationary" crowd case. The Brownian fits for swimmer-like crowds are significantly better than the Ballistic fits, but still don't capture all of the variation seen in the image structure power spectrum $F$. This would indicate that a Brownian ISF is the most appropriate fit for both crowd types (of the two ISFs that were tested). However in the swimmer-like crowds the Brownian ISF only partially describes the dynamics of the system. Meaning further investigation in to crowd types and their associated ISFs are required.}
 \label{fig:running_ballistic_fits_tauc}
 \end{figure}
 
@@ -828,7 +829,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we can see the $q$ dependence of the Ballistic ISF fitting parameter $v$ for two swimmer-like crowds. These fits are again very poor, and so the Ballistic ISF is not an appropriate form for swimmer-like crowds.}
 \label{fig:running_ballistic_fits_v}
 \end{figure}
 
@@ -857,10 +858,9 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we can see the dependence of the parameters $A$ and $B$ on $q$ for two swimmer-like crowds fitted to a Ballistic ISF. These fits are poor, and show many missing values. Which indicates in conjunction with the fits for the other parameters that a Ballistic ISF is not an appropriate choice for swimmer-like crowds.}
 \label{fig:running_ballistic_fits_B}
 \end{figure}
-
 
 \subsection{Multi-Scale DDM}
 
@@ -1088,9 +1088,8 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \label{fig:running_ballistic_fits_tauc_B_boxsizes}
 \end{figure}
 
-
-\subsection{Performance}
-\label{section:performance}
+%\subsection{Performance}
+%\label{section:performance}
 
 
 \section{Conclusion}
@@ -1120,7 +1119,7 @@ If this project is successful in being able to measure crowd dynamics in real ti
 Due to the time restrictions imposed on this project, development had to be focused. There are various avenues which could be explored in order to improve the current implementation. Two main areas that could be investigated are algorithm optimisations, and crowd categorisation (the appropriate intermediate scattering functions for each crowd type).
 
 \subsubsection{Algorithm Optimisations}
-Although most of the steps in the algorithm complete in a reasonable time frame, further optimisations could be incorporated. See section \ref{section:performance} for performance data. 
+Although most of the steps in the algorithm complete in a reasonable time frame, further optimisations could be incorporated.
 \\\\
 The main algorithmic slowdown occurs in the radial averaging stage, this stage involves multiplying the intensity array by annuli of varying radii (covering the whole intensity array $\Sigma_{A \in annuli} A_{\alpha \beta} = 1 \forall \alpha, \beta)$. The intensity array is multiplied by each annulus, the resulting array elements are summed then averaged over the number of non-zero array elements of the multiplying annulus, thus providing the radial average of the intensity at the annulus radius. This process involves a significant number of array operations and as a result is the limiting step in the current implementation. The approach taken is a naive one, it is anticipated that this process could be sped up significantly if more time were available to investigate different approaches. Perhaps by reducing the usage of expensive element wise operations (summing all elements), and trying an approach that makes more use of the highly parallelised array operations instead.
 \\\\
@@ -1130,5 +1129,7 @@ Another issue is that the algorithm waits until the video stream has been exhaus
 \subsubsection{Crowd Categorisation}
 In the current approach crowds are categorised so that they fit into three groups Brownian-like, Swimmer-like or neither (see section \ref{section:crowdtypes} for definitions). To produce better fits for the computed data it would be desirable to further break these categories down. Not only would this provide more accurate results, it may also allow the extraction of different dynamical information (depending on the crowd type and what variables the dynamics depend on). This however would require a time consuming investigation in to not only the mathematics of the ISF for new types of motion, but also how and what defining features could be used to categorise the crowds? These categories would then need to be assigned the appropriate mathematical form of the intermediate scattering function. In-depth tests would then need to be carried out in order to determine the validity of these assignments. Further investigation in this area might lead to more fine grained categorisation of crowd types and their appropriate fits but due to time constraints this project will restrict itself to just the three mentioned above.
 
+\subsubsection{Empirical Forms of the Intermediate Scattering Functions}
+After computing the image structure power spectrum $F$ \ref{eqn:power_spectrum} for a specific crowd type, we can attempt to fit different approximate forms for the intermediate scattering function. The variables that the approximate fit can depend on include $q$, $\tau$, $t_0$ and box size. The approximate fit will also depend on a set of fitting parameters which will be related to the dynamics of the crowd motion. By trying various functional forms until we get an appropriate fit we can determine the approximate form of ISF for that particular crowd type. We can then carry out dimensional analysis on the approximate ISF. The dimensions of the fitting parameters in conjunction with the image properties of the footage will allow us to relate the fitting parameters to the real-world dynamical properties of the crowd.
 
 \end{document}
