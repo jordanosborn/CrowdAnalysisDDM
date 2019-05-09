@@ -149,13 +149,13 @@ Geometric Brownian motion is a related process and is described by the stochasti
 \label{eqn:geometric_brownianSDE}
 \frac{dS_t}{S_t} = \mu dt + \sigma dW_t.
 \end{equation}
-This SDE is primarily used in the world of finance to predict stock prices in the Black-Scholes model (used for option pricing) \cite{sde}. But we will make use of it as a test case for the implemented DDM algorithm. To solve this SDE we make use of the standard techniques of Itô calculus. We can expand the differential of the general function f($S_t$, t) to arrive at
+This SDE is primarily used in the world of finance to predict stock prices in the Black-Scholes model (used for option pricing) \cite{sde}. But we will make use of it as a test case for the implemented DDM algorithm. To solve this SDE we make use of the standard techniques of Itô calculus. We can expand the differential of the general function $f(S_t, t)$ to arrive at
 \begin{equation}
 df(S_t, t) = \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial S_t} dS_t + \frac{1}{2} \frac{\partial^2 f}{\partial S_t^2} dS_t^2.
 \end{equation}
-We retain a term to second order in $dS_t$ as the Wiener process $dW_t$ varies on the order of $\sqrt{dt}$. To solve equation \ref{eqn:geometric_brownianSDE} we make the substitution f = $ln(S_t)$. After making this substitution we have
+We retain a term to second order in $dS_t$ as the Wiener process $dW_t$ varies on the order of $\sqrt{dt}$. To solve equation \ref{eqn:geometric_brownianSDE} we make the substitution $f = ln(S_t)$. After making this substitution we have
 \begin{equation}
-dln(S_t) = \frac{1}{S_t}dS_t  - \frac{1}{S_t^2}dS_t^2.
+dln(S_t) = \frac{dS_t }{S_t} - \frac{1}{2}\frac{dS_t^2}{S_t^2}.
 \end{equation}
 We then substitute the definition of $dS_t$ (equation \ref{eqn:geometric_brownianSDE}) to find
 \begin{equation}
@@ -714,7 +714,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_499.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and are better fitted to a Ballistic ISF (or another ISF with an oscillatory component).}
+\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and a better fit might be provided by an ISF with an oscillatory component).}
 \label{fig:running5_brownian_fits}
 \end{figure}
 
@@ -868,18 +868,18 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff, tauc vs box size at fixed q
 \paragraph{Brownian ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Brownian ISF vary as a function of \textit{q} at different box-sizes. 
 \begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_crowd4_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we see plots of the parameter $\tau_c$ (from the Brownian ISF) as a function of $q$ for two "stationary" crowds at a range of box sizes. The data is plotted on a log-log scale in order to make any power law dependence explicit. In both plots the fitting issues at low $q$ outlined in section \ref{section:fitting_issues} appear. We will ignore these problematic regions in our analysis and will focus only on the approximately linear patterns seen at mid-range $q$. The linear region expected for Brownian motion is seen in both figures at all box sizes. There is some substructure to the curves as a function of box-size, we will extract the linear region from multiple videos (to determine the $q$ and box-size dependence of $\tau_c$) and carry out more in depth analysis in section \ref{section:brownian_multiDDM}.}
 \label{fig:crowd_brownian_fits_tauc_all_boxsizes}
 \end{figure}
 
@@ -908,7 +908,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/B/brownian_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we see figures showing the $q$ dependence of the Brownian ISF fitting parameters $A$ and $B$ at a range of box-sizes for two "stationary" crowds. Parameter $A$ shows similar functional forms at all box-sizes, but as box-size decreases the curve is shifted downwards. This is an interesting pattern and could be an avenue for further research. However we are only interested in the dynamical properties of the crowds, meaning we will ignore the non-dynamical fitting parameters $A$ and $B$ in our analysis.}
 \label{fig:crowd_brownian_fits_tauc_B_boxsizes}
 \end{figure}
 
@@ -916,35 +916,36 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \paragraph{Ballistic ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of \textit{q} at different box-sizes. 
 
 \begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd4_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
 \label{fig:crowd_ballistic_fits_tauc_all_boxsizes}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd4_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we can see the $q$ dependence of the dynamical fitting parameters $\tau_c$ and $v$ for two "stationary" crowds at a range of box sizes. The fits seen are incredibly poor and aim to illustrate that a Ballistic ISF is inappropriate for "stationary" crowd types.}
 \label{fig:crowd_ballistic_fits_v_all_boxsizes}
+\end{figure}
+
+\begin{figure}[H]
+
 \end{figure}
 
 \begin{figure}[H]
@@ -972,7 +973,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{Here we can see the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two "stationary" crowds at a range of box sizes. The fits seen are again incredibly poor and thus also illustrating that a Ballistic ISF is inappropriate for "stationary" crowd types.}
 \label{fig:crowd_ballistic_fits_tauc_B_boxsizes}
 \end{figure}
 
@@ -980,18 +981,18 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff velocity, tauc vs box size at fixed q
 \paragraph{Brownian ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Brownian ISF (equation \ref{eqn:BrownianISF}) vary as a function of \textit{q} at different box-sizes. 
 \begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_running5_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_running6_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{These figures show the $q$ dependence of the Brownian fitting parameter $\tau_c$ for two swimmer-like crowds at a range of box-sizes. There are regions in both figures where the fit is incredibly poor. However linear regions can be seen, and so the crowd data is behaving at least approximately Brownian in these limited regions. It does however indicate (in conjunction with the oscillations seen in the image structure function $F$) that we have not arrived at the full picture and a Brownian ISF is only an approximation of the ISF for this crowd type. The linear regions in these plots will be analysed in detail in section \ref{section:brownian_multiDDM}.}
 \label{fig:running_brownian_fits_tauc_all_boxsizes}
 \end{figure}
 
@@ -1020,7 +1021,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/B/brownian_running6_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO}
+\caption{These figures show the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two swimmer-like crowds at a range of box-sizes. They are only included for completeness and will not be discussed further.}
 \label{fig:running_brownian_fits_tauc_B_boxsizes}
 \end{figure}
 
@@ -1028,29 +1029,26 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \paragraph{Ballistic ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Ballistic ISF (equation \ref{eqn:BallisticISF}) vary as a function of \textit{q} at different box-sizes. 
 
 \begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running5_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running6_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{TODO }
 \label{fig:running_ballistic_fits_tauc_all_boxsizes}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{\textwidth}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
   \centering
  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running5_all_boxsizes.png}
   \caption{}
 \end{subfigure}%
 \hfill
-\begin{subfigure}[t]{\textwidth}
+\begin{subfigure}[t]{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running6_all_boxsizes.png}
   \caption{}
@@ -1058,6 +1056,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \caption{TODO}
 \label{fig:running_ballistic_fits_v_all_boxsizes}
 \end{figure}
+
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -1088,6 +1087,10 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \label{fig:running_ballistic_fits_tauc_B_boxsizes}
 \end{figure}
 
+
+\subsection{Brownian Fits an In-Depth Analysis}
+\label{section:brownian_multiDDM}
+% explain ballistic gives very poor fits for both types and brownian at least gives approx info
 %\subsection{Performance}
 %\label{section:performance}
 
