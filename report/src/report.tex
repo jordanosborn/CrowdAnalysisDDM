@@ -153,7 +153,7 @@ This SDE is primarily used in the world of finance to predict stock prices in th
 \begin{equation}
 df(S_t, t) = \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial S_t} dS_t + \frac{1}{2} \frac{\partial^2 f}{\partial S_t^2} dS_t^2.
 \end{equation}
-We retain a term to second order in $dS_t$ as the Wiener process $dW_t$ varies on the order of $\sqrt{dt}$. To solve equation \ref{eqn:geometric_brownianSDE} we make the substitution f = $ln(s_t)$. After making this substitution we have
+We retain a term to second order in $dS_t$ as the Wiener process $dW_t$ varies on the order of $\sqrt{dt}$. To solve equation \ref{eqn:geometric_brownianSDE} we make the substitution f = $ln(S_t)$. After making this substitution we have
 \begin{equation}
 dln(S_t) = \frac{1}{S_t}dS_t  - \frac{1}{S_t^2}dS_t^2.
 \end{equation}
