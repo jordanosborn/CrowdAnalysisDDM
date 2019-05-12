@@ -315,29 +315,6 @@ In the figure above we see a typical plot of $\tau_c$ vs  \textit{q} on a log-lo
 \item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
 \end{enumerate}
 \clearpage
-\section{Implementation Details}
-\label{section:implementation}
-
-DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
-
-\subsection{Tools and Technologies}
-Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a macOS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
-
-\subsection{Hardware Details}
-Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. A large amount of ram (16GB+) is also required for the algorithm to run successfully. This capacity is used to implement a rolling buffer of the frames that are captured from the video source. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU\cite{jetson}. The Jetson GPU can be coded with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All)\cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely reimplementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
-
-\subsection{Software Details}
-Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a much easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust language bindings for popular libraries are still in their infancy. This required me to create a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQlite database to allow efficient querying of the available data.
-\\\\
-Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and data exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, sqlite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust codebase so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
-
-\subsection{Algorithm Pipeline}
-\begin{figure}[H]
-%algorithm pipeline	
-\centering
-\includegraphics[width=0.95\textwidth]{images/algo-pipeline.png}
-\caption{Flow chart of the algorithm structure used in this project.}
-\end{figure}
 
 \section{Results}
 \label{section:results}
@@ -1286,7 +1263,32 @@ The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu
 \subsubsection{Database}
 \label{section:database}
 The raw data from DDM is stored inside an Sqlite database which can be found \href{https://github.com/jordanosborn/CrowdAnalysisDDM/blob/master/code/crowd.sqlite?raw=true}{here}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired. Not all graphs were included in this report due to the limited available space, they can however be accessed at this  \href{https://drive.google.com/drive/folders/1LI3qSCtjwXnbb-hIaWZYloMIHjo4BUsj?usp=sharing}{link}.
-\subsection{Appendix 1: Future}
+
+\subsection{Appendix 1: Implementation Details}
+\label{section:implementation}
+
+DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
+
+\subsubsection{Tools and Technologies}
+Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a macOS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
+
+\subsubsection{Hardware Details}
+Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. A large amount of ram (16GB+) is also required for the algorithm to run successfully. This capacity is used to implement a rolling buffer of the frames that are captured from the video source. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU\cite{jetson}. The Jetson GPU can be coded with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All)\cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely reimplementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
+
+\subsubsection{Software Details}
+Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a much easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust language bindings for popular libraries are still in their infancy. This required me to create a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQlite database to allow efficient querying of the available data.
+\\\\
+Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and data exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, sqlite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust codebase so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
+
+\subsubsection{Algorithm Pipeline}
+\begin{figure}[H]
+%algorithm pipeline	
+\centering
+\includegraphics[width=0.95\textwidth]{images/algo-pipeline.png}
+\caption{Flow chart of the algorithm structure used in this project.}
+\end{figure}
+
+\subsection{Appendix 2: Future}
 \label{section:future}
 \subsubsection{Applications}
 If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems in crowded environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
