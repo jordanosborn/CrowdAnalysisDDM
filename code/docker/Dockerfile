@@ -51,6 +51,7 @@ RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 -p ubuntu u
 RUN echo ubuntu:ubuntu | chpasswd
 USER ubuntu
 WORKDIR /home/ubuntu
+
 RUN git clone https://github.com/jordanosborn/MastersProject.git
 WORKDIR /home/ubuntu/MastersProject
 #rust
