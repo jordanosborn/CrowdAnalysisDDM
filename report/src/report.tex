@@ -176,11 +176,11 @@ There are other forms of Stochastic processes that could have been chosen to mod
 
 \subsection{Differential Dynamic Microscopy}
 \subsubsection{DDM Algorithm}
-Defining \textit{d} the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
+Defining $d$ the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
 \begin{equation}
     d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0),
 \end{equation}
-where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time. This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in grayscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Grayscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
+where the function $I$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time. This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in grayscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Grayscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
 \\\\
 After taking the Fourier transform denoted $ \mathscr{F}$ of the image structure function we arrive at
 
@@ -201,7 +201,7 @@ If you can make some assumptions about the properties of the footage, including 
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
 Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each $q$ changes with the time differences between frames $\tau$ \cite{ddm2}.
 \\\\
-The image structure function \textit{d} is complex. We therefore take the square magnitude of this to find a power spectrum \textit{F} (hereafter referred to as just the image structure function) which takes the form
+The image structure function $d$ is complex. We therefore take the square magnitude of this to find a power spectrum $F$ (hereafter referred to as just the image structure function) which takes the form
 \begin{equation}
 F(\textbf{q}, t_0, \tau) = d(\textbf{q}, t_0, \tau)) \cdot d(\textbf{q}, t_0, \tau) )^{*} = |d(\textbf{q}, t_0, \tau) )|^2.
 \end{equation}
@@ -212,7 +212,7 @@ It has been shown that the ("stationary") image structure function takes the gen
 	F(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q}),
 \end{equation}
 
-where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for \textit{f} are known including Brownian and Ballistic motion \cite{DLSPecora}. The function \textit{f} "characterises how quickly structure is lost over length scales $\approx 1/q$" \cite{ddm1}. The parameters $A(\textbf{q})$ and $B(\textbf{q})$ are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. The interesting dynamical properties of the system are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}.
+where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for $f$ are known including Brownian and Ballistic motion \cite{DLSPecora}. The function $f$ "characterises how quickly structure is lost over length scales $\approx 1/q$" \cite{ddm1}. The parameters $A(\textbf{q})$ and $B(\textbf{q})$ are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. The interesting dynamical properties of the system are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}.
 \\\\
 DDM can be carried out as a fully automated process, as long as the expected form of the system's dynamics is known beforehand. This means that once a family of dynamics is chosen, the DDM data can be fitted to the expected functional form and dynamical information can be extracted, all without the input of a user \cite{ddm1}.
 
@@ -293,29 +293,6 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \label{section:crowdtypes}
 In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for Ballistic motion (equation \ref{eqn:BallisticISF}).
 
-\subsection{Apparatus Limitations}
-\label{section:fitting_issues}
-\begin{figure}[H]
-\centering
-\centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
-\caption{
-In the figure above we see a typical plot of $\tau_c$ vs \textit{q} on a log-log scale. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus. (Note that pixel and sensor size refer to image sizes and not to any particular physical length-scale.)
-}
-\end{figure}
-
-\begin{enumerate}[label=(\Alph*)]
-\item In this region \textit{q} takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small \textit{q}.
-     
-\item In this region \textit{q} takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of \textit{1 / pixel size}. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large \textit{q}.
-
-\item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
-
-\item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
-
-\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
-\end{enumerate}
-\clearpage
-
 \section{Results}
 \label{section:results}
 In this section we will only provide data for a small selection of the crowds that were analysed. This is in order to keep this discussion brief, see section \ref{section:database} for information on how to obtain all of the analysed data.
@@ -342,7 +319,7 @@ In this section we will only provide data for a small selection of the crowds th
   \includegraphics[width=\linewidth]{images/brownian_67_5.png}
  \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion ($\mu = 0$, $\sigma = 1$) (equation \ref{eqn:brownianSDE}) at two different values of \textit{q}. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm. A typical screenshot of the simulated footage is shown in figure \ref{fig:simulated_brownian_screenshot}.}
+\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion ($\mu = 0$, $\sigma = 1$) (equation \ref{eqn:brownianSDE}) at two different values of $q$. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm. A typical screenshot of the simulated footage is shown in figure \ref{fig:simulated_brownian_screenshot}.}
 \label{fig:simulated_brownian1}
 \end{figure}
 
@@ -719,7 +696,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_353.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the swimmer-like group.}
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) $q$ for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the swimmer-like group.}
 \label{fig:running6_brownian_fits}
 \end{figure}
 
@@ -1286,6 +1263,29 @@ Because of the nature of the DDM algorithm (mainly large array manipulations) it
 Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a far easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust, language bindings for popular libraries are still in their infancy. This therefore required the creation of a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQLite database to allow efficient querying of the available data.
 \\\\
 Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, SQLite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust code-base so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
+
+\subsubsection{Apparatus Limitations}
+\label{section:fitting_issues}
+\begin{figure}[H]
+\centering
+\centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
+\caption{
+In the figure above we see a typical plot of $\tau_c$ vs $q$ on a log-log scale. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus. (Note that pixel and sensor size refer to image sizes and not to any particular physical length-scale.)
+}
+\end{figure}
+
+\begin{enumerate}[label=(\Alph*)]
+\item In this region $q$ takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small $q$.
+     
+\item In this region $q$ takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of $1 / pixel$ $size$. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large $q$.
+
+\item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
+
+\item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
+
+\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
+\end{enumerate}
+\clearpage
 
 \subsubsection{Algorithm Pipeline}
 \begin{figure}[H]
