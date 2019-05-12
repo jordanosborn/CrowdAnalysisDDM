@@ -27,12 +27,12 @@ def send_message(secrets: Any, body: str):
 
 
 def func(x, a, b, c):
-    return a * np.exp(-x / b) + c
+    return a * ( 1 - np.exp(-x / b)) + c
 
 
 def get_fit(f, x, y, bounds):
     try:
-        fit, _ = curve_fit(func, x, y, bounds=(bounds[0], bounds[1]))
+        fit, _ = curve_fit(f, x, y, bounds=(bounds[0], bounds[1]))
     except RuntimeError:
         return [np.nan] * len(bounds[0])
     else:
