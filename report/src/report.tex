@@ -1244,12 +1244,13 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \label{fig:tauc_polyfit_params}
 \end{figure}
 
-
 \section{Conclusion}
 \label{section:conclusion}
-TODO: brownian okay, ballistic fit very poor, fits stationary crowds well , fits okay to swimmer like but there is additional structure, 5th order poly fits and parameters dependence on box-size. where to go from here. Hard to relate to physical parameters as properties of the footage is unknown 
+This report has hopefully demonstrated that DDM can be used to analyse macroscopic motion (crowds) and is not just limited to microscopic applications. However it is still early days and this report has only demonstrated that it is possible to analyse macroscopic motion using DDM, it hasn't properly related the data to the physical properties of the crowd. This was due to limitations imposed by the quality of the available footage. In order to relate the data to the physical features of the crowd it is necessary to know the properties of the camera (and its orientation and location) used to film the footage. We need this information so that we can relate the time and length scales seen in the data (in terms of pixels and differences in frame index) to their physical counterparts. Unfortunately, after contacting the owners of the footage used in this project it was clear that this information was unavailable. In order to correctly relate the image scales to physical ones it therefore would have been necessary to collect footage of crowds independently (this was not done due to funding, legal and time constraints). This project does however provide a platform for further research in to this application of DDM.
 
+The results seen in this project are promising and will help to constrain the search for appropriate forms of the intermediate scattering function for crowds in motion. It was found that a Ballistic ISF fit was inappropriate for both of the crowd types tested in this project, producing horrendously noisy and inaccurate fits of the data. However a Brownian ISF was a good fit for both crowd types, especially so for "stationary" crowds, indicating that they both act in an approximately Brownian manner. Although the overall trends in the data for swimmer-like crowds could be explained by a Brownian ISF, the data also contained an oscillatory substructure (which the "stationary" crowds did not contain) indicating that there is an essential difference between the two crowd types. It is expected that there is a more appropriate ISF for swimmer-like crowds that takes into account this finer structure. A search to further constrain the form of the ISF for various crowd types would be the next logical step (see section \ref{section:future}).
 
+TODO:  5th order poly fits and parameters dependence on box-size. where to go from here end line. edit/check, move to appendix 
 
 \clearpage
 \section{References}
