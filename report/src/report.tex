@@ -52,18 +52,19 @@ This project focuses on a new application of a technique called differential dyn
 \section{Introduction}
 In this project the technique of Differential Dynamic Microscopy will be applied to videos of crowd motion. This technique provides information about the dynamical behaviour of objects in a video without the use of image segmentation. DDM was first carried out in 2008, to analyse the dynamics of colloidal particles in Brownian motion \cite{ddm0}. A video of colloidal particles will be analysed and will act as a test case for the code developed in this project. Differential Dynamic Microscopy has primarily been used to analyse the motion of microscopic particles \cite{ddm1} \cite{ddm2}. This project was undertaken in order to determine the applicability of DDM to macroscopic motion i.e. crowd motion videos. A literature review will be carried out in section 2, but this will mainly be centred around the microscopic applications of DDM as prior literature is not available for the application of DDM to macroscopic motion. The code developed as a part of this project is intended to act as a reference for further development (e.g. for real time commercial crowd analysis) and so has been developed with execution speed as well as accuracy as a priority. Certain design decision were undertaken to achieve this. Further discussion about implementation will be carried out in section \ref{section:implementation}.
 \\\\
-DDM is used to extract dynamical information from videos by analysing the Intensity profile (in k-space) of the differences between a starting frame and lagging frames. This intensity is a function of wave-vector q and $\tau$ the time delay between frames. By fitting this curve to the expected image structure function we can extract dynamical information about the system. A detailed discussion of the theory behind DDM will occur in section \ref{section:theory}. (The information extractable from a DDM analysis is sensitive to the particular dynamics of the system for example for particles undergoing Brownian motion it is possible to extract the size of the diffusing particle \cite{ddm1}.)
+DDM is used to extract dynamical information from videos by analysing the Intensity profile (in k-space) of the differences between a starting frame and lagging frames. This intensity is a function of wave-vector $q$ and $\tau$ the time delay between frames. By fitting this curve to the expected image structure function we can extract dynamical information about the system. A detailed discussion of the theory behind DDM will occur in section \ref{section:theory}. (The information extractable from a DDM analysis is sensitive to the particular dynamics of the system, for example for particles undergoing Brownian motion it is possible to extract the size of the diffusing particle \cite{ddm1}.)
 \\\\
-There are two primary types of DDM analysis. Single-scale DDM and multi-scale DDM. Single-scale DDM performs DDM analysis on the entire image and so picks up a combination of the spatial and temporal scales of synchronisation \cite{ddm2}. Where as Multi-scale DDM performs DDM analysis on individual tilings of the image from a full-scale image down to the smallest tile size (determines the mini-mum wave-vector that can be compared across tiles) \cite{ddm2}. In this way spatial and temporal scales of synchronisation can be picked up separately. A more in-depth description of the two methods will take place in sections \ref{section:theory} and \ref{section:implementation}.  
+There are two primary types of DDM analysis. Single-scale DDM and multi-scale DDM. Single-scale DDM performs DDM analysis on the entire image and so picks up a combination of the spatial and temporal scales of synchronisation \cite{ddm2}. Where as Multi-scale DDM performs DDM analysis on individual tilings of the image from a full-scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) \cite{ddm2}. In this way spatial and temporal scales of synchronisation can be picked up separately. A more in-depth description of the two methods will take place in sections \ref{section:theory} and \ref{section:implementation}.  
 \\\\
-Each type of analysis will yield different pieces of dynamical information. Both methods will be run on a large database of approximately 400 videos \cite{crowdMotionDB}. The data will then be analysed, dynamical information will be extracted and then compared to that extractable by eye (for select videos). This analysis and discussion will take place in section \ref{section:results}.
+Each type of analysis will yield different pieces of dynamical information. Both methods will be run on a large database of approximately 400 videos \cite{crowdMotionDB}. The data will then be analysed, dynamical information will be extracted and then compared (for select videos). This analysis and discussion will take place in section \ref{section:results}.
 \\\\
 DDM has the potential to be used to implement real-time analysis of crowd motion without the use of image segmentation, or the use of machine learning (expensive datasets and long training periods), DDM is compared with existing motion analysis techniques in section \ref{section:existing}. Section \ref{section:future} contains an in depth discussion about the future of DDM as applied to the analysis of crowd motion. The hope is that DDM might one day be used to help implement real-time crowd safety/monitoring systems in environments such as public transportation, stadiums, city centres etc.
 
 \section{Literature Review}
+This section will discuss the previous literature surrounding DDM (see section \ref{section:existing} for comparisons with existing motion analysis techniques).
 \subsection{Differential Dynamic Microscopy}
 \subsubsection{Origins and Initial Applications to Brownian Motion}
-DDM is a relatively recent development originating in the paper "Differential dynamic microscopy: Probing wave-vector-dependent dynamics with a microscope" in 2008 \cite{ddm0}. In this paper the technique was used to attempt a characterisation of the dynamics of colloidal particles undergoing Brownian motion. DDM was first used to determine the diffusion coefficient of colloidal particles suspended in a liquid medium \cite{ddm0} \cite{ddm_maths}. This is likely due to the known form of the intermediate scattering function for Brownian motion equation \ref{eqn:BrownianISF}. If the viscosity of the liquid is known DDM can also be used to determine the size of the diffusing particles \cite{ddm1} and vice versa. 
+DDM is a relatively recent development originating in the paper "Differential dynamic microscopy: Probing wave-vector-dependent dynamics with a microscope" in 2008 \cite{ddm0}. In this paper the technique was used to attempt a characterisation of the dynamics of colloidal particles undergoing Brownian motion. DDM was first used to determine the diffusion coefficient of colloidal particles suspended in a liquid medium \cite{ddm0} \cite{ddm_maths}. This is likely due to the known form of the intermediate scattering function for Brownian motion (equation \ref{eqn:BrownianISF}). If the viscosity of the liquid is known DDM can also be used to determine the size of the diffusing particles \cite{ddm1} and vice versa. 
 \\\\
 Due to DDMs insensitivity to static features of the sample, DDM has found a use in the analysis of hindered diffusion \cite{nanoposts}. Static nano-posts in a square periodic array were used to confine diffusing particles. Using DDM the diffusion coefficient as a function of confinement strength was determined.
 
@@ -71,62 +72,11 @@ Due to DDMs insensitivity to static features of the sample, DDM has found a use 
 Multi-scale DDM has been used to study the collective dynamics of cilia \cite{ddm2}. These cilia beat at a well defined frequency. Through the application of multi-scale DDM temporal and spatial coherence scales of cilia dynamics can be found \cite{ddm1}. In a system that has a spatial scale for collective motion (cilia) we would expect that scale to emerge as a feature when comparing the dynamics across tile sizes \cite{ddm1}. And so by seeing how the intensity profiles vary with respect to tile size it is possible to determine the spatial coherence of the collective motion.
 
 \subsubsection{Applications to Ballistic Motion}
-DDM has also been used to analyse bacterial motility \cite{bacterial_motility}. In this paper the motion of isotropic "swimmers" (E.coli) was analysed. DDM was used to extract the swimming speed distribution of the bacteria and also their diffusion properties. In this case the data from DDM is fitted to an intermediate scattering function of a similar form to equation \ref{eqn:BallisticISF}, however the fitted form is slightly more complicated in that it takes account of the possibility that only a fraction of "swimmers" are motile and also that the swimmers follow some specified speed distribution \cite{bacterial_motility}.
+DDM has also been used to analyse bacterial motility \cite{bacterial_motility}. In this paper the motion of isotropic "swimmers" (E.coli) was analysed. DDM was used to extract the swimming speed distribution of the bacteria and also their diffusion properties. In this case the data from DDM is fitted to an intermediate scattering function of a similar form to equation \ref{eqn:BallisticISF}, however the fitted form is slightly more complicated in that it takes account of the possibility that only a fraction of the "swimmers" are motile and also that the swimmers follow some specified speed distribution \cite{bacterial_motility}.
 
 \subsubsection{Relevance of Prior Research}
 An in-depth literature review of DDM was carried out in 2017 \cite{ddm1}. This review focused on the areas in which DDM has been applied, it found that so far DDM has only been used to analyse microscopic dynamics, specifically biological samples suspended in a liquid medium. Further research yielded no results for DDM being used to analyse macroscopic dynamics. This project therefore offers original research on the method of DDM with no evidence of prior literature on this application. The results from past experiments will be used as test cases (primarily Brownian motion) to verify the validity of the code written. Results from this project could provide the motivation to carry out research on further applications of DDM.
 
-\subsection{Existing Motion Analysis Techniques}
-\label{section:existing}
-There are many methods that can be used to analyse motion within videos. Some examples are outlined and compared with DDM in the sections below.
-\subsubsection{Image Segmentation}
-In image segmentation an image is partition in to a set of segments. The image is split in to segments that have certain characteristics (colour, intensity, etc.) and could be chosen algorithmically or manually. This is carried out in order to simplify the image and hence reduce the complexity of any subsequent analysis. \cite{computer_vision_book} An example of image segmentation would be object detection using the gradient of intensity to detect object boundaries (edges) using a Sobel filter \cite{sobel}. Image segmentation can be carried out using a variety of algorithms including k-means clustering (an unsupervised technique) \cite{segmentation_kmeans}. K-means clustering is carried out by picking k centres (categories) then putting each segment in the category that minimises the difference between the cluster center and the segment. The cluster centres are then re-computed by averaging over all points in the cluster and the previous step is repeated until convergence. Segmentation could be carried out on moving objects by carrying out these techniques on the difference between successive frames (static background should be removed).
-\\\\
-Most image segmentation algorithms are very computationally intensive and some even require manual input. DDM however offers solutions to both of these problems. DDM can offer dramatic speed improvements due to its highly parallel nature and can even be made to run fully autonomously (once an ISF is selected). DDM focuses on more fundamental properties of the motion and is backgrounded in physics (fitting to a derived ISF) whereas with many image segmentation techniques the focus is on a straight analysis of the image intensity field and can be incredibly sensitive to the properties of the video (leading to over-under segmentation etc.) \cite{computer_vision_book}. 
-
-\subsubsection{Neural Networks}
-Neural networks offer some unique benefits over DDM in that they can be trained to find specific objects in an image and so can be used to directly count the number and location of different objects \cite{yolov3}. The main drawback is that these predictions will only be as good as the quality of your dataset. High quality data is often not available and when it is it is usually very expensive to procure. The larger your training dataset the longer it will take to train (usually with the benefit of more accurate predictions). Often training algorithms will require a form of supervised learning, for example the images will need to be tagged with the objects they contain. This is a time consuming process. However once the model is trained it can usually produce predictions in a reasonable time frame. However if detection of a new type of object is required the model will need to be retrained, often with a new dataset. \cite{tensorflow} DDM requires no such training data and can therefore be used with zero training time on any type of motion (once an ISF is selected). These two methods are however not at odds with one another, DDM can't be used to track objects as it doesn't really have a notion of the individual constituents of the system. It is primarily focussed on extracting dynamical information of the entire system or average information about the individual constituents. Neural networks however can be used to locate and track individual objects between frames. It however is not really applicable to the extraction of dynamical information. These two methods could therefore be used in tandem to track and analyse the motion inside crowds.
-
-\subsubsection{Particle Image Velocimetry}
-Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used. 
-
-\subsubsection{Optical Flow}
-"Optical flow is the distribution of apparent velocities of movement of brightness patterns in an image" \cite{optical_flow}. It can arise due to relative motion between an observer and the objects in a scene. Optical flow can give information about the spatial positioning of objects and the rate of change of the arrangements of these objects. "Discontinuities in the optical flow can help in segmenting images into regions that correspond to different objects" \cite{optical_flow}. However objects may be moving but exhibit no change in brightness, this method will therefore not be sensitive to this sort of motion. It is possible to determine the velocities of the motion from the brightness gradients computed from the footage.
-\\\\
-The equation that is used to determine these velocities is derived under the assumption that the pixel intensity of a moving object ($x \rightarrow x + dx, y \rightarrow y + dy, t \rightarrow t + dt $) is unchanged and that neighbouring pixels have similar motion \cite{optical_flow_opencv}.
-\begin{equation}
-I(x, y, t) = I(x + dx, y + dy, t + dt)
-\end{equation}
-Taking the Taylor expansion of this equation and only retaining terms up to first order.
-\begin{equation}
-I(x, y, t) = I(x, y, t) + \frac{\partial I}{\partial x} dx + \frac{\partial I}{\partial y} dy + \frac{\partial I}{\partial t} dt
-\end{equation}
-After rearranging and then taking the time derivative we arrive at the desired equation.
-\begin{equation}
-0 = \nabla I \cdot \textbf{v} + \frac{\partial I}{\partial t}
-\end{equation}
- 
-There are some notable caveats of this method which are outlined in detail in \cite{optical_flow}. The method requires you to solve a partial differential equation thus necessitating the implementation of some constraints in order to uniquely determine the equation of motion. It also assumes that objects show consistent intensities which may or may not be valid depending on the footage. DDM requires neither of these things.
-
-\subsection{Advantages of DDM}
-\begin{enumerate}
-\item It can be applied without carrying out any special preparations on the system. DDM can therefore be used on pre-recorded footage.
-\item Does not require training data.
-\item Completely autonomous (once an intermediate scattering function is selected).
-\item Highly parallelisable so it could be carried out in real-time (however the required optimisations aren't currently implemented).
-\item Can be applied to a wide range of dynamical systems. Has very few requirements.
-\item Based on the physical information encoded in the footage, rather than focusing on particular image properties.
-\item Can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
-\end{enumerate}
-
-\subsection{Disadvantages of DDM}
-\begin{enumerate}
-\item Can't be used to track individual constituents of the system.
-\item Information that can be extracted from the footage is entirely determined by the form of the ISF.
-\item The ISF only has analytic solutions for a small collection of systems. And therefore some research needs to be carried out in order to determine good approximate fits for certain crowd types (the good news is this only needs to be done once for each crowd type).
-\item The form of the ISF must be chosen before fitting can start and so crowds must be classified before this fitting can take place. However fits for multiple ISFs could be produced, and human intervention/cost functions could be used to select the most realistic fits. The dynamical information from the selected fits could then be compared to select a plausible result and so this drawback could be circumvented somewhat.
-\end{enumerate}
- 
 \section{The Theory of Differential Dynamic Microscopy}
 \label{section:theory}
 DDM or Differential Dynamic Microscopy is a method that can be used to analyse an image sequence by taking the difference between two images (removes static features and retains only motion/differences between frames), and then taking the 2D spatial Fourier transform (using a 2D FFT algorithm \cite{fft}) of this difference to obtain an image structure function.
@@ -136,7 +86,7 @@ We model the dynamical system as a collection of stochastic particles (i.e parti
 
 \subsection{Stochastic Processes}
 \subsubsection{Brownian Motion}
-Brownian motion (the random motion of particles suspended in a fluid, where the random motion is the result of collisions with microscopic particles) is a stochastic process. It is defined using the Wiener process which is the process described by the stochastic variable $W_t$. Where $dW_t$ is continuous, independent (at different times) and normally distributed with a mean of 0, and a variance $dW_t^2 = dt$ \cite{sde}. A particle undergoing Brownian motion with an mean speed $\mu$ and variance $\sigma^2$ will therefore follow the stochastic differential equation
+Brownian motion (the random motion of particles suspended in a fluid, where the random motion is the result of collisions with microscopic particles) is a stochastic process. It is defined using the Wiener process which is the process described by the stochastic variable $W_t$. Where $dW_t$ is continuous, independent (at different times) and normally distributed with a mean of 0, and a variance $dW_t^2 = dt$ \cite{sde}. A particle undergoing Brownian motion with a mean speed $\mu$ and variance $\sigma^2$ will therefore follow the stochastic differential equation
 \begin{equation}
 \label{eqn:brownianSDE}
 dX_t = \mu dt + \sigma dW_t.
@@ -165,22 +115,22 @@ Using $dW_t^2 = dt$ from the definition of the Wiener process and neglecting $O(
 \begin{equation}
 dln(S_t) = (\mu - \frac{1}{2} \sigma^2) dt + \sigma dW_t.
 \end{equation}
-For constant $\mu$ and $\sigma$ we can solve this SDE exactly (for an arbitrary starting value $S_0$). Integrating the expression above we find
+For constant $\mu$ and $\sigma$ we can solve this SDE exactly (for an arbitrary starting value $S_0$). Integrating the expression above we obtain
 \begin{equation}
 \label{eqn:geometric_brownian_equation}
 S(t) = S_0 e^{(\mu - \frac{1}{2} \sigma^2) t + \sigma W_t}.
 \end{equation}
 This formula can therefore be used to simulate a particle undergoing Geometric Brownian motion (where $W_t$ is a Wiener process and follows a normal distribution with a mean of 0 and a variance $dt$).
 \subsubsection{Other Processes}
-There are other forms of Stochastic processes that could have been chosen to model crowds. However we will only be modelling based on Brownian motion in order to determine a first approximation. We will also use a related process called Ballistic motion which models an isotropically moving collection of particles, where each particle undergoes Brownian motion about its average direction. A significant advantage of using just these two models is that exact forms of the intermediate scattering functions are known for both Brownian and Ballistic motion (equations \ref{eqn:BrownianISF} \ref{eqn:BallisticISF}). 
+There are other forms of Stochastic processes that could have been chosen to model crowds. However we will only be modelling based on Brownian motion in order to determine a first approximation. We will also use a related process called Ballistic motion which models an isotropically moving collection of particles, where each particle undergoes Brownian motion about its average direction. A significant advantage of using just these two models is that exact forms of the intermediate scattering functions are known for both Brownian and Ballistic motion (equations \ref{eqn:BrownianISF} and \ref{eqn:BallisticISF}). 
 
 \subsection{Differential Dynamic Microscopy}
 \subsubsection{DDM Algorithm}
-Defining \textit{d} the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
+Defining $d$ the image structure function (intensity difference between two frames separated by a time $\tau$) (in position space) as
 \begin{equation}
     d(\textbf{r}, t_0, \tau) = I(\mathbf{r}, t_0 + \tau) - I(\mathbf{r}, t_0),
 \end{equation}
-where the function $\textit{I}$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time. This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in grayscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Grayscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
+where the function $I$ encodes the 2D projection of the scene along the optical axis of the camera (i.e the image intensity) as a function of position and of time. This intensity could well be in colour (tuple of 3 intensities for red, green and blue) or could be in grayscale. Colour information may provide extra information about motion but may also be an artefact produced by lighting effects. Grayscale images would provide the necessary motion information and would not be vulnerable to the issues colour images may pose (more computational complexity, does a colour change really indicate motion etc.)
 \\\\
 After taking the Fourier transform denoted $ \mathscr{F}$ of the image structure function we arrive at
 
@@ -189,19 +139,19 @@ After taking the Fourier transform denoted $ \mathscr{F}$ of the image structure
 \end{equation}
 
 The second equality results from the linearity of the Fourier transform and reduces computational complexity as it allows you to cache Fourier transforms at each time and then compute their difference.
-This reduces the number of Fourier transforms you need to compute, hence provides a computational optimisation.\cite{ddm2}
+This reduces the number of Fourier transforms you need to compute, thus providing a computational optimisation \cite{ddm2}.
 The Fourier transform takes the image structure function from its position-space representation to its momentum-space counterpart. We now have the image structure function in terms of the 2D wave-vector $\textbf{q} =  (q_x, q_y)$,
 
 \begin{equation}
     d(\textbf{q}, t_0, \tau) ) = \mathscr{F}(I(\mathbf{r}, t_0 + \tau)) - \mathscr{F}(I(\mathbf{r}, t_0)).
 \end{equation}
 
-If you can make some assumptions about the properties of the footage, including isotropy and that motion is "stationary" (indifferent about the start time) \cite{ddm1} then you can simplify this function so that it only depends on $\tau$ and $|\textbf{q}|$ (through radial and start time averaging). This reduces the complexity significantly, as it reduces the degrees of freedom of the image structure function from five down to two (making it significantly easier to plot and fit to).
+If you can make some assumptions about the properties of the footage, including isotropy and that motion is "stationary" (indifferent about the start time) \cite{ddm1} then you can simplify this function so that it only depends on $\tau$ and $|\textbf{q}|$ (through start time and radial averaging). This reduces the complexity significantly, as it reduces the degrees of freedom of the image structure function from five down to two (making it significantly easier to plot and fit to).
 \\\\
 The wave-vectors can be used to derive a wavelength $(\lambda = \frac{2\pi}{|\textbf{q}|})$ which gives you the length scale probed by a particular mode.
-Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each q changes with the time differences between frames $\tau$ \cite{ddm2}.
+Information about the system's dynamics can be obtained by looking at how the amplitudes of the Fourier modes for each $q$ changes with the time differences between frames $\tau$ \cite{ddm2}.
 \\\\
-The image structure function \textit{d} is complex. We therefore take the square magnitude of this to find a power spectrum \textit{F} (hereafter referred to as just the image structure function) which takes the form
+The image structure function $d$ is complex. We therefore take the square magnitude of this to find a power spectrum $F$ (hereafter referred to as just the image structure function) which takes the form
 \begin{equation}
 F(\textbf{q}, t_0, \tau) = d(\textbf{q}, t_0, \tau)) \cdot d(\textbf{q}, t_0, \tau) )^{*} = |d(\textbf{q}, t_0, \tau) )|^2.
 \end{equation}
@@ -212,18 +162,18 @@ It has been shown that the ("stationary") image structure function takes the gen
 	F(\textbf{q}, \tau) = A(\textbf{q}) \cdot (1 - f(\textbf{q}, \tau)) + B(\textbf{q}),
 \end{equation}
 
-where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for \textit{f} are known including Brownian motion and Ballistic motion \cite{DLSPecora}. The function \textit{f} "characterises how quickly structure is lost over length scales $\approx 1/q$"\ cite{ddm1}. The parameters \textit{A(\textbf{q})} and \textit{B(\textbf{q})} are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. The interesting dynamical properties of the system are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}.
+where $f(\textbf{q}, \tau)$ is the normalised "intermediate scattering function" as commonly measured in dynamic light scattering experiments \cite{DLSPecora}. A few analytical forms for $f$ are known including Brownian and Ballistic motion \cite{DLSPecora}. The function $f$ "characterises how quickly structure is lost over length scales $\approx 1/q$" \cite{ddm1}. The parameters $A(\textbf{q})$ and $B(\textbf{q})$ are functions related to the static scattering properties of the sample, to the details of the imaging process optics and to the noise in the acquisition \cite{ddm1}. These are just going to be considered as fitting parameters but some useful information can be extracted from them \cite{ddm1}. The interesting dynamical properties of the system are often completely captured by $f(\textbf{q}, \tau)$ \cite{ddm1}.
 \\\\
 DDM can be carried out as a fully automated process, as long as the expected form of the system's dynamics is known beforehand. This means that once a family of dynamics is chosen, the DDM data can be fitted to the expected functional form and dynamical information can be extracted, all without the input of a user \cite{ddm1}.
 
 \subsubsection{The Intermediate Scattering Function - Van-Hove Equation}
-The intermediate scattering function \textit{f} is the spatial Fourier transform of the Van-Hove self space-time correlation function \cite{DLSPecora}.
+The intermediate scattering function $f$ is the spatial Fourier transform of the Van-Hove self space-time correlation function \cite{DLSPecora}.
 
 \begin{equation}
 	f(\textbf{q}, \tau) = \mathscr{F} (G(\textbf{r}, \tau)) = \int d^3 \textbf{r} e^{i \textbf{q} \cdot \textbf{r}} G(\textbf{r}, \tau).
 \end{equation}
 
-The Van-Hove equation is the probability distribution for a particle with position $\textbf{R}_j(t)$ to suffer a displacement $\textbf{r}$ in a time $\tau$ \cite{DLSPecora}.
+The Van-Hove equation is the probability distribution for a particle with position $\textbf{R}_j(t)$ to suffer a displacement $\textbf{r}$ in a time $\tau$ \cite{DLSPecora} and is given by
 
 \begin{equation}
 	G(\textbf{r}, \tau) = \left\langle \delta (\textbf{r} - [\textbf{R}_j(t) - \textbf{R}_j(0)]) \right\rangle.
@@ -232,13 +182,13 @@ The Van-Hove equation is the probability distribution for a particle with positi
 It is easy to see through the definitions above how dynamical information about the system can be extracted from the form of the intermediate scattering function.
 
 \subsubsection{Intermediate Scattering Function for Brownian Motion}
-Now this is a complicated equation and so has only been solved analytically for a few cases. One of which is Brownian motion. In the case of Brownian motion the ISF has been shown to be
+The Van-Hove equation is a very complicated equation and so has only been solved analytically for a few cases. One of which is Brownian motion. In the case of Brownian motion the ISF has been shown to be
 
 \begin{equation}
 \label{eqn:BrownianISF}
 	f(\textbf{q}, \tau) = e^{- \tau / \tau_c(\textbf{q})} = e^{- \tau / (\frac{1}{D_T |\textbf{q}|^2})},
 \end{equation}
-where $D_T$ is the translational diffusion coefficient \cite{ddm1}. If we then fit this to data from videos behaving in a similar manner to Brownian motion we should then have $\tau_c$ as a function of $|\textbf{q}|$. Plotting this data on a log-log plot we should then see the characteristic form predicted by the equation above
+where $D_T$ is the translational diffusion coefficient \cite{ddm1}. If we fit data from videos behaving in a similar manner to Brownian motion to this ISF we should be able to obtain $\tau_c$ as a function of $|\textbf{q}|$. Plotting the data on a log-log plot should make the predicted $q$ dependence given below explicit.
 \begin{equation}
 \label{eqn:brownian_diffusion_relation}
 \log{\tau_c} = -2 \cdot \log{|\textbf{q}|} - \log{D_T}.
@@ -246,18 +196,18 @@ where $D_T$ is the translational diffusion coefficient \cite{ddm1}. If we then f
 By comparing the measured gradient to -2 we can see how valid the assumption of Brownian motion is. And from the y-intercept we can also derive a prediction for the translational diffusion coefficient $D_T$.
 
 \subsubsection{Intermediate Scattering Function for Ballistic Motion}
-Another solved case is that of Ballistic motion. This form is derived on the assumption of an isotropic collection of motile "swimmers" that also undergo Brownian motion as they travel. The form of the intermediate structure function in this case is 
+Another solved case is that of Ballistic motion. This form is derived on the assumption of an isotropic collection of motile "swimmers" that also undergo Brownian motion as they travel. The form of the intermediate scattering function in this case is 
 
 \begin{equation}
 \label{eqn:BallisticISF}
 	f(\textbf{q}, \tau) = sinc(|\textbf{q}| \cdot v \cdot \tau) \cdot e^{- \tau / \tau_c(\textbf{q})}.
 \end{equation} \cite{DLSPecora}.
 
-Systems that show similar behaviour to ballistic motion should have a similar ISF, from the ISF we should therefore be able to extract the velocity of the crowd from the first peak in the intensity profile.
+Systems that show similar behaviour to Ballistic motion should have a similar ISF, from the ISF we should therefore be able to extract the velocity of the crowd from the first peak in the intensity profile.
 
 \subsubsection{Multi-Scale Differential Dynamic Microscopy}
 A related method called multi-scale DDM (this project will make heavy use of this method) picks up temporal and spatial scales of synchronisation separately (normal single-scale DDM only picks up a combination).
-In multi-scale DDM you perform a single-scale DDM over a whole series of different tilings of the image \cite{ddm1}. These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced) \cite{ddm1}.
+In multi-scale DDM you perform single-scale DDM over a whole series of different tilings of the image \cite{ddm1}. These tilings are chosen so that windows vary from a full scale image down to the smallest tile size (determines the minimum wave-vector that can be compared across tiles) (usually log spaced) \cite{ddm1}.
 To reduce the number of tiles that need to be computed you can select only the tiles showing the most activity, an equation that can determine if a tile exceeds a threshold activity is
 \begin{equation}
     \Sigma_{\textbf{r} \in tile} \sigma(\textbf{r}) = \Sigma_{\textbf{r} \in tile} \sqrt{\frac{\Sigma_{[t_0, t_0 + \tau]} (I(\mathbf{r}, t) - <I(\mathbf{r}, t)>)^2}{N - 1}} > \sigma_{threshold}
@@ -266,10 +216,10 @@ To reduce the number of tiles that need to be computed you can select only the t
 Which sums all of the standard deviations (computed over the time period $\tau$) of the intensities at each position in the tile and then checks if this sum is greater than some threshold standard deviation.
 If it is a valid inequality then that tile is said to be "active" otherwise it is "inactive" \cite{ddm2}.
 This is a very rudimentary activity classifying function.
-There are other ways that a tile's activity can be classified which may need to be investigated.
+There are other ways that a tile's activity could be classified which may need to be investigated.
 \\\\
 In the cross comparisons between the tiles of different sizes the scale of the collective motion should emerge \cite{ddm1}.
-Other properties of the motion should emerge by studying how tau varies as a function of the wave-vector amplitude \cite{ddm1}.
+Other properties of the motion should emerge by studying how $\tau_c$ varies as a function of the wave-vector amplitude $q$ \cite{ddm1}.
 
 \subsection{Differential Dynamic Microscopy Example - Brownian Motion}
 
@@ -283,38 +233,15 @@ Other properties of the motion should emerge by studying how tau varies as a fun
 \item we take a video of the motion we wish to analyse and convert each frame into a 2D array of gray-scale pixel intensities.
 \item for each starting frame in the video we take the difference between the pixel intensities of that frame and all lagging frames. $ \tau $ 
 denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $). We denote each of these differences $ d(\underline{x}, t_0, \tau) $.
-\item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position. $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $F(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
-\item because the system is stationary (power spectrum should be independent of $t_0$ and should only depend on $\tau$) we therefore take the average of the Fourier transforms over each $t_0$. This allows us to remove the dependence of $t_0$ from I and also reduce the effects of experimental uncertainty.
-\item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector q. $I(q, \tau)$
-\item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of q will yield the diffusion coefficient D. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
+\item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position, $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $F(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
+\item because the system is stationary (power spectrum should be independent of $t_0$ and should only depend on $\tau$) we therefore take the average of the Fourier transforms over each $t_0$. This allows us to remove the dependence of $t_0$ from $I$ and also reduce the effects of experimental uncertainty.
+\item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector $q$, $I(q, \tau)$
+\item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of $q$ should yield the diffusion coefficient $D$. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
 \end{enumerate}
 
 \subsection{Types of Crowd}
 \label{section:crowdtypes}
-In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for ballistic motion (equation \ref{eqn:BallisticISF}).
-
-\subsection{Apparatus Limitations}
-\label{section:fitting_issues}
-\begin{figure}[H]
-\centering
-\centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
-\caption{
-In the figure above we see a typical plot of $\tau_c$ vs  \textit{q} on a log-log scale. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus. (Note that pixel and sensor size refer to image sizes and not to any particular physical length-scale.)
-}
-\end{figure}
-
-\begin{enumerate}[label=(\Alph*)]
-\item In this region \textit{q} takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small \textit{q}.
-     
-\item In this region \textit{q} takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of \textit{1 / pixel size}. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large \textit{q}.
-
-\item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
-
-\item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
-
-\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
-\end{enumerate}
-\clearpage
+In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for Ballistic motion (equation \ref{eqn:BallisticISF}).
 
 \section{Results}
 \label{section:results}
@@ -342,7 +269,7 @@ In this section we will only provide data for a small selection of the crowds th
   \includegraphics[width=\linewidth]{images/brownian_67_5.png}
  \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion ($\mu = 0$, $\sigma = 1$) (equation \ref{eqn:brownianSDE}) at two different values of \textit{q}. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm. A typical screenshot of the simulated footage is shown in figure \ref{fig:simulated_brownian_screenshot}.}
+\caption{Two plots showing the characteristic ISF (equation \ref{eqn:BrownianISF}) for Brownian motion ($\mu = 0$, $\sigma = 1$) (equation \ref{eqn:brownianSDE}) at two different values of $q$. These plots were computed from simulated Brownian motion and are used to demonstrate the validity of the algorithm. A typical screenshot of the simulated footage is shown in figure \ref{fig:simulated_brownian_screenshot}.}
 \label{fig:simulated_brownian1}
 \end{figure}
 
@@ -358,21 +285,21 @@ In this section we will only provide data for a small selection of the crowds th
   \includegraphics[width=\linewidth]{images/brownian_399_5.png}
  \label{fig:simulated_brownian1_67_5}
 \end{subfigure}
-\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high \textit{q} due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high q.}
+\caption{Here we can see typical plots of regions where the fits are particularly poor (due to the very noisy nature of the data). We see these poor fits in the simulated Brownian motion footage at high $q$ due to the finite pixel size (see section \ref{section:fitting_issues} for more details). We therefore neglect fits for $\tau_c$ at high $q$.}
 \label{fig:simulated_brownian_troubled}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{images/brownian_critical_tau_whole.png}
-\caption{Here we can see $\tau_c$ plotted as a function of \textit{q} for each type of motion. For mid-range \textit{q} values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of \textit{q} we see behaviour unexpected for an ideal system. The terrible fits for extreme values of \textit{q} are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
+\caption{Here we can see $\tau_c$ plotted as a function of $q$ for each type of motion. For mid-range $q$ values we see the characteristic linear fit (expected from the Brownian ISF). However towards the extreme values of $q$ we see behaviour unexpected for an ideal system. The terrible fits for extreme values of $q$ are due to the properties of the footage that is used (not the system). See section \ref{section:fitting_issues} for detailed reasons why these regions produce terrible fits and why they can be neglected.}
 \label{fig:simulated_brownian_tauc_whole}
 \end{figure}
 
 \begin{figure}[H]
   \centering
 \includegraphics[width=0.75\textwidth]{images/brownian_critical_tau_linear_region.png}
-  \caption{After extracting the linear region of each plot from figure \ref{fig:simulated_brownian_tauc_whole}, linear regression is performed and best fits are plotted on top of the data. The data is plotted on a log-log scale to make the q-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. We see the characteristic gradient $\approx$ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}. For Geometric Brownian motion (equation \ref{eqn:geometric_brownianSDE}) we see a slight deviation from the expected decay (a slightly different gradient), this is okay as the dynamics of Geometric Brownian motion follow a different stochastic differential equation to normal Brownian motion and so a different form of the ISF should be expected. As predicted both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
+  \caption{After extracting the linear region of each plot from figure \ref{fig:simulated_brownian_tauc_whole}, linear regression is performed and best fits are plotted on top of the data. The data is plotted on a log-log scale to make the $q$-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. We see the characteristic gradient $\approx$ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}. For Geometric Brownian motion (equation \ref{eqn:geometric_brownianSDE}) we see a slight deviation from the expected decay (a slightly different gradient), this is okay as the dynamics of Geometric Brownian motion follow a different stochastic differential equation to normal Brownian motion and so a different form of the ISF should be expected. As predicted both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
  \label{fig:simulated_brownian_tauc_linear_region}
 \end{figure}
 
@@ -399,14 +326,14 @@ In this section we will only provide data for a small selection of the crowds th
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{images/500colloid_fit.png}
-\caption{Here we see plots of the fitted Brownian motion ISF parameters for colloidal particles (500nm diameter) suspended in solution as a function of \textit{q} (log-log scale). We are only interested in the $\tau_c$ curve as the other parameters are related to the properties of the filming apparatus (can extract useful information from them but this is not our focus). Again we see non-linear regions at high and low q values these regions can be neglected (see section \ref{section:fitting_issues}). And so we take only the the linear section at mid-range \textit{q} values.}
+\caption{Here we see plots of the fitted Brownian motion ISF parameters for colloidal particles (500nm diameter) suspended in solution as a function of $q$ (log-log scale). We are only interested in the $\tau_c$ curve as the other parameters are related to the properties of the filming apparatus (can extract useful information from them but this is not our focus). Again we see non-linear regions at high and low $q$ values these regions can be neglected (see section \ref{section:fitting_issues}). And so we take only the the linear section at mid-range $q$ values.}
 \label{fig:colloid_brownian_whole}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{images/500colloid_linear_region_fit.png}
-  \caption{After extracting the linear region of the data in figure \ref{fig:colloid_brownian_whole}, linear regression is performed and a best fit is plotted on top of the data. We see the characteristic gradient of $\approx$ -2 that is expected using the Brownian ISF. Indicating that the colloidal particles are undergoing Brownian motion. The diffusion coefficient is related to the intercept of this curve (equation \ref{eqn:brownian_diffusion_relation}) but unfortunately the properties of the camera that was used to film the colloids is unknown and so it is impossible to relate the extracted Diffusion coefficient (in terms of pixel sizes and frame rates) to a real world value.}
+  \caption{After extracting the linear region of the data in figure \ref{fig:colloid_brownian_whole}, linear regression is performed and a best fit is plotted on top of the data. We see the characteristic gradient of approximately $-2$ that is expected when using the Brownian ISF. Indicating that the colloidal particles are undergoing Brownian motion. The diffusion coefficient is related to the intercept of this curve (equation \ref{eqn:brownian_diffusion_relation}) but unfortunately the properties of the camera that was used to film the colloids is unknown and so it is impossible to relate the extracted Diffusion coefficient (in terms of pixel sizes and frame rates) to a real world value.}
  \label{fig:colloid_brownian_linear_region}
 \end{figure}
 
@@ -454,7 +381,7 @@ In this section we will only provide data for a small selection of the crowds th
   \label{fig:crowd17_screenshot}
   \caption{}
 \end{subfigure}%
-\caption{Here we see typical frames from four Brownian like videos. They each show a "stationary" crowd inside a stadium. The screenshots were captured from the 10th frame of the videos (a) crowd4, (b) crowd5, (c) crowd10 and (d) crowd17. All other Brownian like crowd videos contain footage of crowds similar to these.}
+\caption{Here we see typical frames from four Brownian-like videos. They each show a "stationary" crowd inside a stadium. The screenshots were captured from the 10th frame of the videos (a) crowd4, (b) crowd5, (c) crowd10 and (d) crowd17. All other Brownian-like crowd videos contain footage of crowds similar to these.}
 \label{fig:crowd_screenshots}
 \end{figure}
 
@@ -483,7 +410,7 @@ In this section we will only provide data for a small selection of the crowds th
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd4_q_157.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} values for the video crowd4. The data was collected by running single-scale DDM (box-size = full frame). We see troubling fits at low and high \textit{q}, whose origins are explained in section \ref{section:fitting_issues}, we will neglect these fits in our discussion. However at mid-range \textit{q} we see that the data fits incredibly well to the Brownian ISF (indicating that the crowd behaves in an approximately Brownian manner). The overall trend of the data (mid-range \textit{q}) follows that predicted by the Brownian ISF, however there is additional substructure to the curves which causes them to deviate slightly from the ideal fit. This is as expected as the crowds won't exactly follow Brownian motion and we do not have perfect footage.}
+\caption{Here we see typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) $q$ values for the video crowd4. The data was collected by running single-scale DDM (box-size = full frame). We see troubling fits at low and high $q$, whose origins are explained in section \ref{section:fitting_issues}, we will neglect these fits in our discussion. However at mid-range $q$ we see that the data fits incredibly well to the Brownian ISF (indicating that the crowd behaves in an approximately Brownian manner). The overall trend of the data (mid-range $q$) follows that predicted by the Brownian ISF, however there is additional substructure to the curves which causes them to deviate slightly from the ideal fit. This is as expected as the crowds won't exactly follow Brownian motion and we do not have perfect footage.}
 \label{fig:crowd4_brownian_fits}
 \end{figure}
 
@@ -511,14 +438,14 @@ In this section we will only provide data for a small selection of the crowds th
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_crowd5_q_510.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame).}
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) $q$ for the video crowd5. The data was collected by running single-scale DDM (box-size = full frame).}
 \label{fig:crowd4_brownian_fits}
 \end{figure}
 
 \clearpage
 \paragraph{Brownian ISF}
 
-In this section we will show how the fitted parameters for "stationary" crowds vary with \textit{q} for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
+In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -532,7 +459,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_q/tauc/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{Here we see plots of $\tau_c$ vs \textit{q} for two "stationary" crowd videos. The figures are plotted on a log-log scale in order to make any power law dependence of $\tau_c$ on \textit{q} explicit. We see the characteristic linear (approximately) fits at mid-range \textit{q} that is expected for Brownian motion. At low \textit{q} the fitting problems outlined in section \ref{section:fitting_issues} are seen.}
+\caption{Here we see plots of $\tau_c$ vs $q$ for two "stationary" crowd videos. The figures are plotted on a log-log scale in order to make any power law dependence of $\tau_c$ on $q$ explicit. We see the characteristic linear (approximately) fits at mid-range $q$ that is expected for Brownian motion. At low $q$ the fitting problems outlined in section \ref{section:fitting_issues} are seen.}
 \label{fig:crowd_brownian_fits_tauc}
 \end{figure}
 
@@ -568,7 +495,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
 
 \paragraph{Ballistic ISF}
 
-In this section we will show how the fitted parameters for "stationary" crowds vary with \textit{q} for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
+In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -663,7 +590,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \label{fig:running7_screenshot}
   \caption{}
 \end{subfigure}%
-\caption{Here we see typical frames from four Swimmer like videos. They each show a "Ballistic" crowd moving in some direction. The screenshots were captured from the 10th frame of the videos (a) running4, (b) running5, (c) running6 and (d) running7. All other Swimmer like crowd videos contain footage of crowds similar to these.}
+\caption{Here we see typical frames from four swimmer-like videos. They each show a crowd moving in some overall direction. The screenshots were captured from the 10th frame of the videos (a) running4, (b) running5, (c) running6 and (d) running7. All other swimmer-like crowd videos contain footage of crowds similar to these.}
 \label{fig:running_screenshots}
 \end{figure}
 
@@ -691,7 +618,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running5_q_499.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) \textit{q}. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and a better fit might be provided by an ISF with an oscillatory component).}
+\caption{Here we see the raw data for the video running5. A plot of a fitted Brownian ISF is overlain. The four figures are plotted at low (a), high (b) and mid-range (c) (d) $q$. Fitting to a Brownian ISF shows a remarkable level of agreement. However the curves have an oscillatory nature that appears after the first peak and a better fit might be provided by an ISF with an oscillatory component).}
 \label{fig:running5_brownian_fits}
 \end{figure}
 
@@ -719,14 +646,14 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{{images/fits/video_multiDDM_running6_q_353.5_box_size_1024}.png}
   \caption{}
 \end{subfigure}%
-\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) \textit{q} for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the Swimmer like group.}
+\caption{Here we see another example. The figures above show typical fits for the Brownian ISF at low (a), high (b) and mid-range (c) (d) $q$ for the video running6. The data was collected by running single-scale DDM (box-size = full frame). The fits shown are exceptionally poor and the data itself is particularly noisy. This would suggest that the motion in this crowd is not of a Brownian nature and therefore the crowd is incorrectly classified as belonging to the swimmer-like group.}
 \label{fig:running6_brownian_fits}
 \end{figure}
 
 \clearpage
 \paragraph{Brownian ISF}
 
-In this section we will show how the fitted parameters for swimmer-like crowds vary with \textit{q} for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
+In this section we will show how the fitted parameters for swimmer-like crowds vary with $q$ for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -776,8 +703,8 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 
 \clearpage
 \paragraph{Ballistic ISF}
+In this section we will show how the fitted parameters for swimmer-like crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
 
-In this section we will show how the fitted parameters for swimmer-like crowds vary with \textit{q} for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
@@ -843,7 +770,8 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 
 \subsubsection{Stationary Crowds - Brownian Like}
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff, tauc vs box size at fixed q
-\paragraph{Brownian ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Brownian ISF vary as a function of \textit{q} at different box-sizes. 
+\paragraph{Brownian ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Brownian ISF vary as a function of $q$ at different box-sizes. 
+
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
@@ -890,7 +818,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \end{figure}
 
 
-\paragraph{Ballistic ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of \textit{q} at different box-sizes. 
+\paragraph{Ballistic ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of $q$ at different box-sizes. 
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -956,7 +884,8 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 
 \subsubsection{Directional Motion - Swimmer Like}
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff velocity, tauc vs box size at fixed q
-\paragraph{Brownian ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Brownian ISF (equation \ref{eqn:BrownianISF}) vary as a function of \textit{q} at different box-sizes. 
+\paragraph{Brownian ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Brownian ISF (equation \ref{eqn:BrownianISF}) vary as a function of $q$ at different box-sizes.
+
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
   \centering
@@ -1003,7 +932,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \end{figure}
 
 
-\paragraph{Ballistic ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Ballistic ISF (equation \ref{eqn:BallisticISF}) vary as a function of \textit{q} at different box-sizes. 
+\paragraph{Ballistic ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Ballistic ISF (equation \ref{eqn:BallisticISF}) vary as a function of $q$ at different box-sizes. 
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -1146,7 +1075,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/tauc_polyfit/brownian_crowd3_boxsize_288.png}
   \caption{}
 \end{subfigure}
-\caption{These figures show the $q$ dependence of $\tau_c$ on a log-log scale for a range of videos and box sizes. Each data set is fitted to a fifth order polynomial, the form of the fitted polynomial is given below each figure. A fifth order polynomial was chosen as the fitting function after extensive testing of a range of functional forms. It provided the best explanation of the overall trends seen in the data (with the minimum number of fitting parameters). A fifth order polynomial fits remarkably well to the majority of the videos in the data set. It doesn't explain all variation seen in the data but it does provide a good approximation to the overall trends that appear (it is expected that there is a more appropriate functional form which would include the finer details that are seen in the data. This could be an avenue for further research). The meaning of each fitting parameter is not initially clear as there is no theoretical model for this fifth order polynomial dependence (see figure \ref{fig:tauc_polyfit_params} for further discussion).}
+\caption{These figures show the $q$ dependence of $\tau_c$ on a log-log scale for a range of videos and box sizes. Each data set is fitted to a fifth order polynomial, the form of the fitted polynomial is given below each figure. A fifth order polynomial was chosen as the fitting function after extensive testing of a range of functional forms. It provided the best explanation of the overall trends seen in the data whilst using the fewest fitting parameters. A fifth order polynomial fits remarkably well to the majority of the videos in the data set. It doesn't explain all variation seen in the data but it does provide a good approximation to the overall trends that appear (it is expected that there is a more appropriate functional form which would include the finer details that are seen in the data. This could be an avenue for further research). The meaning of each fitting parameter is not initially clear as there is no theoretical model for this fifth order polynomial dependence (see figure \ref{fig:tauc_polyfit_params} for further discussion).}
 \label{fig:tauc_polyfit1}
 \end{figure}
 
@@ -1250,9 +1179,9 @@ This report has hopefully demonstrated that DDM can be used to analyse macroscop
 \\\\
 The results seen in this project are promising and will help to constrain the search for appropriate forms of the ISF for crowds in motion. It was found that a Ballistic ISF fit was inappropriate for both of the crowd types tested in this project, producing horrendously noisy and inaccurate fits of the data. However a Brownian ISF was a good fit for both crowd types, especially so for "stationary" crowds, indicating that both crowd types act in an approximately Brownian manner. Although the overall trends in the data for swimmer-like crowds can be explained by a Brownian ISF, the data also contains an oscillatory substructure (which the "stationary" crowds do not) indicating that there is an essential difference between the two crowd types. It is expected that there is a more appropriate ISF for swimmer-like crowds that takes into account this finer structure. A search to further constrain the form of the ISF for various crowd types would be the next logical step to investigate (see section \ref{section:future}).
 \\\\
-After extensive research it was found that the functional form (with the fewest fitting parameters) which provided the most explanatory power for the Brownian ISF parameter $\tau_c(q)$ was a fifth order polynomial. This functional form accurately described almost all videos in the dataset. The challenge is then to relate the six polynomial parameters to the physical properties of the crowd. Unfortunately this could not be done due to the lack of information about the equipment used to record the crowds. These parameters were plotted against box-size (the only variable available to us that could be used to describe parameter behaviour), the parameters show some dependence on the box-size but it is not clear if there is any systematic relationship between the two variables.
+After extensive research it was found that the functional form (with the fewest fitting parameters) which provided the most explanatory power for the Brownian ISF parameter $\tau_c(q)$ was a fifth order polynomial. This functional form accurately described almost all videos in the dataset. The challenge was then to relate the six polynomial parameters to the physical properties of the crowd. Unfortunately this could not be done due to the lack of information about the equipment used to record the crowds. These parameters were plotted against box-size (the only variable available to us that could be used to describe parameter behaviour), the parameters show some dependence on the box-size but it is not clear if there is any systematic relationship between the two variables.
 \\\\
-This report demonstrates the potential in the application of DDM to macroscopic motion. DDM is not viable for crowd analysis today, but with further research it may find usage in crowd monitoring systems in the near future.
+This report demonstrates the potential of the application of DDM to macroscopic motion. DDM is not viable for crowd analysis today, but with further research it may find usage in crowd monitoring systems in the near future.
 
 \clearpage
 \section{References}
@@ -1269,7 +1198,58 @@ The bulk of the videos (413 clips) can be found at \url{http://mmlab.ie.cuhk.edu
 \label{section:database}
 The raw data from DDM is stored inside an SQLite database which can be found \href{https://github.com/jordanosborn/CrowdAnalysisDDM/blob/master/code/crowd.sqlite?raw=true}{here}. Naming conventions are used such that tables are named according to the format $\{$data type$\}\_\{$video name$\}$ replacing the curly braces with the name of the video and data type that are desired. Not all graphs were included in this report due to the limited available space, they can however be accessed at this  \href{https://drive.google.com/drive/folders/1LI3qSCtjwXnbb-hIaWZYloMIHjo4BUsj?usp=sharing}{link}.
 
-\subsection{Appendix 1: Implementation Details}
+\subsection{Appendix 1: Existing Motion Analysis Techniques}
+\label{section:existing}
+There are many methods that can be used to analyse motion within videos. Some examples are outlined and compared with DDM in the sections below.
+\subsubsection{Image Segmentation}
+In image segmentation an image is partitioned in to a set of segments. The image is split in to segments that have certain characteristics (colour, intensity, etc.) and could be chosen algorithmically or manually. This is carried out in order to simplify the image and hence reduce the complexity of any subsequent analysis \cite{computer_vision_book}. An example of image segmentation would be object detection using the gradient of intensity to detect object boundaries (edges) using a Sobel filter \cite{sobel}. Image segmentation can be carried out using a variety of algorithms including k-means clustering (an unsupervised technique) \cite{segmentation_kmeans}. K-means clustering is carried out by picking k centres (categories) then putting each segment in the category that minimises the difference between the cluster center and the segment. The cluster centres are then re-computed by averaging over all points in the cluster and the previous step is repeated until convergence. Segmentation could be carried out on moving objects by carrying out these techniques on the difference between successive frames (static background should be removed).
+\\\\
+Most image segmentation algorithms are very computationally intensive and some even require manual input. DDM however offers solutions to both of these problems. DDM can offer dramatic speed improvements due to its highly parallel nature and can even be made to run fully autonomously (once an ISF is selected). DDM focuses on more fundamental properties of the motion and is backgrounded in physics (fitting to a derived ISF) whereas with many image segmentation techniques the focus is on a straight analysis of the image intensity field and can be incredibly sensitive to the properties of the video (leading to over-under segmentation etc.) \cite{computer_vision_book}. 
+
+\subsubsection{Neural Networks}
+Neural networks offer some unique benefits over DDM in that they can be trained to find specific objects in an image and so can be used to directly count the number and location of different objects \cite{yolov3}. The main drawback is that these predictions will only be as good as the quality of the dataset used to train them. High quality data is often not available and when it is it is usually very expensive to procure. The larger your training dataset the longer it will take to train (usually with the benefit of more accurate predictions). Often training algorithms will require a form of supervised learning, for example the images will need to be tagged with the objects they contain. This is a time consuming process. However once the model is trained it can usually produce predictions in a reasonable time frame. However if detection of a new type of object is required the model will need to be retrained, often with a new dataset \cite{tensorflow}. DDM requires no such training data and can therefore be used with zero training time on any type of motion (once an ISF is selected). These two methods are however not at odds with one another, DDM can't be used to track objects as it doesn't really have a notion of the individual constituents of the system. It is primarily focussed on extracting dynamical information of the entire system or average information about the individual constituents. Neural networks however can be used to locate and track individual objects between frames. It however is not really applicable to the extraction of dynamical information. These two methods could therefore be used in tandem to track and analyse the motion inside crowds.
+
+\subsubsection{Particle Image Velocimetry}
+Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used. 
+
+\subsubsection{Optical Flow}
+"Optical flow is the distribution of apparent velocities of movement of brightness patterns in an image" \cite{optical_flow}. It can arise due to relative motion between an observer and the objects in a scene. Optical flow can give information about the spatial positioning of objects and the rate of change of the arrangements of these objects. "Discontinuities in the optical flow can help in segmenting images into regions that correspond to different objects" \cite{optical_flow}. However objects may be moving but exhibit no change in brightness, this method will therefore not be sensitive to this sort of motion. It is possible to determine the velocities of the motion from the brightness gradients computed from the footage.
+\\\\
+The equation that is used to determine these velocities is derived under the assumption that the pixel intensity of a moving object ($x \rightarrow x + dx, y \rightarrow y + dy, t \rightarrow t + dt $) is unchanged and that neighbouring pixels have similar motion \cite{optical_flow_opencv}.
+\begin{equation}
+I(x, y, t) = I(x + dx, y + dy, t + dt).
+\end{equation}
+After taking the Taylor expansion of this equation and retaining terms up to first order we obtain
+\begin{equation}
+I(x, y, t) = I(x, y, t) + \frac{\partial I}{\partial x} dx + \frac{\partial I}{\partial y} dy + \frac{\partial I}{\partial t} dt.
+\end{equation}
+After rearranging and then taking the time derivative we arrive at
+\begin{equation}
+0 = \nabla I \cdot \textbf{v} + \frac{\partial I}{\partial t}.
+\end{equation}
+ 
+There are some notable caveats of this method which are outlined in detail in \cite{optical_flow}. The method requires you to solve a partial differential equation thus necessitating the implementation of some constraints in order to uniquely determine the equation of motion. It also assumes that objects show consistent intensities which may or may not be valid depending on the footage. DDM requires neither of these things.
+
+\subsubsection{Advantages of DDM}
+\begin{enumerate}
+\item It can be applied without carrying out any special preparations on the system. DDM can therefore be used on pre-recorded footage.
+\item Does not require training data.
+\item Completely autonomous (once an intermediate scattering function is selected).
+\item Highly parallelisable so it could be carried out in real-time (however the required optimisations aren't currently implemented).
+\item Can be applied to a wide range of dynamical systems. Has very few requirements.
+\item Based on the physical information encoded in the footage, rather than focusing on particular image properties.
+\item Can be implemented inexpensively, only requirements are some video footage (pre-recorded, or from a camera) and a mid-range computer.
+\end{enumerate}
+
+\subsubsection{Disadvantages of DDM}
+\begin{enumerate}
+\item Can't be used to track individual constituents of the system.
+\item Information that can be extracted from the footage is entirely determined by the form of the ISF.
+\item The ISF only has analytic solutions for a small collection of systems. And therefore some research needs to be carried out in order to determine good approximate fits for certain crowd types (the good news is this only needs to be done once for each crowd type).
+\item The form of the ISF must be chosen before fitting can start and so crowds must be classified before this fitting can take place. However fits for multiple ISFs could be produced, and human intervention/cost functions could be used to select the most realistic fits. The dynamical information from the selected fits could then be compared to select a plausible result and so this drawback could be circumvented somewhat.
+\end{enumerate}
+ 
+\subsection{Appendix 2: Implementation Details}
 \label{section:implementation}
 
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
@@ -1278,12 +1258,35 @@ DDM is a very computationally intensive algorithm, in order to approach real-tim
 Software development best practices were followed throughout development. The project was version controlled using Git, continuously integrated using \href{https://travis-ci.com}{TravisCI} and a custom docker image, the set-up of both a macOS and Linux based development environment was documented in detail, and core algorithms were benchmarked and tested in depth.
 
 \subsubsection{Hardware Details}
-Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. A large amount of ram (16GB+) is also required for the algorithm to run successfully. This capacity is used to implement a rolling buffer of the frames that are captured from the video source. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU\cite{jetson}. The Jetson GPU can be coded with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All)\cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely reimplementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
+Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. A large amount of ram (16GB+) is also required for the algorithm to run successfully. This capacity is used to implement a rolling buffer of the frames that are captured from the video source. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU \cite{jetson}. The Jetson GPU can be programmed with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All) \cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely re-implementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
 
 \subsubsection{Software Details}
-Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a much easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust language bindings for popular libraries are still in their infancy. This required me to create a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQLite database to allow efficient querying of the available data.
+Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a far easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust, language bindings for popular libraries are still in their infancy. This therefore required the creation of a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQLite database to allow efficient querying of the available data.
 \\\\
 Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, SQLite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust code-base so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
+
+\subsubsection{Apparatus Limitations}
+\label{section:fitting_issues}
+\begin{figure}[H]
+\centering
+\centerline{\includegraphics[scale=0.5]{images/apparatus_limitations.png}}
+\caption{
+In the figure above we see a typical plot of $\tau_c$ vs $q$ on a log-log scale. This figure aims to illustrate the locations of problematic fitting zones, why they occur, and why we ignore the fitted parameters in such regions during our analysis. These problems are related to the limitations (length and time scales) imposed by the filming apparatus. (Note that pixel and sensor size refer to image sizes and not to any particular physical length-scale.)
+}
+\end{figure}
+
+\begin{enumerate}[label=(\Alph*)]
+\item In this region $q$ takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small $q$.
+     
+\item In this region $q$ takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of $1 / pixel$ $size$. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large $q$.
+
+\item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
+
+\item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
+
+\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
+\end{enumerate}
+\clearpage
 
 \subsubsection{Algorithm Pipeline}
 \begin{figure}[H]
@@ -1293,10 +1296,10 @@ Again due to time limitations and the immaturity of the Rust library ecosystem a
 \caption{Flow chart of the algorithm structure used in this project.}
 \end{figure}
 
-\subsection{Appendix 2: Future}
+\subsection{Appendix 3: Future}
 \label{section:future}
 \subsubsection{Applications}
-If this project is successful in being able to measure crowd dynamics in real time then DDM may find an application in real time crowd safety/monitoring systems in crowded environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
+If DDM could be implemented such that it can measure crowd dynamics in real time then it may find an application in crowd safety/monitoring systems in environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
 
 \subsubsection{Further Development}
 Due to the time restrictions imposed on this project, development had to be focused. There are various avenues which could be explored in order to improve the current implementation. Two main areas that could be investigated are algorithm optimisations, and crowd categorisation (the appropriate intermediate scattering functions for each crowd type).
@@ -1306,13 +1309,13 @@ Although most of the steps in the algorithm complete in a reasonable time frame,
 \\\\
 The main algorithmic slowdown occurs in the radial averaging stage, this stage involves multiplying the intensity array by annuli of varying radii (covering the whole intensity array $\Sigma_{A \in annuli} A_{\alpha \beta} = 1 \forall \alpha, \beta)$. The intensity array is multiplied by each annulus, the resulting array elements are summed then averaged over the number of non-zero array elements of the multiplying annulus, thus providing the radial average of the intensity at the annulus radius. This process involves a significant number of array operations and as a result is the limiting step in the current implementation. The approach taken is a naive one, it is anticipated that this process could be sped up significantly if more time were available to investigate different approaches. Perhaps by reducing the usage of expensive element wise operations (summing all elements), and trying an approach that makes more use of the highly parallelised array operations instead.
 \\\\
-Further algorithmic improvements could be made in the initial and final steps of the implementation. To ease the algorithmic implementation no frames are analysed until a full set of data is available (a sufficient number of frames have arrived from the stream so that the last and first frame are separated by a time difference $\tau_{max}$). This means the analysis thread is waiting in standby until this condition is met. This thread could be doing work on the frames that have arrived (doing DDM on the frames that have arrived then waiting when it needs another frame to arrive). The effect of this should be rather small as the thread will only be waiting during the first start time, all subsequent start times that are analysed will occur straight away (as once the frame cache is full, DDM is performed using the first frame in the cache as the start time, once another frame arrives in to the cache the first frame is popped off of the top and discarded. The frame now at position one in the cache will be used as the new start time i.e. a circular buffer). For long videos (large number of frames and therefore start times) this effect will be negligible but could be eradicated with further development. 
+Further algorithmic improvements could be made in the initial and final steps of the implementation. To ease the algorithmic implementation no frames are analysed until a full set of data is available (a sufficient number of frames have arrived from the stream so that the last and first frame are separated by a time difference $\tau_{max}$). This means the analysis thread is waiting in standby until this condition is met. This thread could be doing work on the frames that have arrived (doing DDM on the frames that have arrived then waiting when it needs another frame to arrive). The effect of this should be rather small as the thread will only be waiting during the first start time, all subsequent start times that are analysed will occur straight away (as once the frame cache is full, DDM is performed using the first frame in the cache as the start time, and once another frame arrives in to the cache the first frame is popped off of the top and discarded. The frame now at position one in the cache will be used as the new start time i.e. a circular buffer). For long videos (large number of frames and therefore start times) this effect will be negligible but could be eradicated with further development. 
 \\\\
 Another issue is that the algorithm waits until the video stream has been exhausted before performing curve fitting and dynamical data extraction. This means that live streams (cameras) must be closed before fitting takes place. A solution to this problem is to add a third worker thread that performs curve fitting on the DDM data as it becomes available. This would permit the live extraction of dynamical data. This is only really necessary for real-time crowd analysis (a small slowdown is expected otherwise) and was not included in the current implementation so as to reduce algorithmic complexity.
 \subsubsection{Crowd Categorisation}
 In the current approach crowds are categorised so that they fit into three groups Brownian-like, Swimmer-like or neither (see section \ref{section:crowdtypes} for definitions). To produce better fits for the computed data it would be desirable to further break these categories down. Not only would this provide more accurate results, it may also allow the extraction of different dynamical information (depending on the crowd type and what variables the dynamics depend on). This however would require a time consuming investigation in to not only the mathematics of the ISF for new types of motion, but also how and what defining features could be used to categorise the crowds? These categories would then need to be assigned the appropriate mathematical form of the intermediate scattering function. In-depth tests would then need to be carried out in order to determine the validity of these assignments. Further investigation in this area might lead to more fine grained categorisation of crowd types and their appropriate fits but due to time constraints this project will restrict itself to just the three mentioned above.
 
 \subsubsection{Empirical Forms of the Intermediate Scattering Functions}
-After computing the image structure power spectrum $F$ \ref{eqn:power_spectrum} for a specific crowd type, we can attempt to fit different approximate forms for the intermediate scattering function. The variables that the approximate fit can depend on include $q$, $\tau$, $t_0$ and box size. The approximate fit will also depend on a set of fitting parameters which will be related to the dynamics of the crowd motion. By trying various functional forms until we get an appropriate fit we can determine the approximate form of ISF for that particular crowd type. We can then carry out dimensional analysis on the approximate ISF. The dimensions of the fitting parameters in conjunction with the image properties of the footage will allow us to relate the fitting parameters to the real-world dynamical properties of the crowd.
+After computing the image structure power spectrum $F$ (equation \ref{eqn:power_spectrum}) for a specific crowd type, we can attempt to fit different approximate forms for the intermediate scattering function. The variables that the approximate fit can depend on include $q$, $\tau$, $t_0$ and box size. The approximate fit will also depend on a set of fitting parameters which will be related to the dynamics of the crowd motion. By trying various functional forms until we get an appropriate fit we can determine the approximate form of ISF for that particular crowd type. We can then carry out dimensional analysis on the approximate ISF. The dimensions of the fitting parameters in conjunction with the image properties of the footage will allow us to relate the fitting parameters to the real-world dynamical properties of the crowd.
 
 \end{document}
