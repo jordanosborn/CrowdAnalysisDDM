@@ -215,7 +215,7 @@ In this project we will be focusing primarily on two types of crowd. Crowds whic
 
 \section{Results}
 \label{section:results}
-In this section we will only provide data for a small selection of the crowds that were analysed. This is in order to keep this discussion brief, see section \ref{section:database} for information on how to obtain all of the analysed data.
+In this section we will only provide data for a small selection of the crowds that were analysed. This is in order to keep this discussion brief, see section \ref{section:database} for information on how to obtain all of the analysed data. Fits to a Ballistic ISF were also not included in this section as the fits provided incredibly poor results, indicating that a Ballistic functional form is an inappropriate choice of ISF for both of the tested crowd types. See section \ref{section:ballistic_motion_results} for further details.
 
 \subsection{Brownian Motion}
 \label{section:brownian}
@@ -462,73 +462,6 @@ In this section we will show how the fitted parameters for "stationary" crowds v
 \label{fig:crowd_brownian_fits_B}
 \end{figure}
 
-
-\paragraph{Ballistic ISF}
-
-In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_crowd4_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_crowd5_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{These figures show how $\tau_c$ varies as a function of $q$ for two different "stationary" crowd videos fitted to Ballistic ISFs. The fit provided is exceedingly poor and is used to demonstrate that modelling the "stationary" crowds as purely Brownian motion provides a much better description of the data.}
-\label{fig:crowd_ballistic_fits_tauc}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_crowd4_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_crowd5_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{The figures above show how the fitted Ballistic ISF parameter $v$ varies as a function of $q$. Again the poor fits indicate that a Ballistic ISF is not applicable to these crowd types.}
-\label{fig:crowd_ballistic_fits_v}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_crowd4_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_crowd5_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\label{fig:crowd_ballistic_fits_A}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_crowd4_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_crowd5_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Ballistic ISF) on $q$ for two different "stationary" crowd videos. These are again exceedingly poor fits. These are provided for completeness, but are not relevant to our analysis (only in that they indicate "stationary" crowds do not follow Ballistic motion) and so will not be discussed further.}
-\label{fig:crowd_ballistic_fits_B}
-\end{figure}
-
-
 \subsubsection{Directional Motion - Swimmer Like}
 % show stills from video examples, tauc plots and their fits at 1024px (for good cases) location of bad fits (compare brownian and ballistic fits) what info we find is it approx brownian, diffusion, velocity, A, B plots
 %stills of videos
@@ -670,72 +603,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \label{fig:running_brownian_fits_B}
 \end{figure}
 
-
 \clearpage
-\paragraph{Ballistic ISF}
-In this section we will show how the fitted parameters for swimmer-like crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running5_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running6_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{The figures above show $\tau_c$ as a function of $q$ for two swimmer-like crowds fitted to a Ballistic ISF. The fits are very noisy and are quite poor like in the "stationary" crowd case. The Brownian fits for swimmer-like crowds are significantly better than the Ballistic fits, but still don't capture all of the variation seen in the image structure power spectrum $F$. This would indicate that a Brownian ISF is the most appropriate fit for both crowd types (of the two ISFs that were tested). However in the swimmer-like crowds the Brownian ISF only partially describes the dynamics of the system. Meaning further investigation in to crowd types and their associated ISFs are required.}
-\label{fig:running_ballistic_fits_tauc}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_running5_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_running6_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{Here we can see the $q$ dependence of the Ballistic ISF fitting parameter $v$ for two swimmer-like crowds. These fits are again very poor, and so the Ballistic ISF is not an appropriate form for swimmer-like crowds.}
-\label{fig:running_ballistic_fits_v}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_running5_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_running6_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\label{fig:running_ballistic_fits_A}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_running5_box_size_1024.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_running6_box_size_1024.png}
-  \caption{}
-\end{subfigure}
-\caption{Here we can see the dependence of the parameters $A$ and $B$ on $q$ for two swimmer-like crowds fitted to a Ballistic ISF. These fits are poor, and show many missing values. Which indicates in conjunction with the fits for the other parameters that a Ballistic ISF is not an appropriate choice for swimmer-like crowds.}
-\label{fig:running_ballistic_fits_B}
-\end{figure}
-
 \subsection{Multi-Scale DDM}
 
 \subsubsection{Stationary Crowds - Brownian Like}
@@ -786,72 +654,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \caption{Here we see figures showing the $q$ dependence of the Brownian ISF fitting parameters $A$ and $B$ at a range of box-sizes for two "stationary" crowds. Parameter $A$ shows similar functional forms at all box-sizes, but as box-size decreases the curve is shifted downwards. This is an interesting pattern and could be an avenue for further research. However we are only interested in the dynamical properties of the crowds, meaning we will ignore the non-dynamical fitting parameters $A$ and $B$ in our analysis.}
 \label{fig:crowd_brownian_fits_tauc_B_boxsizes}
 \end{figure}
-
-
-\paragraph{Ballistic ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of $q$ at different box-sizes. 
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd4_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\label{fig:crowd_ballistic_fits_tauc_all_boxsizes}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd4_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\caption{Here we can see the $q$ dependence of the dynamical fitting parameters $\tau_c$ and $v$ for two "stationary" crowds at a range of box sizes. The fits seen are incredibly poor and aim to illustrate that a Ballistic ISF is inappropriate for "stationary" crowd types.}
-\label{fig:crowd_ballistic_fits_v_all_boxsizes}
-\end{figure}
-
-\begin{figure}[H]
-
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_crowd4_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_crowd5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\label{fig:crowd_ballistic_fits_A_all_boxsizes}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd4_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\caption{Here we can see the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two "stationary" crowds at a range of box sizes. The fits seen are again incredibly poor and thus also illustrating that a Ballistic ISF is inappropriate for "stationary" crowd types.}
-\label{fig:crowd_ballistic_fits_tauc_B_boxsizes}
-\end{figure}
-
+\clearpage
 \subsubsection{Directional Motion - Swimmer Like}
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff velocity, tauc vs box size at fixed q
 \paragraph{Brownian ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Brownian ISF (equation \ref{eqn:BrownianISF}) vary as a function of $q$ at different box-sizes.
@@ -900,68 +703,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \caption{These figures show the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two swimmer-like crowds at a range of box-sizes. They are only included for completeness and will not be discussed further.}
 \label{fig:running_brownian_fits_tauc_B_boxsizes}
 \end{figure}
-
-
-\paragraph{Ballistic ISF} In this section we will show how the parameters from swimmer-like crowds fitted to a Ballistic ISF (equation \ref{eqn:BallisticISF}) vary as a function of $q$ at different box-sizes. 
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running6_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\label{fig:running_ballistic_fits_tauc_all_boxsizes}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running6_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\caption{Here we can see the $q$ dependence of the dynamical Ballistic fitting parameters $\tau_c$ and $v$ for two swimmer-like crowds at a range of box-sizes. We again get exceedingly poor fits for both parameters at every box-size making it quite clear that a Ballistic ISF is not an appropriate functional form for the ISF of swimmer-like crowds.}
-\label{fig:running_ballistic_fits_v_all_boxsizes}
-\end{figure}
-
-\begin{figure}[H]
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_running5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_running6_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\label{fig:running_ballistic_fits_A_all_boxsizes}
-\par\bigskip
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
- \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_running5_all_boxsizes.png}
-  \caption{}
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_running6_all_boxsizes.png}
-  \caption{}
-\end{subfigure}
-\caption{These figures show the $q$ dependence of the non-dynamical Ballistic fitting parameters $A$ and $B$ for two swimmer-like crowds at a range of box-sizes. The fits are again very noisy and indicate that a Ballistic fit is inappropriate for the swimmer-like crowd type.}
-\label{fig:running_ballistic_fits_B_all_boxsizes}
-\end{figure}
-
+\clearpage
 \subsection{Brownian Fits an In-Depth Analysis}
 \label{section:brownian_multiDDM}
 % explain ballistic gives very poor fits for both types and brownian at least gives approx info
@@ -1299,7 +1041,257 @@ In the figure above we see a typical plot of $\tau_c$ vs $q$ on a log-log scale.
 \subsection{Appendix 4: Extended Results - Ballistic Motion}
 \label{section:ballistic_motion_results}
 
-\subsection{Appendix 4: Future}
+\subsubsection{Single-Scale DDM - Brownian-Like Crowds}
+In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_crowd4_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_crowd5_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{These figures show how $\tau_c$ varies as a function of $q$ for two different "stationary" crowd videos fitted to Ballistic ISFs. The fit provided is exceedingly poor and is used to demonstrate that modelling the "stationary" crowds as purely Brownian motion provides a much better description of the data.}
+\label{fig:crowd_ballistic_fits_tauc}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_crowd4_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_crowd5_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{The figures above show how the fitted Ballistic ISF parameter $v$ varies as a function of $q$. Again the poor fits indicate that a Ballistic ISF is not applicable to these crowd types.}
+\label{fig:crowd_ballistic_fits_v}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_crowd4_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_crowd5_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\label{fig:crowd_ballistic_fits_A}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_crowd4_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_crowd5_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Ballistic ISF) on $q$ for two different "stationary" crowd videos. These are again exceedingly poor fits. These are provided for completeness, but are not relevant to our analysis (only in that they indicate "stationary" crowds do not follow Ballistic motion) and so will not be discussed further.}
+\label{fig:crowd_ballistic_fits_B}
+\end{figure}
+
+\subsubsection{Single-Scale DDM - Swimmer-Like Crowds}
+In this section we will show how the fitted parameters for swimmer-like crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running5_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running6_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{The figures above show $\tau_c$ as a function of $q$ for two swimmer-like crowds fitted to a Ballistic ISF. The fits are very noisy and are quite poor like in the "stationary" crowd case. The Brownian fits for swimmer-like crowds are significantly better than the Ballistic fits, but still don't capture all of the variation seen in the image structure power spectrum $F$. This would indicate that a Brownian ISF is the most appropriate fit for both crowd types (of the two ISFs that were tested). However in the swimmer-like crowds the Brownian ISF only partially describes the dynamics of the system. Meaning further investigation in to crowd types and their associated ISFs are required.}
+\label{fig:running_ballistic_fits_tauc}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_running5_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_running6_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{Here we can see the $q$ dependence of the Ballistic ISF fitting parameter $v$ for two swimmer-like crowds. These fits are again very poor, and so the Ballistic ISF is not an appropriate form for swimmer-like crowds.}
+\label{fig:running_ballistic_fits_v}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_running5_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/A/video_multiDDM_running6_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\label{fig:running_ballistic_fits_A}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_running5_box_size_1024.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_running6_box_size_1024.png}
+  \caption{}
+\end{subfigure}
+\caption{Here we can see the dependence of the parameters $A$ and $B$ on $q$ for two swimmer-like crowds fitted to a Ballistic ISF. These fits are poor, and show many missing values. Which indicates in conjunction with the fits for the other parameters that a Ballistic ISF is not an appropriate choice for swimmer-like crowds.}
+\label{fig:running_ballistic_fits_B}
+\end{figure}
+
+\subsubsection{Multi-Scale DDM - Brownian-Like Crowds}
+In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of $q$ at different box-sizes. 
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd4_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_crowd5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\label{fig:crowd_ballistic_fits_tauc_all_boxsizes}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd4_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\caption{Here we can see the $q$ dependence of the dynamical fitting parameters $\tau_c$ and $v$ for two "stationary" crowds at a range of box sizes. The fits seen are incredibly poor and aim to illustrate that a Ballistic ISF is inappropriate for "stationary" crowd types.}
+\label{fig:crowd_ballistic_fits_v_all_boxsizes}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_crowd4_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_crowd5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\label{fig:crowd_ballistic_fits_A_all_boxsizes}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd4_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\caption{Here we can see the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two "stationary" crowds at a range of box sizes. The fits seen are again incredibly poor and thus also illustrating that a Ballistic ISF is inappropriate for "stationary" crowd types.}
+\label{fig:crowd_ballistic_fits_tauc_B_boxsizes}
+\end{figure}
+
+\subsubsection{Multi-Scale DDM - Swimmer-Like Crowds}
+In this section we will show how the parameters from swimmer-like crowds fitted to a Ballistic ISF (equation \ref{eqn:BallisticISF}) vary as a function of $q$ at different box-sizes. 
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/tauc/ballistic_running6_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\label{fig:running_ballistic_fits_tauc_all_boxsizes}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_running6_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\caption{Here we can see the $q$ dependence of the dynamical Ballistic fitting parameters $\tau_c$ and $v$ for two swimmer-like crowds at a range of box-sizes. We again get exceedingly poor fits for both parameters at every box-size making it quite clear that a Ballistic ISF is not an appropriate functional form for the ISF of swimmer-like crowds.}
+\label{fig:running_ballistic_fits_v_all_boxsizes}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_running5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/A/ballistic_running6_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\label{fig:running_ballistic_fits_A_all_boxsizes}
+\par\bigskip
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+ \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_running5_all_boxsizes.png}
+  \caption{}
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_running6_all_boxsizes.png}
+  \caption{}
+\end{subfigure}
+\caption{These figures show the $q$ dependence of the non-dynamical Ballistic fitting parameters $A$ and $B$ for two swimmer-like crowds at a range of box-sizes. The fits are again very noisy and indicate that a Ballistic fit is inappropriate for the swimmer-like crowd type.}
+\label{fig:running_ballistic_fits_B_all_boxsizes}
+\end{figure}
+
+\subsection{Appendix 5: Future}
 \label{section:future}
 \subsubsection{Applications}
 If DDM could be implemented such that it can measure crowd dynamics in real time then it may find an application in crowd safety/monitoring systems in environments such as public transportation, stadiums, city centres etc. To facilitate this, speed improvements must be made whether that be through hardware or software. Ideally the speed gains would be made through software improvements so that the software could run on easily available hardware thus reducing installation cost and increasing adoption. To maximise usability a GUI should be developed in order to abstract away the technical details of DDM and allow anyone to carry out crowd analysis. This GUI would automatically produce and show graphs and tables of the dynamical data that is extracted from the selected video stream (pre-recorded video or live-stream). Potentially this GUI could automatically flag up any safety issues that the DDM analysis has found. After further development DDM analysis could then therefore be used in a low cost, real-time and accessible crowd safety monitoring system.
