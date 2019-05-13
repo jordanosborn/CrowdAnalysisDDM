@@ -213,6 +213,15 @@ denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is sho
 \label{section:crowdtypes}
 In this project we will be focusing primarily on two types of crowd. Crowds which are "stationary" for example people sat inside a stadium. Motion is restricted to oscillations around the person's average location. We term this crowd type "Brownian-like". The other type is that where the crowd shows some overall direction of travel. For example runner's in a marathon. We term this type of crowd "Swimmer-like". Videos have been typecast in to one of these two categories or neither (if they show a different type of motion). We expect the ISF for videos of a particular category to be similar (albeit with different values for the fit parameters) i.e of the same functional form. For the Brownian-like crowds we will try a fit of the type expected for Brownian motion (equation \ref{eqn:BrownianISF}). And for Swimmer-like crowds we will try a fit of the expected type for Ballistic motion (equation \ref{eqn:BallisticISF}).
 
+\clearpage
+\section{Implementation Details - Algorithm Pipeline}
+\begin{figure}[H]
+%algorithm pipeline	
+\centering
+\includegraphics[width=0.95\textwidth]{images/algo-pipeline.png}
+\caption{Flow chart of the algorithm structure used in this project.}
+\end{figure}
+
 \section{Results}
 \label{section:results}
 In this section we will only provide data for a small selection of the crowds that were analysed. This is in order to keep this discussion brief, see section \ref{section:database} for information on how to obtain all of the analysed data. Fits to a Ballistic ISF were also not included in this section as the fits provided incredibly poor results, indicating that a Ballistic functional form is an inappropriate choice of ISF for both of the tested crowd types. See section \ref{section:ballistic_motion_results} for further details.
@@ -991,7 +1000,7 @@ S(t) = S_0 e^{(\mu - \frac{1}{2} \sigma^2) t + \sigma W_t}.
 \end{equation}
 This formula can therefore be used to simulate a particle undergoing Geometric Brownian motion (where $W_t$ is a Wiener process and follows a normal distribution with a mean of 0 and a variance $dt$).
  
-\subsection{Appendix 3: Implementation Details}
+\subsection{Appendix 3: Extended Implementation Details}
 \label{section:implementation}
 
 DDM is a very computationally intensive algorithm, in order to approach real-time speeds it was necessary to focus on producing an optimal implementation from the start. Certain design decisions were primarily made in order to facilitate the required optimisations. The design decisions and how they were made will be explained in the following paragraph. An outline of the algorithm pipeline will then complete this section.
@@ -1028,15 +1037,6 @@ In the figure above we see a typical plot of $\tau_c$ vs $q$ on a log-log scale.
 
 \item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
 \end{enumerate}
-\clearpage
-
-\subsubsection{Algorithm Pipeline}
-\begin{figure}[H]
-%algorithm pipeline	
-\centering
-\includegraphics[width=0.95\textwidth]{images/algo-pipeline.png}
-\caption{Flow chart of the algorithm structure used in this project.}
-\end{figure}
 
 \subsection{Appendix 4: Extended Results - Ballistic Motion}
 \label{section:ballistic_motion_results}
