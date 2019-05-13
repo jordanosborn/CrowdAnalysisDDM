@@ -202,10 +202,10 @@ Other properties of the motion should emerge by studying how $\tau_c$ varies as 
 \begin{enumerate}[label=\alph*]
 \item we take a video of the motion we wish to analyse and convert each frame into a 2D array of gray-scale pixel intensities.
 \item for each starting frame in the video we take the difference between the pixel intensities of that frame and all lagging frames. $ \tau $ 
-denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $). We denote each of these differences $ d(\underline{x}, t_0, \tau) $.
-\item the 2D spatial Fourier transform of $ d(\underline{x}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position, $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $F(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
+denotes the temporal separation of the two frames ( $ \tau = 3 $ frames,  is shown for various start times $ t_0 $). We denote each of these differences $ d(\underline{r}, t_0, \tau) $.
+\item the 2D spatial Fourier transform of $ d(\underline{r}, t_0, \tau) $ is then taken for all combinations of $ t_0 $ and $ \tau $. Giving us d as a function of wave-vector instead of position, $ d(\underline{q}, t_0, \tau) $. We then take the the modulus squared of each Fourier transform giving us a power spectrum $F(\underline{q}, t_0, \tau) = |d(\underline{q}, t_0, \tau)|^2$.
 \item because the system is stationary (power spectrum should be independent of $t_0$ and should only depend on $\tau$) we therefore take the average of the Fourier transforms over each $t_0$. This allows us to remove the dependence of $t_0$ from $I$ and also reduce the effects of experimental uncertainty.
-\item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector $q$, $I(q, \tau)$
+\item in the current case the system is also isotropic and so we can then take the azimuthal average of the 2D power spectrum. This means the power spectrum is now only a function of the modulus of the wave-vector $q$, $I(q, \tau)$.
 \item the expected functional form (for Brownian Motion) of this power spectrum has been proven to be $I(q, \tau) = A(q) \cdot (1 - e^{-\tau / \tau_c (q)}) + B(q)$ \cite{DLSPecora}. The physically interesting information is contained within $\tau_c$. $\tau_c$ for Brownian motion has been shown to equal $(D \cdot q^2)^{-1}$. Fitting the data (at each $\tau$) to this functional form and then extracting the value of $\tau_c$ as a function of $q$ should yield the diffusion coefficient $D$. Plotting $log(\tau_c)$ against $log(q)$ should show a relationship of the form $y = -2\cdot x - log(D)$. The diffusion coefficient can then be used to find other pieces of information about the system including the size of the colloidal particles as there is a known relationship $D=\frac{k_B T}{6 \pi \eta R}$ between these two variables \cite{wynot_2002}.
 \end{enumerate}
 
@@ -278,7 +278,7 @@ In this section we will only provide data for a small selection of the crowds th
 \begin{figure}[H]
   \centering
 \includegraphics[width=0.75\textwidth]{images/brownian_critical_tau_linear_region.png}
-  \caption{After extracting the linear region of each plot from figure \ref{fig:simulated_brownian_tauc_whole}, linear regression is performed and best fits are plotted on top of the data. The data is plotted on a log-log scale to make the $q$-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. We see the characteristic gradient $\approx$ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}. For Geometric Brownian motion (equation \ref{eqn:geometric_brownianSDE}) we see a slight deviation from the expected decay (a slightly different gradient), this is okay as the dynamics of Geometric Brownian motion follow a different stochastic differential equation to normal Brownian motion and so a different form of the ISF should be expected. As predicted both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
+  \caption{After extracting the linear region of each plot from figure \ref{fig:simulated_brownian_tauc_whole}, linear regression is performed and best fits are plotted on top of the data. The data is plotted on a log-log scale to make the $q$-dependence of $\tau_c = (D_T q^{2})^{-1}$ explicit. We see the characteristic gradient $\approx$ -2 for both cases of (standard) Brownian motion as predicted from equation \ref{eqn:BrownianISF}. For Geometric Brownian motion (equation \ref{eqn:geometric_brownianSDE}) we see a slight deviation from the expected decay (a slightly different gradient), this is okay as the dynamics of Geometric Brownian motion follow a different stochastic differential equation to normal Brownian motion (section \ref{section:geometric}) and so a different form of the ISF should be expected. As predicted both cases of Brownian motion show the expected gradient of approximately -2 (within a couple of standard errors) and so the algorithm works as intended.}
  \label{fig:simulated_brownian_tauc_linear_region}
 \end{figure}
 
@@ -424,7 +424,7 @@ In this section we will only provide data for a small selection of the crowds th
 \clearpage
 \paragraph{Brownian ISF}
 
-In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
+In this section we will show how the fitted parameters for Brownian-like crowds vary with $q$ for a Brownian ISF (equation \ref{eqn:BrownianISF}) fitted at a single-scale.
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -438,7 +438,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_q/tauc/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{Here we see plots of $\tau_c$ vs $q$ for two "stationary" crowd videos. The figures are plotted on a log-log scale in order to make any power law dependence of $\tau_c$ on $q$ explicit. We see the characteristic linear (approximately) fits at mid-range $q$ that is expected for Brownian motion. At low $q$ the fitting problems outlined in section \ref{section:fitting_issues} are seen.}
+\caption{Here we see plots of $\tau_c$ vs $q$ for two Brownian-like crowd videos. The figures are plotted on a log-log scale in order to make any power law dependence of $\tau_c$ on $q$ explicit. We see the characteristic linear (approximately) fits at mid-range $q$ that is expected for Brownian motion. At low $q$ the fitting problems outlined in section \ref{section:fitting_issues} are seen.}
 \label{fig:crowd_brownian_fits_tauc}
 \end{figure}
 
@@ -467,7 +467,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_q/B/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Brownian ISF) on $q$ for two different "stationary" crowd videos. These are provided for completeness, but are not relevant to our analysis and so will not be discussed further.}
+\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Brownian ISF) on $q$ for two different Brownian-like crowd videos. These are provided for completeness, but are not relevant to our analysis and so will not be discussed further.}
 \label{fig:crowd_brownian_fits_B}
 \end{figure}
 
@@ -617,7 +617,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 
 \subsubsection{Stationary Crowds - Brownian Like}
 % show graphs for various box sizes , A, B plots, spikes at certain box sizes, diffusion coeff, tauc vs box size at fixed q
-\paragraph{Brownian ISF} In this section we will show how the parameters from "stationary" crowds fitted to a Brownian ISF vary as a function of $q$ at different box-sizes. 
+\paragraph{Brownian ISF} In this section we will show how the parameters from Brownian-like crowds fitted to a Brownian ISF vary as a function of $q$ at different box-sizes. 
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -631,7 +631,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{Here we see plots of the parameter $\tau_c$ (from the Brownian ISF) as a function of $q$ for two "stationary" crowds at a range of box sizes. The data is plotted on a log-log scale in order to make any power law dependence explicit. In both plots the fitting issues at low $q$ outlined in section \ref{section:fitting_issues} appear. We will ignore these problematic regions in our analysis and will focus only on the approximately linear patterns seen at mid-range $q$. The linear region expected for Brownian motion is seen in both figures at all box sizes. There is some substructure to the curves as a function of box-size, we will extract the linear region from multiple videos (to determine the $q$ and box-size dependence of $\tau_c$) and carry out more in depth analysis in section \ref{section:brownian_multiDDM}.}
+\caption{Here we see plots of the parameter $\tau_c$ (from the Brownian ISF) as a function of $q$ for two Brownian-like crowds at a range of box sizes. The data is plotted on a log-log scale in order to make any power law dependence explicit. In both plots the fitting issues at low $q$ outlined in section \ref{section:fitting_issues} appear. We will ignore these problematic regions in our analysis and will focus only on the approximately linear patterns seen at mid-range $q$. The linear region expected for Brownian motion is seen in both figures at all box sizes. There is some substructure to the curves as a function of box-size, we will extract an approximate fit from multiple videos (to determine the $q$ and box-size dependence of $\tau_c$) and carry out more in depth analysis in section \ref{section:brownian_multiDDM}.}
 \label{fig:crowd_brownian_fits_tauc_all_boxsizes}
 \end{figure}
 
@@ -660,7 +660,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/B/brownian_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{Here we see figures showing the $q$ dependence of the Brownian ISF fitting parameters $A$ and $B$ at a range of box-sizes for two "stationary" crowds. Parameter $A$ shows similar functional forms at all box-sizes, but as box-size decreases the curve is shifted downwards. This is an interesting pattern and could be an avenue for further research. However we are only interested in the dynamical properties of the crowds, meaning we will ignore the non-dynamical fitting parameters $A$ and $B$ in our analysis.}
+\caption{Here we see figures showing the $q$ dependence of the Brownian ISF fitting parameters $A$ and $B$ at a range of box-sizes for two Brownian-like crowds. Parameter $A$ shows similar functional forms at all box-sizes, but as box-size decreases the curve is shifted downwards. This is an interesting pattern and could be an avenue for further research. However we are only interested in the dynamical properties of the crowds, meaning we will ignore the non-dynamical fitting parameters $A$ and $B$ in our analysis.}
 \label{fig:crowd_brownian_fits_tauc_B_boxsizes}
 \end{figure}
 \clearpage
@@ -680,7 +680,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/brownian_all_boxsizes/tauc/brownian_running6_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{These figures show the $q$ dependence of the Brownian fitting parameter $\tau_c$ for two swimmer-like crowds at a range of box-sizes. There are regions in both figures where the fit is incredibly poor. However linear regions can be seen, and so the crowd data is behaving at least approximately Brownian in these limited regions. It does however indicate (in conjunction with the oscillations seen in the image structure function $F$) that we have not arrived at the full picture and a Brownian ISF is only an approximation of the ISF for this crowd type. The linear regions in these plots will be analysed in detail in section \ref{section:brownian_multiDDM}.}
+\caption{These figures show the $q$ dependence of the Brownian fitting parameter $\tau_c$ for two swimmer-like crowds at a range of box-sizes. There are regions in both figures where the fit is incredibly poor. However linear regions can be seen, and so the crowd data is behaving at least approximately Brownian in these limited regions. It does however indicate (in conjunction with the oscillations seen in the image structure function $F$) that we have not arrived at the full picture and a Brownian ISF is only an approximation of the ISF for this crowd type.}
 \label{fig:running_brownian_fits_tauc_all_boxsizes}
 \end{figure}
 
@@ -740,7 +740,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{{images/fits/brownian_v_boxsize/tauc/brownian_crowd5_163.5}.png}
   \caption{}
 \end{subfigure}
-\caption{These figures show $\tau_c$ and its dependence on box-size at a range of $q$ values for the video crowd5 on a log-log scale. The figures show $\tau_c$ increasing as a function of box-size for all values of $q$. A similar functional dependence is seen for footage of other "stationary" crowds.}
+\caption{These figures show $\tau_c$ and its dependence on box-size at a range of $q$ values for the video crowd5 on a log-log scale. The figures show $\tau_c$ increasing as a function of box-size for all values of $q$. A similar functional dependence is seen for footage of other Brownian-like crowds.}
 \label{fig:crowd5_tauc_v_boxsize}
 \end{figure}
 
@@ -852,7 +852,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/tauc_polyfit/brownian_running12_boxsize_1024.png}
   \caption{}
 \end{subfigure}
-\caption{Here we can see further figures showing the approximate fifth order polynomial form of the data. This function fits remarkably well for the "stationary" crowds (a) (b), but for the swimmer-like crowds (c) (d) there is a more complicated structure to the data. And the fifth order polynomial only fits the overall trend very approximately (for information on how to obtain graphs for each crowd in the data set see section \ref{section:database}).}
+\caption{Here we can see further figures showing the approximate fifth order polynomial form of the data. This function fits remarkably well for the Brownian-like crowds (a) (b), but for the swimmer-like crowds (c) (d) there is a more complicated structure to the data. And the fifth order polynomial only fits the overall trend very approximately (for information on how to obtain graphs for each crowd in the data set see section \ref{section:database}).}
 \label{fig:tauc_polyfit3}
 \end{figure}
 
@@ -890,7 +890,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/tauc_polyfit/brownian_running9_fit_poly5.png}
   \caption{}
 \end{subfigure}
-\caption{The figures above show how the fitted parameters (for a fifth order polynomial) vary as a function of box-size for six different videos. We see that the highest order parameters ($O(log^5q)$ and $O(log^4q)$) remain small (in comparison to the other parameters) no matter the box-size or video. The lower order parameters show significantly more variation with box-size (and video). The swimmer-like crowd fit parameters show particularly nice trends and are seen to increase/decrease approximately monatomically with box-size for low to mid-range box-sizes, after which the parameters strictly decrease in magnitude as the box-size approaches the footage size. Where as for the "stationary" crowds the functional dependence on box-size is much less clear. We see oscillations in the fit parameters with no obvious dependence on box-size. However a significant number of crowds show peaks similar to the one seen in figure (a) at $box$-$size \approx 615$ $pixels$. It is not clear what these peaks correspond to in a physical sense. }
+\caption{The figures above show how the fitted parameters (for a fifth order polynomial) vary as a function of box-size for six different videos. We see that the highest order parameters ($O(log^5q)$ and $O(log^4q)$) remain small (in comparison to the other parameters) no matter the box-size or video. The lower order parameters show significantly more variation with box-size (and video). The swimmer-like crowd fit parameters show particularly nice trends and are seen to increase/decrease approximately monatomically with box-size for low to mid-range box-sizes, after which the parameters strictly decrease in magnitude as the box-size approaches the footage size. Where as for the Brownian-like crowds the functional dependence on box-size is much less clear. We see oscillations in the fit parameters with no obvious dependence on box-size. However a significant number of crowds show peaks similar to the one seen in figure (a) at $box$-$size \approx 615$ $pixels$. It is not clear what these peaks correspond to in a physical sense. }
 \label{fig:tauc_polyfit_params}
 \end{figure}
 
@@ -898,7 +898,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \label{section:conclusion}
 This report has hopefully demonstrated that DDM can be used to analyse macroscopic motion (crowds) and is not just limited to microscopic applications. However it is still early days and this report has only demonstrated that it is possible to analyse macroscopic motion using DDM, it hasn't directly related the data to the physical properties of the crowd. This was due to limitations imposed by the quality of the available footage. In order to relate the data to the physical features of the crowd it is necessary to know the properties of the device (camera properties, orientation and location etc.) used to film the footage. We need this information so that we can relate the time and length scales seen in the data (in terms of pixels and differences in frame index) to their physical counterparts. Unfortunately, after contacting the owners of the footage used in this project it was clear that this information was unavailable. In order to correctly relate the image scales to physical ones it therefore would have been necessary to collect footage of crowds independently (this was not done due to funding, legal and time constraints).
 \\\\
-The results seen in this project are promising and will help to constrain the search for appropriate forms of the ISF for crowds in motion. It was found that a Ballistic ISF fit was inappropriate for both of the crowd types tested in this project, producing horrendously noisy and inaccurate fits of the data. However a Brownian ISF was a good fit for both crowd types, especially so for "stationary" crowds, indicating that both crowd types act in an approximately Brownian manner. Although the overall trends in the data for swimmer-like crowds can be explained by a Brownian ISF, the data also contains an oscillatory substructure (which the "stationary" crowds do not) indicating that there is an essential difference between the two crowd types. It is expected that there is a more appropriate ISF for swimmer-like crowds that takes into account this finer structure. A search to further constrain the form of the ISF for various crowd types would be the next logical step to investigate (see section \ref{section:future}).
+The results seen in this project are promising and will help to constrain the search for appropriate forms of the ISF for crowds in motion. It was found that a Ballistic ISF fit was inappropriate for both of the crowd types tested in this project, producing horrendously noisy and inaccurate fits of the data. However a Brownian ISF was a good fit for both crowd types, especially so for the Brownian-like crowds, indicating that both crowd types act in an approximately Brownian manner. Although the overall trends in the data for swimmer-like crowds can be explained by a Brownian ISF, the data also contains an oscillatory substructure (which the Brownian-like crowds do not) indicating that there is an essential difference between the two crowd types. It is expected that there is a more appropriate ISF for swimmer-like crowds that takes into account this finer structure. A search to further constrain the form of the ISF for various crowd types would be the next logical step to investigate (see section \ref{section:future}).
 \\\\
 After extensive research it was found that the functional form (with the fewest fitting parameters) which provided the most explanatory power for the Brownian ISF parameter $\tau_c(q)$ was a fifth order polynomial. This functional form accurately described almost all videos in the dataset. The challenge was then to relate the six polynomial parameters to the physical properties of the crowd. Unfortunately this could not be done due to the lack of information about the equipment used to record the crowds. These parameters were plotted against box-size (the only variable available to us that could be used to describe parameter behaviour), the parameters show some dependence on the box-size but it is not clear if there is any systematic relationship between the two variables.
 \\\\
@@ -931,7 +931,7 @@ Most image segmentation algorithms are very computationally intensive and some e
 Neural networks offer some unique benefits over DDM in that they can be trained to find specific objects in an image and so can be used to directly count the number and location of different objects \cite{yolov3}. The main drawback is that these predictions will only be as good as the quality of the dataset used to train them. High quality data is often not available and when it is it is usually very expensive to procure. The larger your training dataset the longer it will take to train (usually with the benefit of more accurate predictions). Often training algorithms will require a form of supervised learning, for example the images will need to be tagged with the objects they contain. This is a time consuming process. However once the model is trained it can usually produce predictions in a reasonable time frame. However if detection of a new type of object is required the model will need to be retrained, often with a new dataset \cite{tensorflow}. DDM requires no such training data and can therefore be used with zero training time on any type of motion (once an ISF is selected). These two methods are however not at odds with one another, DDM can't be used to track objects as it doesn't really have a notion of the individual constituents of the system. It is primarily focussed on extracting dynamical information of the entire system or average information about the individual constituents. Neural networks however can be used to locate and track individual objects between frames. It however is not really applicable to the extraction of dynamical information. These two methods could therefore be used in tandem to track and analyse the motion inside crowds.
 
 \subsubsection{Particle Image Velocimetry}
-Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used. 
+Is a technique that is more appropriate for comparison with microscopic applications of DDM. However it does offer some insight in to the benefits of DDM analysis. PIV is used to obtain velocity and related information about the flow of fluids. It achieves this through the introduction of tracer particles. These particles are assumed to follow the overall flow of the fluid. The fluid is illuminated and the tracer particles are tracked to measure the velocity field of the flow \cite{piv}. This method therefore requires pre-preparation of the system that is to be studied, DDM however can be applied to pre-recorded motion and does not require any special conditions to be set-up before it can be used (only that the properties of the filming apparatus is known). 
 
 \subsubsection{Optical Flow}
 "Optical flow is the distribution of apparent velocities of movement of brightness patterns in an image" \cite{optical_flow}. It can arise due to relative motion between an observer and the objects in a scene. Optical flow can give information about the spatial positioning of objects and the rate of change of the arrangements of these objects. "Discontinuities in the optical flow can help in segmenting images into regions that correspond to different objects" \cite{optical_flow}. However objects may be moving but exhibit no change in brightness, this method will therefore not be sensitive to this sort of motion. It is possible to determine the velocities of the motion from the brightness gradients computed from the footage.
@@ -1012,7 +1012,7 @@ Software development best practices were followed throughout development. The pr
 Because of the nature of the DDM algorithm (mainly large array manipulations) it was decided that the code should target GPUs due to their suitability for highly parallelised array based Mathematics. A large amount of ram (16GB+) is also required for the algorithm to run successfully. This capacity is used to implement a rolling buffer of the frames that are captured from the video source. An Nvidia Jetson TX2 was provided as a development board (will now be referred to as just the Jetson). The Jetson is a powerful, energy efficient development board with an embedded GPU \cite{jetson}. The Jetson GPU can be programmed with the programming language CUDA, but after carrying out initial research \cite{cuda_book} it was decided that writing raw CUDA code by hand would be a significant undertaking and so other avenues to utilise GPU parallelism were explored. After careful consideration the library ArrayFire was selected as it offered optimised algorithms for several backends (GPU: CUDA/OPENCL and CPU: All) \cite{arrayfire}. This was an important feature as it meant it would be possible to avoid timely re-implementations of various algorithms and also that rapid prototyping on any development machine was possible due to the available CPU and OPENCL backends.
 
 \subsubsection{Software Details}
-Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a far easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust, language bindings for popular libraries are still in their infancy. This therefore required the creation of a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQLite database to allow efficient querying of the available data.
+Due to the selection of Arrayfire (availability of language bindings), the focus on speed and my own programming knowledge the selection of programming language was effectively limited to C++ or Rust \cite{rust} (for core algorithm implementation). Rust is a relatively recently developed programming language with a focus on speed, safety and concurrency. I selected Rust for the core of the algorithm implementation as it allows you to develop concurrent code in a far easier and safer way than C++, this is important so that the algorithm will not be bound by the CPU (passing data around, reading frames, sequential operations). Due to the relative immaturity of Rust, language bindings for popular libraries are still in their infancy. This therefore required the creation of a small C++ library to expose language bindings for OpenCV over a C ffi (foreign function interface). OpenCV is used in this project to capture video streams from files, cameras, urls etc. Frames from these streams are then sent into the DDM algorithm as they become available. This level of optimisation allows the bulk of the algorithm to run in less time than the length of the video (even using the CPU backend). There however is a significant slowdown associated with the radial averaging of the Fourier Transforms during the DDM algorithm. This slowdown prevents the algorithm from running in real-time but with further development it is anticipated that radial averaging can be optimised as the algorithm used currently only uses very rudimentary techniques (time limitations have so far prevented the implementations of these optimisations). After completion of the DDM algorithms the raw data is added to an SQLite database to allow efficient querying of the available data.
 \\\\
 Again due to time limitations and the immaturity of the Rust library ecosystem all data analysis (image structure function fitting etc. The ISFs are often not linearisable which means we have to resort to non-linear least-squares regression, scipy provides built in methods for this based on the Levenberg-Marquardt algorithm \cite{scipy_fit}.) and exploration was undertaken using Python (numpy, scipy, matplotlib, pandas, SQLite, etc.) and Jupyter Notebooks. If time permitted a custom curve fitting solution would have been added to the Rust code-base so that the algorithm could run as a totally self contained executable. This custom fitting solution would need to be implemented if DDM were to find an application in real-time autonomous crowd monitoring systems.
 
@@ -1029,20 +1029,20 @@ In the figure above we see a typical plot of $\tau_c$ vs $q$ on a log-log scale.
 \begin{enumerate}[label=(\Alph*)]
 \item In this region $q$ takes on small values, which means the associated length scale is large ($q \propto 1 / L$). The reason this becomes problematic is because of the finite sensor size of the camera recording the footage. Once the associated length scale approaches the sensor size the sensor can no longer pick up the frequencies at smaller length scales. This therefore contributes to the erratic fits we arrive at when working in the region of small $q$.
      
-\item In this region $q$ takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of $1 / pixel$ $size$. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large $q$.
+\item In this region $q$ takes on large values, which means the associated length scale is small ($q \propto 1 / L$). Due to the finite width of the pixels in the footage we can't pick up frequency details at arbitrarily small length scales, we are limited to frequencies of the order of $1 / pixel$ $size$. If we could take the limit as the pixel size tends to 0 we would find that the fits continue to behave well, up to the limit of the optics that are providing the images. This therefore contributes to the erratic fits we arrive at when working in the region of large $q$.
 
 \item In this region the time-scale $\tau_c$ takes on large values. At time scales exceeding the duration of the available footage, we are extrapolating based on a single incomplete time period. And thus the footage length imposes an upper limit on the time scales we can accurately probe using this method. With sufficiently long footage we can take frame differences at larger and larger time separations. The motion should become more and more decorrelated as the time between frames increases. Once we approach total decorrelation at very large separations we have the limiting behaviour of the system. This would not be a problem if infinitely long footage was available. But due to the finite number of available frames we can't probe at time scales above the footage length. This contributes to the erratic fits in region C.
 
 \item In this region the time-scale $\tau_c$ takes on small values. There is a (lower) limiting time-scale imposed by the finite frame rate. The frame rate of the footage determines the minimum time scale that can be probed. The time difference between frames is given by the reciprocal of the frame rate. Motion (in the footage) is thus discretised and not continuous, it only appears so due to the limitations of the human eye. We can't therefore probe to arbitrarily small time scales as we are limited to time-scales exceeding the duration between frames. This contributes to the erratic fits in region D.
 
-\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E only).
+\item We therefore conclude that region E is the only region viable for analysis. Only mid-range time and length scales are appropriate to analyse due to the limitations imposed by the recording apparatus. The regions $A \cap C$ and $B \cap D$ should be avoided even more so than A, B, C or D on their own, due to the interactions between the time and length scale limiting factors in these areas. These intersections exacerbate the issues with fitting in these regions. We will therefore only concern ourselves with mid-range length and time scales during our analysis (length and time scales corresponding to region E).
 \end{enumerate}
 
 \subsection{Appendix 4: Extended Results - Ballistic Motion}
 \label{section:ballistic_motion_results}
 
 \subsubsection{Single-Scale DDM - Brownian-Like Crowds}
-In this section we will show how the fitted parameters for "stationary" crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
+In this section we will show how the fitted parameters for Brownian-like crowds vary with $q$ for a Ballistic ISF (equation \ref{eqn:BallisticISF}) fitted at a single-scale.
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -1056,7 +1056,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{These figures show how $\tau_c$ varies as a function of $q$ for two different "stationary" crowd videos fitted to Ballistic ISFs. The fit provided is exceedingly poor and is used to demonstrate that modelling the "stationary" crowds as purely Brownian motion provides a much better description of the data.}
+\caption{These figures show how $\tau_c$ varies as a function of $q$ for two different Brownian-like crowd videos fitted to Ballistic ISFs. The fit provided is exceedingly poor and is used to demonstrate that modelling the Brownian-like crowds as purely Brownian motion provides a much better description of the data.}
 \label{fig:crowd_ballistic_fits_tauc}
 \end{figure}
 
@@ -1072,7 +1072,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/v/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{The figures above show how the fitted Ballistic ISF parameter $v$ varies as a function of $q$. Again the poor fits indicate that a Ballistic ISF is not applicable to these crowd types.}
+\caption{The figures above show how the fitted Ballistic ISF parameter $v$ varies as a function of $q$. Again the poor fits indicate that a Ballistic ISF is not appropriate for these crowd types.}
 \label{fig:crowd_ballistic_fits_v}
 \end{figure}
 
@@ -1101,7 +1101,7 @@ In this section we will show how the fitted parameters for "stationary" crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/B/video_multiDDM_crowd5_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Ballistic ISF) on $q$ for two different "stationary" crowd videos. These are again exceedingly poor fits. These are provided for completeness, but are not relevant to our analysis (only in that they indicate "stationary" crowds do not follow Ballistic motion) and so will not be discussed further.}
+\caption{The figures above show the dependence of the parameters $A$ and $B$ (from the Ballistic ISF) on $q$ for two different Brownian-like crowd videos. These are again exceedingly poor fits. These are provided for completeness, but are not relevant to our analysis (only in that they indicate Brownian-like crowds do not follow Ballistic motion) and so will not be discussed further.}
 \label{fig:crowd_ballistic_fits_B}
 \end{figure}
 
@@ -1120,7 +1120,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
   \includegraphics[width=\linewidth]{images/fits/ballistic_q/tauc/video_multiDDM_running6_box_size_1024.png}
   \caption{}
 \end{subfigure}
-\caption{The figures above show $\tau_c$ as a function of $q$ for two swimmer-like crowds fitted to a Ballistic ISF. The fits are very noisy and are quite poor like in the "stationary" crowd case. The Brownian fits for swimmer-like crowds are significantly better than the Ballistic fits, but still don't capture all of the variation seen in the image structure power spectrum $F$. This would indicate that a Brownian ISF is the most appropriate fit for both crowd types (of the two ISFs that were tested). However in the swimmer-like crowds the Brownian ISF only partially describes the dynamics of the system. Meaning further investigation in to crowd types and their associated ISFs are required.}
+\caption{The figures above show $\tau_c$ as a function of $q$ for two swimmer-like crowds fitted to a Ballistic ISF. The fits are very noisy and are quite poor like in the Brownian-like crowd case. The Brownian fits for swimmer-like crowds are significantly better than the Ballistic fits, but still don't capture all of the variation seen in the image structure power spectrum $F$. This would indicate that a Brownian ISF is the most appropriate fit for both crowd types (of the two ISFs that were tested). However in the swimmer-like crowds the Brownian ISF only partially describes the dynamics of the system. Meaning further investigation in to crowd types and their associated ISFs are required.}
 \label{fig:running_ballistic_fits_tauc}
 \end{figure}
 
@@ -1170,7 +1170,7 @@ In this section we will show how the fitted parameters for swimmer-like crowds v
 \end{figure}
 
 \subsubsection{Multi-Scale DDM - Brownian-Like Crowds}
-In this section we will show how the parameters from "stationary" crowds fitted to a Ballistic ISF vary as a function of $q$ at different box-sizes. 
+In this section we will show how the parameters from Brownian-like crowds fitted to a Ballistic ISF vary as a function of $q$ at different box-sizes. 
 
 \begin{figure}[H]
 \begin{subfigure}[t]{.5\textwidth}
@@ -1197,7 +1197,7 @@ In this section we will show how the parameters from "stationary" crowds fitted 
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/v/ballistic_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{Here we can see the $q$ dependence of the dynamical fitting parameters $\tau_c$ and $v$ for two "stationary" crowds at a range of box sizes. The fits seen are incredibly poor and aim to illustrate that a Ballistic ISF is inappropriate for "stationary" crowd types.}
+\caption{Here we can see the $q$ dependence of the dynamical fitting parameters $\tau_c$ and $v$ for two Brownian-like crowds at a range of box sizes. The fits seen are incredibly poor and aim to illustrate that a Ballistic ISF is inappropriate for Brownian-like crowd types.}
 \label{fig:crowd_ballistic_fits_v_all_boxsizes}
 \end{figure}
 
@@ -1226,7 +1226,7 @@ In this section we will show how the parameters from "stationary" crowds fitted 
   \includegraphics[width=\linewidth]{images/fits/ballistic_all_boxsizes/B/ballistic_crowd5_all_boxsizes.png}
   \caption{}
 \end{subfigure}
-\caption{Here we can see the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two "stationary" crowds at a range of box sizes. The fits seen are again incredibly poor and thus also illustrating that a Ballistic ISF is inappropriate for "stationary" crowd types.}
+\caption{Here we can see the $q$ dependence of the non-dynamical fitting parameters $A$ and $B$ for two Brownian-like crowds at a range of box sizes. The fits seen are again incredibly poor and thus also illustrating that a Ballistic ISF is inappropriate for Brownian-like crowd types.}
 \label{fig:crowd_ballistic_fits_tauc_B_boxsizes}
 \end{figure}
 
