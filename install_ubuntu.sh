@@ -6,6 +6,7 @@ sudo apt install -y apt-utils sudo nano
 sudo apt install -y make cmake git curl gcc g++ wget python3-pip libssl-dev pkg-config zlib1g-dev clang libc++-dev
 sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential
 sudo pip3 install --upgrade pip
+sudo pip3 install virtualenv
 
 #OpenCV4
 sudo apt install -y libopencv-dev
@@ -44,5 +45,7 @@ sudo ldconfig
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/CrowdAnalysisDDM/code
 git pull
+virtualenv ddm
+source ddm/bin/activate
 $HOME/.poetry/bin/poetry install
 cargo test
