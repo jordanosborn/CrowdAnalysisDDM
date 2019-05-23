@@ -20,7 +20,7 @@ git checkout 3.6
 git submodule init && git submodule update
 mkdir $HOME/arrayfire/build
 cd $HOME/arrayfire/build
-cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
 make -j4
 sudo make install
 echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
