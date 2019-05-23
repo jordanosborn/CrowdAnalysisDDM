@@ -35,7 +35,13 @@ curl https://sh.rustup.rs -sSf | sh -s -- -y
 source $HOME/.cargo/env
 $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 
+#Python Deps
+cd $HOME
+curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+poetry completions bash > /etc/bash_completion.d/poetry.bash-completion
+
 #Clone Repo
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
-cd $HOME/CrowdAnalysisDDM
+cd $HOME/CrowdAnalysisDDM/code
+poetry install
 cargo test
