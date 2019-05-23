@@ -29,4 +29,12 @@ Inside code directory replace {arg} with path/ numerical value (positive integer
     cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path}
 
 #### Python automation script
-TODO
+Saves to folder results and results-transposed and uploads data to crowd.sqlite database.
+
+    python3 run.py video-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
+    python3 run.py video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
+    python3 run.py add-to-db {database_file} {folder_containing_results} {filename_"radial_Avg.csv"} {database_table_prefix}
+    python3 run.py fit {csvs folder path} 
+    python3 run.py fit {csv file path} custom #fit to a custom function not just brownian and ballistic.
+    python3 run.py plot #Search database for video and create a plot at specific values
+
