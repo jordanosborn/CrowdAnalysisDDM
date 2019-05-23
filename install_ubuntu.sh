@@ -47,5 +47,6 @@ cd $HOME/CrowdAnalysisDDM/code
 git pull
 virtualenv -p python3 .venv
 source .venv/bin/activate
+$HOME/.poetry/bin/poetry update
 $HOME/.poetry/bin/poetry install
 cargo test
