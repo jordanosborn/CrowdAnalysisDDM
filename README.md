@@ -9,7 +9,7 @@
 1. Rust
 1. Clang++
 1. Python3.6+
-1. Poetry
+1. [Poetry](https://github.com/sdispater/poetry)
 #### Install on Ubuntu:
 [Download](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh) installer script.
 
