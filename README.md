@@ -35,6 +35,12 @@ Inside code directory replace {arg} with path/ numerical value (positive integer
 #### Python automation script
 Saves to folder results and results-transposed and uploads data to crowd.sqlite database.
 
+Activate Virtual Environment
+
+    source .venv/bin/activate
+
+Python run script commands
+
     python3 run.py video-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
     python3 run.py video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
     python3 run.py add-to-db {database_file} {folder_containing_results} {filename_"radial_Avg.csv"} {database_table_prefix}
