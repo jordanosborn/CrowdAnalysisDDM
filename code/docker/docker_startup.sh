@@ -30,7 +30,4 @@ exit_if_failed $?
 cargo clippy --all-targets --all-features -- -D warnings
 exit_if_failed $?
 
-cargo run --release "$@"
-exit_if_failed $?
-
 exit 0
