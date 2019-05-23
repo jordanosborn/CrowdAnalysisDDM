@@ -31,4 +31,7 @@ exit_if_failed $?
 cargo tarpaulin
 exit_if_failed $?
 
+cargo run
+exit_if_failed $?
+
 exit 0
