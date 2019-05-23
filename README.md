@@ -4,6 +4,12 @@
 ## Set Up
 ### Requirements
 1. Ubuntu 18.04+ or macOS Mojave+
+1. OpenCV4
+1. ArrayFire 3.6
+1. Rust
+1. Clang++
+1. Python3.6+
+1. Poetry
 #### Install on Ubuntu:
 [Download](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh) installer script.
 
