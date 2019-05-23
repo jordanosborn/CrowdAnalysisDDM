@@ -17,5 +17,5 @@
     ./install_ubuntu.sh
 #### Install on Mac:
 TODO - follow README in [code folder](code/README.md).
-### Run - Command Line Arguments
+### Usage - Command Line Arguments
 TODO
