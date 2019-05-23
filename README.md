@@ -18,4 +18,4 @@
 #### Install on Mac:
 TODO - follow README in [code folder](code/README.md).
 ### Usage - Command Line Arguments
-TODO
+TODO - cargo run args and run.py args
