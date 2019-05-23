@@ -20,6 +20,7 @@ git clone --recursive https://github.com/arrayfire/arrayfire.git
 cd $HOME/arrayfire
 git checkout 3.6
 git submodule init && git submodule update
+mkdir $HOME/arrayfire/build
 cd $HOME/arrayfire/build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j4
