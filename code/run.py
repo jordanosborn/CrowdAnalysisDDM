@@ -37,19 +37,22 @@ def get_allowed_dimension(
         return box_range
 
 
-with open("secrets.json") as f:
+with open("secrets_template.json") as f:
     secrets = json.loads(f.read())
 
 
 def send_message(secrets: Any, body: str):
-    account_sid = secrets["account_sid"]
-    auth_token = secrets["auth_token"]
-    client = Client(account_sid, auth_token)
+    try:
+        account_sid = secrets["account_sid"]
+        auth_token = secrets["auth_token"]
+        client = Client(account_sid, auth_token)
 
-    message = client.messages.create(
-        body=body, from_=f'{secrets["twilio_number"]}', to=f'{secrets["phone_number"]}'
-    )
-    print(f'Sent message to {secrets["phone_number"]} message_ID = {message.sid}')
+        message = client.messages.create(
+            body=body, from_=f'{secrets["twilio_number"]}', to=f'{secrets["phone_number"]}'
+        )
+        print(f'Sent message to {secrets["phone_number"]} message_ID = {message.sid}')
+    except KeyError:
+        pass
 
 
 def run(command: str, video: str, capacity: str, radial_width: str):
