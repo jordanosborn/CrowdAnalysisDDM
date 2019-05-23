@@ -16,6 +16,6 @@
     chmod +x install_ubuntu.sh
     ./install_ubuntu.sh
 #### Install on Mac:
-TODO - follow README in folder code.
+TODO - follow README in [code folder](code/README.md).
 ### Run - Command Line Arguments
 TODO
