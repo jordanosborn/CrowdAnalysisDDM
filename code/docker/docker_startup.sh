@@ -19,7 +19,7 @@ source $HOME/.bashrc
 
 ldconfig
 
-cd MastersProject
+cd CrowdAnalysisDDM
 git pull
 
 cd code
@@ -30,10 +30,7 @@ exit_if_failed $?
 cargo clippy --all-targets --all-features -- -D warnings
 exit_if_failed $?
 
-cargo tarpaulin
-exit_if_failed $?
-
-cargo run --release
+cargo run --release "$@"
 exit_if_failed $?
 
 exit 0
