@@ -53,16 +53,12 @@ RUN echo ubuntu:ubuntu | chpasswd
 USER ubuntu
 WORKDIR /home/ubuntu
 
-RUN git clone https://github.com/jordanosborn/MastersProject.git
-WORKDIR /home/ubuntu/MastersProject
+RUN git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
+WORKDIR /home/ubuntu/CrowdAnalysisDDM
 #rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-# RUN /home/ubuntu/.cargo/bin/rustup install nightly
-# RUN /home/ubuntu/.cargo/bin/rustup default stable
-RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 
-RUN RUSTFLAGS="--cfg procmacro2_semver_exempt" /home/ubuntu/.cargo/bin/cargo install cargo-tarpaulin
-COPY ./docker_startup.sh .
+RUN /home/ubuntu/.cargo/bin/rustup component add rls rustfmt clippy
 
 
 ENTRYPOINT ["/bin/bash", "./docker_startup.sh"]
