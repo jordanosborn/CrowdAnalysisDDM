@@ -48,7 +48,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .cpp_link_stdlib("stdc++")
         .cpp_link_stdlib("c++")
         .cpp_set_stdlib("c++")
-        .compiler("clang++")
+        .compiler("g++")
         .compile(output);
     unix::opencv_link();
 }
