@@ -1,5 +1,6 @@
 #!/bin/bash
 cd $HOME
+
 #Pre-requisites
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y apt-utils sudo nano
@@ -8,10 +9,10 @@ sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential
 sudo pip3 install --upgrade pip
 sudo pip3 install virtualenv
 
-#OpenCV4
+#OpenCV installation
 sudo apt install -y libopencv-dev
 
-#Arrayfire
+#Arrayfire dependency installation and building
 sudo apt install -y libfreeimage-dev cmake-curses-gui
 sudo apt install -y  libopenblas-dev libfftw3-dev liblapacke-dev libblas-dev libclblas-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
 sudo apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
@@ -28,16 +29,16 @@ echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
 echo -e "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
 
 cd $HOME
-#Rust
+#Rust installation
 curl https://sh.rustup.rs -sSf | sh -s -- -y
 source $HOME/.cargo/env
 $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 
-#Python Deps
+#Poetry installation - python dependency management
 cd $HOME
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
-#Other
+#Configure linking directories
 source $HOME/.bashrc
 sudo ldconfig
 
@@ -45,8 +46,12 @@ sudo ldconfig
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/CrowdAnalysisDDM/code
 git pull
+
+#Create python virtual environment and install all dependencies
 virtualenv -p python3 .venv
 source .venv/bin/activate
 $HOME/.poetry/bin/poetry update
 $HOME/.poetry/bin/poetry install
-cargo test
+
+#Test that executable runs
+cargo run
