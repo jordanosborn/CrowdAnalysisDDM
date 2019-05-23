@@ -7,7 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /home
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y apt-utils sudo nano
-RUN apt-get install -y make cmake git curl gcc g++ wget python3-pip libssl-dev pkg-config zlib1g-dev clang libc++-dev libstd++abi-dev
+RUN apt-get install -y make cmake git curl gcc g++ wget python3-pip libssl-dev pkg-config zlib1g-dev clang libc++-dev 
+#libstd++abi-dev
 
 #Opencv4
 RUN apt-get install -y libopencv-dev
