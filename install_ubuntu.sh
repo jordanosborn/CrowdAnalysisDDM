@@ -25,8 +25,6 @@ make -j4
 sudo make install
 echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
 echo -e "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
-source $HOME/.bashrc
-sudo ldconfig
 
 cd $HOME
 #Rust
@@ -37,12 +35,14 @@ $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 #Python Deps
 cd $HOME
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
-echo -e "source $HOME/.profile" >> $HOME/.bashrc
+
+#Other
 source $HOME/.bashrc
+sudo ldconfig
 
 #Clone Repo
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/CrowdAnalysisDDM/code
 git pull
-poetry install
+$HOME/.poetry/bin/poetry install
 cargo test
