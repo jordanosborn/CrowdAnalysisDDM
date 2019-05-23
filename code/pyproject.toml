@@ -5,7 +5,7 @@ description = ""
 authors = ["Jordan Osborn <jordan@osborn.dev>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "*"
 numpy = "*"
 matplotlib = "*"
 twilio = "*"
