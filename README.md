@@ -28,6 +28,10 @@ Inside code directory replace {arg} with path/ numerical value (positive integer
     cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path}
     cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path}
 
+##### Example
+
+    cargo run --release video-ddm 80 1 simulations/Brownian_example.avi Brownian_example_results.csv
+
 #### Python automation script
 Saves to folder results and results-transposed and uploads data to crowd.sqlite database.
 
