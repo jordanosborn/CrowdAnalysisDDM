@@ -4,13 +4,11 @@ cd $HOME
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y apt-utils sudo nano
 sudo apt install -y make cmake git curl gcc g++ wget python3-pip libssl-dev pkg-config zlib1g-dev clang libc++-dev
+sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential
+sudo pip3 install --upgrade pip
 
 #OpenCV4
 sudo apt install -y libopencv-dev
-sudo apt install -y libomp-dev libgmp-dev libboost-all-dev
-sudo pip3 install --upgrade pip
-sudo apt install -y build-essential libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-sudo apt install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev
 
 #Arrayfire
 sudo apt install -y libfreeimage-dev cmake-curses-gui
@@ -41,7 +39,6 @@ cd $HOME
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 echo -e "source $HOME/.profile" >> $HOME/.bashrc
 source $HOME/.bashrc
-poetry completions bash | sudo cat > /etc/bash_completion.d/poetry.bash-completion
 
 #Clone Repo
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
