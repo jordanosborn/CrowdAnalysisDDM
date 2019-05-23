@@ -42,7 +42,7 @@ fn build(src_files: Vec<&str>, output: &str) {
         .flag("-std=c++14")
         .flag(&get_opencv_flags())
         .include("./lib/include")
-        .include("/usr/local/include")
+        //.include("/usr/local/include")
         .include("/usr/local/include/af")
         .include(unix::opencv_include())
         .cpp_link_stdlib("stdc++")
