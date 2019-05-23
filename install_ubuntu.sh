@@ -45,7 +45,7 @@ sudo ldconfig
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/CrowdAnalysisDDM/code
 git pull
-virtualenv ddm
-source ddm/bin/activate
+virtualenv .venv
+source .venv/bin/activate
 $HOME/.poetry/bin/poetry install
 cargo test
