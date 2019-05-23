@@ -45,5 +45,6 @@ poetry completions bash | sudo cat > /etc/bash_completion.d/poetry.bash-completi
 #Clone Repo
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/CrowdAnalysisDDM/code
+git pull
 poetry install
 cargo test
