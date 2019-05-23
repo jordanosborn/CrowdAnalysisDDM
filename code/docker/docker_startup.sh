@@ -33,7 +33,7 @@ exit_if_failed $?
 cargo tarpaulin
 exit_if_failed $?
 
-cargo run "$@"
+cargo run --release
 exit_if_failed $?
 
 exit 0
