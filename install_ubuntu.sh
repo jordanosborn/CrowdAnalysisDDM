@@ -39,7 +39,8 @@ $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 #Python Deps
 cd $HOME
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
-echo -e "$HOME/.profile" >> $HOME/.bashrc
+echo -e "source $HOME/.profile" >> $HOME/.bashrc
+source $HOME/.bashrc
 poetry completions bash | sudo cat > /etc/bash_completion.d/poetry.bash-completion
 
 #Clone Repo
