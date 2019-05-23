@@ -9,6 +9,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#ifndef __GNUC_PREREQ
+# define __GNUC_PREREQ(ma, mi) 0
+#endif
 #else
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
