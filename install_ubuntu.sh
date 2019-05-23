@@ -14,7 +14,7 @@ sudo apt install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpn
 
 #Arrayfire
 sudo apt install -y libfreeimage-dev cmake-curses-gui
-sudo apt install -y libopenblas-dev libfftw3-dev liblapacke-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
+sudo apt install -y  libopenblas-dev libfftw3-dev liblapacke-dev libblas-dev libclblas-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
 sudo apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
 git clone --recursive https://github.com/arrayfire/arrayfire.git
 cd $HOME/arrayfire
