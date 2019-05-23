@@ -22,11 +22,11 @@ TODO - follow README in [code folder](code/README.md).
 
 Inside code directory replace {arg} with path/ numerical value (positive integers)
 
-#### Cargo
-1. cargo run --release video-ddm {frame_buffer_capacity} {annuli_spacing} {video_path} {output_csv_path}
-1. cargo run --release camera-ddm {frame_buffer_capacity} {outup_csv_path}
-1. cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path}
-1. cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path}
+#### Cargo Options
+    cargo run --release video-ddm {frame_buffer_capacity} {annuli_spacing} {video_path} {output_csv_path}
+    cargo run --release camera-ddm {frame_buffer_capacity} {outup_csv_path}
+    cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path}
+    cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path}
 
 #### Python automation script
 TODO
