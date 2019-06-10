@@ -31,7 +31,7 @@ mkdir $HOME/DDM/CMake/build
 cd $HOME/DDM/CMake/build
 cmake .. -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX=$HOME/DDM
 make -j4
-sudo make install
+make install
 
 #Build arrayfire
 cd $HOME/DDM/arrayfire/build
