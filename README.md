@@ -7,6 +7,7 @@
 1. (Optional) NVIDIA Jetson TX2 - set up using Jetpack tool
 1. OpenCV4
 1. ArrayFire 3.6
+1. Cmake 3.11 +
 1. Rust
 1. Clang++
 1. Python3.6+
