@@ -5,8 +5,8 @@ cd $HOME/DDM
 #Pre-requisites
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y apt-utils sudo nano virtualenv
-sudo apt install -y make cmake git curl gcc g++ wget python3-pip libssl-dev pkg-config zlib1g-dev clang libc++-dev
-sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential libatlas-base-dev
+sudo apt install -y make cmake git curl gcc g++ wget python3-pip libssl-dev openssl pkg-config zlib1g-dev clang libc++-dev
+sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential
 sudo pip3 install --upgrade pip
 sudo pip3 install virtualenv
 
@@ -15,7 +15,7 @@ sudo apt install -y libopencv-dev
 
 #Arrayfire dependency installation and building
 sudo apt install -y libfreeimage-dev cmake-curses-gui
-sudo apt install -y  libopenblas-dev libfftw3-dev liblapacke-dev libblas-dev libclblas-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
+sudo apt install -y libopenblas-dev libatlas-base-dev libfftw3-dev liblapacke-dev libblas-dev libclblas-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
 sudo apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
 git clone --recursive https://github.com/arrayfire/arrayfire.git
 cd $HOME/DDM/arrayfire
