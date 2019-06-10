@@ -18,7 +18,7 @@ sudo apt install -y  libopenblas-dev libfftw3-dev liblapacke-dev libblas-dev lib
 sudo apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
 git clone --recursive https://github.com/arrayfire/arrayfire.git
 cd $HOME/arrayfire
-git checkout 3.6
+git checkout v3.6
 git submodule init && git submodule update
 mkdir $HOME/arrayfire/build
 cd $HOME/arrayfire/build
