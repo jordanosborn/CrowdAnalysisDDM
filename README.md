@@ -9,7 +9,7 @@
 1. ArrayFire 3.6
 1. Cmake 3.11 +
 1. Rust
-1. Clang++
+1. Clang
 1. Python3.6+
 1. [Poetry](https://github.com/sdispater/poetry)
 #### Install on Ubuntu:
