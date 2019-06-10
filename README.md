@@ -14,6 +14,7 @@
 1. [Poetry](https://github.com/sdispater/poetry)
 #### Install on Ubuntu:
 [Download](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh) installer script.
+
     curl https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh > install_ubuntu.sh 
     chmod +x install_ubuntu.sh
     ./install_ubuntu.sh
