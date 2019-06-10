@@ -26,7 +26,7 @@ cd $HOME/DDM/arrayfire/build
 
 #Use latest cmake
 cd $HOME/DDM/
-git pull https://github.com/Kitware/CMake.git
+git clone https://github.com/Kitware/CMake.git
 cd $HOME/DDM/CMake
 mkdir $HOME/DDM/CMake/build
 cd $HOME/DDM/CMake/build
