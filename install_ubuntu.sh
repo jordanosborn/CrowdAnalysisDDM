@@ -1,5 +1,6 @@
 #!/bin/bash
-cd $HOME
+mkdir $HOME/DDM
+cd $HOME/DDM
 
 #Pre-requisites
 sudo apt update && sudo apt upgrade -y
@@ -17,12 +18,25 @@ sudo apt install -y libfreeimage-dev cmake-curses-gui
 sudo apt install -y  libopenblas-dev libfftw3-dev liblapacke-dev libblas-dev libclblas-dev opencl-headers libboost-all-dev ocl-icd-opencl-dev
 sudo apt install -y libglfw3-dev libfontconfig1-dev libglm-dev
 git clone --recursive https://github.com/arrayfire/arrayfire.git
-cd $HOME/arrayfire
+cd $HOME/DDM/arrayfire
 git checkout v3.6
 git submodule init && git submodule update
-mkdir $HOME/arrayfire/build
-cd $HOME/arrayfire/build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
+mkdir $HOME/DDM/arrayfire/build
+cd $HOME/DDM/arrayfire/build
+
+#Use latest cmake
+cd $HOME/DDM/
+git pull https://github.com/Kitware/CMake.git
+cd $HOME/DDM/CMake
+mkdir $HOME/DDM/CMake/build
+cd $HOME/DDM/CMake/build
+cmake .. -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX=$HOME/DDM
+make -j4
+sudo make install
+
+#Build arrayfire
+cd $HOME/DDM/
+$HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
 make -j4
 sudo make install
 echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
@@ -35,7 +49,7 @@ source $HOME/.cargo/env
 $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 
 #Poetry installation - python dependency management
-cd $HOME
+cd $HOME/DDM
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
 #Configure linking directories
@@ -44,7 +58,7 @@ sudo ldconfig
 
 #Clone Repo
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
-cd $HOME/CrowdAnalysisDDM/code
+cd $HOME/DDM/CrowdAnalysisDDM/code
 git pull
 
 #Create python virtual environment and install all dependencies
