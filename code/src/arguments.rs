@@ -60,7 +60,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
             output: None,
         }),
         [_, command, capacity, path, output]
-            if command == "video-ddm" && output.ends_with(".csv") =>
+            if command == "video-ddm" =>
         {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
@@ -86,7 +86,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
             })
         }
         [_, command, capacity, annuli_spacing, path, output]
-            if command == "video-ddm" && output.ends_with(".csv") =>
+            if command == "video-ddm" =>
         {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
