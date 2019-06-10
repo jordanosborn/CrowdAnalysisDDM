@@ -35,7 +35,7 @@ make install
 
 #Build arrayfire
 cd $HOME/DDM/arrayfire/build
-$HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
+$HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang -DAF_BUILD_CPU=OFF
 make -j4
 sudo make install
 echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
