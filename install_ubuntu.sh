@@ -22,7 +22,6 @@ cd $HOME/DDM/arrayfire
 git checkout v3.6
 git submodule init && git submodule update
 mkdir $HOME/DDM/arrayfire/build
-cd $HOME/DDM/arrayfire/build
 
 #Use latest cmake
 cd $HOME/DDM/
@@ -35,7 +34,7 @@ make -j4
 sudo make install
 
 #Build arrayfire
-cd $HOME/DDM/
+cd $HOME/DDM/arrayfire/build
 $HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
 make -j4
 sudo make install
