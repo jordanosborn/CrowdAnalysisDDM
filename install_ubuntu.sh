@@ -45,6 +45,7 @@ cd $HOME
 #Rust installation
 curl https://sh.rustup.rs -sSf | sh -s -- -y
 source $HOME/.cargo/env
+echo -e "source $HOME/.cargo/env" >> $HOME/.bashrc
 $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 
 #Poetry installation - python dependency management
