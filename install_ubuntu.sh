@@ -56,6 +56,7 @@ source $HOME/.bashrc
 sudo ldconfig
 
 #Clone Repo
+cd $HOME/DDM
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/DDM/CrowdAnalysisDDM/code
 git pull
