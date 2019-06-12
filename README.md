@@ -5,6 +5,7 @@
 ### Requirements
 1. Ubuntu 18.04+ or macOS Mojave+
 1. (Optional) NVIDIA Jetson TX2 - set up using Jetpack tool
+1. Codecs installed for videos you wish to analyse
 1. OpenCV4
 1. ArrayFire 3.6
 1. Cmake 3.11 +
