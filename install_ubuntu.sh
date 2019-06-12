@@ -23,7 +23,7 @@ git checkout v3.6
 git submodule init && git submodule update
 mkdir $HOME/DDM/arrayfire/build
 
-#Use latest cmake
+#Use latest cmake, bug in cmake < 3.11 causes arrayfire build to fail. 3.10 comes as default in ubuntu 18.04.
 cd $HOME/DDM/
 git clone https://github.com/Kitware/CMake.git
 cd $HOME/DDM/CMake
@@ -57,7 +57,7 @@ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.p
 source $HOME/.bashrc
 sudo ldconfig
 
-#Clone Repo
+#Clone DDM Repo
 cd $HOME/DDM
 git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 cd $HOME/DDM/CrowdAnalysisDDM/code
