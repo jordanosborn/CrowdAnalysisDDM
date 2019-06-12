@@ -31,11 +31,12 @@ curl https://sh.rustup.rs -sSf | sh
 
 
 ## On mac
-brew install opencv llvm (need clang-7) glfw
+    brew install opencv llvm glfw
 
-sudo update_dyld_shared_cache
+    sudo update_dyld_shared_cache
 
-use open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+    open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+
 to fix stdlib errors on mac
 
 illegal instruction 4?
@@ -64,29 +65,6 @@ https://github.com/arrayfire/arrayfire/wiki/Build-Instructions-for-Linux
 
 
 https://elinux.org/Jetson/Installing_ArrayFire#Install
-
-# Darknet
-for comparison work need
-
-install opencv cuda
-
-from code directory
-
-https://github.com/pjreddie/darknet.git
-
-git clone https://github.com/pjreddie/darknet.git
-
-cd darknet
-
-modify makefile to enable CUDA and opencv
-
-wget https://pjreddie.com/media/files/yolov3.weights
-
-make
-
-use from code directory
-
-./analysis_scratch/object_counter.py $video-name$
 
 # Database
 
