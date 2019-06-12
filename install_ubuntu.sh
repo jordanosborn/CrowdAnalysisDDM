@@ -8,7 +8,6 @@ sudo apt install -y apt-utils sudo nano virtualenv
 sudo apt install -y make cmake git curl gcc g++ wget python3-pip libssl-dev openssl pkg-config zlib1g-dev clang libc++-dev
 sudo apt install -y libomp-dev libgmp-dev libboost-all-dev build-essential
 sudo pip3 install --upgrade pip
-sudo pip3 install virtualenv
 
 #OpenCV installation
 sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavdevice-dev
@@ -50,6 +49,7 @@ echo -e "source $HOME/.cargo/env" >> $HOME/.bashrc
 $HOME/.cargo/bin/rustup component add rls rustfmt clippy
 
 #Poetry installation - python dependency management
+sudo pip3 install virtualenv opencv-python
 cd $HOME/DDM
 curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
