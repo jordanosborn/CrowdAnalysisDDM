@@ -11,6 +11,7 @@ sudo pip3 install --upgrade pip
 sudo pip3 install virtualenv
 
 #OpenCV installation
+sudo apt install -y ffmpeg libavcodec-dev libavformat-dev libavdevice-dev
 sudo apt install -y libopencv-dev
 
 #Arrayfire dependency installation and building
