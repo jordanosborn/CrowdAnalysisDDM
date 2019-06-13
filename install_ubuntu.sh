@@ -70,4 +70,5 @@ $HOME/.poetry/bin/poetry update
 $HOME/.poetry/bin/poetry install
 
 #Test that executable runs
+export RUST_BACKTRACE=full
 cargo run
