@@ -55,14 +55,12 @@ USER ubuntu
 WORKDIR /home/ubuntu
 RUN echo -e "export AF_PATH='/usr/local'" >> .bashrc
 RUN echo -e "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> .bashrc
-RUN source .bashrc
 
 #Install Rust and cargo components
 WORKDIR /home/ubuntu
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 RUN .cargo/bin/rustup component add rls rustfmt clippy
 RUN echo -e "source $HOME/.cargo/env" >> .bashrc
-RUN source .bashrc
 
 #Install Poetry
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
@@ -74,8 +72,6 @@ WORKDIR /home/ubuntu/CrowdAnalysisDDM/code
 RUN virtualenv -p python3 .venv
 RUN /home/ubuntu/.poetry/bin/poetry update
 RUN /home/ubuntu/.poetry/bin/poetry install
-RUN export RUST_BACKTRACE=full
-RUN cargo build --release
 
 #Set entrypoint
 WORKDIR /home/ubuntu
