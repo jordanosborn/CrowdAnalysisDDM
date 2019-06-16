@@ -32,7 +32,18 @@ Example **docker_startup.sh** assuming repo is located at $HOME/CrowdAnalysisDDM
     # git pull && rustup self update && rustup update
     cargo run --release "$@"
 
-Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable.
+Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable. 
+
+All results will be stored inside the container can be extracted using
+
+    docker cp <containerId>:/file/path/within/container /host/path/target
+
+New containers will be created each time you use docker run (take up space), unless you restart and attach to an existing container.
+
+To run ensure you are in the directory containing both the Dockerfile and docker_startup.sh
+
+    docker build -t ddm:latest .
+    docker run -ti --name {container_name} ddm:latest {arguments}
 
 #### Install on Mac:
 TODO - follow README in [code folder](code/README.md).
