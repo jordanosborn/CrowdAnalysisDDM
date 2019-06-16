@@ -6,23 +6,15 @@ exit_if_failed() {
   fi
 }
 
-cd $HOME
+source $HOME/.bashrc
 source $HOME/.cargo/env
+
+cd $HOME/CrowdAnalysisDDM/code
+
 rustup self update
 rustup update
-
-echo -e "export AF_PATH='/usr/local'" >> $HOME/.bashrc
-echo -e "export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
-#echo -e "export AF_PATH='/opt/arrayfire'" >> $HOME/.bashrc
-#echo -e "export LD_LIBRARY_PATH='/opt/arrayfire/lib64'" >> $HOME/.bashrc
-source $HOME/.bashrc
-
 ldconfig
-
-cd CrowdAnalysisDDM
 git pull
-
-cd code
 
 cargo test
 exit_if_failed $?
