@@ -9,7 +9,7 @@ WORKDIR /home
 #Pre-requisites (build tools etc.)
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y apt-utils sudo nano virtualenv
-RUN apt-get install -y make cmake git curl gcc g++ wget python3-pip libssl-dev openssl pkg-config zlib1g-dev clang libc++-dev
+RUN apt-get install -y make cmake git curl gcc g++ wget python3-pip libssl-dev openssl pkg-config zlib1g-dev clang libc++-dev python3-setuptools python3-pkg-resources
 RUN apt-get install -y libomp-dev libgmp-dev libboost-all-dev build-essential
 RUN pip3 install --upgrade pip
 
