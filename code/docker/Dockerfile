@@ -64,6 +64,7 @@ RUN echo -e "source $HOME/.cargo/env" >> .bashrc
 
 #Install Poetry
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+RUN echo -e "source $HOME/.poetry/env" >> .bashrc
 
 #Clone and configure repo (install python dependencies, build program etc.)
 WORKDIR /home/ubuntu
