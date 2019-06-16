@@ -34,7 +34,7 @@ Example **docker_startup.sh** assuming repo is located at $HOME/CrowdAnalysisDDM
 
 Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable. 
 
-All results will be stored inside the container can be extracted using
+All results will be stored inside the container and can be extracted using
 
     docker cp <containerId>:/file/path/within/container /host/path/target
 
