@@ -19,6 +19,21 @@
     curl https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh > install_ubuntu.sh 
     chmod +x install_ubuntu.sh
     ./install_ubuntu.sh
+    
+#### Docker (run natively if you can)
+[Dockerfile](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/code/docker/Dockerfile)
+
+Run using a startup script or attach a bash session and run using commands below
+
+Example **docker_startup.sh** assuming repo is located at $HOME/CrowdAnalysisDDM
+
+    #!/bin/bash
+    cd $HOME/CrowdAnalysisDDM/code
+    # git pull && rustup self update && rustup update
+    cargo run --release "$@"
+
+Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable.
+
 #### Install on Mac:
 TODO - follow README in [code folder](code/README.md).
 ### Usage - Command Line Arguments
