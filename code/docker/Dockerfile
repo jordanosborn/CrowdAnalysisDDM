@@ -77,4 +77,7 @@ RUN /home/ubuntu/.poetry/bin/poetry install
 RUN export RUST_BACKTRACE=full
 RUN cargo build --release
 
+#Set entrypoint
+WORKDIR /home/ubuntu
+COPY ./docker_startup.sh .
 ENTRYPOINT ["/bin/bash", "./docker_startup.sh"]
