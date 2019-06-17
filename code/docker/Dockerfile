@@ -71,6 +71,7 @@ WORKDIR /home/ubuntu
 RUN git clone https://github.com/jordanosborn/CrowdAnalysisDDM.git
 WORKDIR /home/ubuntu/CrowdAnalysisDDM/code
 RUN virtualenv -p python3 .venv
+RUN . .venv/bin/activate
 RUN /home/ubuntu/.poetry/bin/poetry update
 RUN /home/ubuntu/.poetry/bin/poetry install
 
