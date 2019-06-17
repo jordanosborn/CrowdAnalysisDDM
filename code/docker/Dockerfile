@@ -38,7 +38,7 @@ RUN git submodule init && git submodule update
 
 #Build Arrayfire
 WORKDIR /home/DDM/arrayfire/build
-RUN $HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang
+RUN $HOME/DDM/bin/cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_HOST_COMPILER=clang -DAF_BUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF
 #-DAF_BUILD_CPU=OFF
 RUN make -j4
 RUN make install
