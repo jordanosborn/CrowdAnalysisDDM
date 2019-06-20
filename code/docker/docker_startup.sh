@@ -16,9 +16,6 @@ rustup update
 ldconfig
 git pull
 
-cargo test
-exit_if_failed $?
-
 cargo clippy --all-targets --all-features -- -D warnings
 exit_if_failed $?
 
