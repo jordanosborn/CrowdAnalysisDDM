@@ -61,7 +61,7 @@ type MultiDdmData = HashMap<
     ),
 >;
 
-#[allow(clippy::too_many_arguments, clippy::cyclomatic_complexity)]
+#[allow(clippy::too_many_arguments, clippy::cognitive_complexity)]
 pub fn multi_ddm(
     id: Option<usize>,
     capacity: Option<usize>,
