@@ -27,7 +27,7 @@ pub enum What {
     OTHER,
 }
 
-#[allow(clippy::cyclomatic_complexity)]
+#[allow(clippy::cognitive_complexity)]
 pub fn process_arguments(args: Vec<String>) -> What {
     let args_slice = args.as_slice();
     match args_slice {
