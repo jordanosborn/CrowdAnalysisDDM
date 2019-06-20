@@ -1,6 +1,7 @@
 # Crowd Analysis using DDM
 
-[![Build Status](https://travis-ci.com/jordanosborn/MastersProject.svg?token=2eJkyoJzDLeBMdiGDz2x&branch=master)](https://travis-ci.com/jordanosborn/MastersProject)
+[![Build Status](https://travis-ci.com/jordanosborn/CrowdAnalysisDDM.svg?branch=master)](https://travis-ci.com/jordanosborn/CrowdAnalysisDDM)
+
 ## Set Up
 ### Requirements
 1. Ubuntu 18.04+ or macOS Mojave+
