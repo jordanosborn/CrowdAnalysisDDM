@@ -6,7 +6,7 @@ edition = "2018"
 build = "build.rs"
 
 [build-dependencies]
-cc = { version = "1.0.36", features = ["parallel"] }
+cc = { version = "1.0.37", features = ["parallel"] }
 
 [profile.dev]
 overflow-checks = false
