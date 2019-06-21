@@ -6,7 +6,7 @@ mod unix {
         if cfg!(target_os = "linux") {
             "/usr/include/opencv2"
         } else {
-            "/usr/local/Cellar/opencv/4.0.1/include/opencv4"
+            "/usr/local/Cellar/opencv/4.1.0_2/include/opencv4"
         }
     }
 
