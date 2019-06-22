@@ -1,6 +1,6 @@
 use crate::native::opencv;
 
-use super::multi_ddm::{MultiDdmData, multi_ddm};
+use super::multi_ddm::{multi_ddm, MultiDdmData};
 
 pub fn single_ddm(
     id: Option<usize>,

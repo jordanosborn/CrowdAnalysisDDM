@@ -12,9 +12,9 @@ use rayon::prelude::*;
 
 pub mod arguments;
 pub mod ddm;
+pub mod fits;
 pub mod native;
 pub mod operations;
-pub mod fits;
 #[macro_use]
 pub mod utils;
 
@@ -68,7 +68,13 @@ fn main() {
             fit_to,
         }) => {
             let fit_to = fits::create_custom_implementations(fit_to);
-            let (out_dir, res) = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename.clone(), output.clone());
+            let (out_dir, res) = ddm::single_ddm(
+                stream_id,
+                capacity,
+                annuli_spacing,
+                filename.clone(),
+                output.clone(),
+            );
             if let Some(fit_to) = fit_to {
                 let _fit_data = fits::fit_ddm_results(res, fit_to, filename, out_dir);
             }
