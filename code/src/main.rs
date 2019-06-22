@@ -67,10 +67,10 @@ fn main() {
             output,
             fit_to,
         }) => {
-            //TODO: if fit to contains CustomUnimplemented implement here
+            let fit_to = fits::create_custom_implementations(fit_to);
             let res = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename, output);
             if let Some(fit_to) = fit_to {
-                fits::fit_single_ddm_results(res, fit_to, filename, output);
+                let fit_data = fits::fit_single_ddm_results(res, fit_to, filename, output);
             }
         }
         What::MultiDDM(MultiDDMArgs {
@@ -93,7 +93,7 @@ fn main() {
             output_dir,
             fit_to,
         }) => {
-            //TODO: if fit to contains CustomUnimplemented implement here
+            let fit_to = fits::create_custom_implementations(fit_to);
             let res = ddm::multi_ddm(
                 stream_id,
                 capacity,
@@ -104,7 +104,7 @@ fn main() {
                 output_dir,
             );
             if let Some(fit_to) = fit_to {
-                fits::fit_ddm_results(res, fit_to, filename, output_dir);
+                let fit_data = fits::fit_ddm_results(res, fit_to, filename, output_dir);
             }
         }
         What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),

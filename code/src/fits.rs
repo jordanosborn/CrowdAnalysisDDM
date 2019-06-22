@@ -28,6 +28,17 @@ pub fn map_fit_type(fit_to: &str) -> Vec<Fit<'static>> {
         .collect()
 }
 
+pub fn create_custom_implementations(fit_to: Option<Vec<Fit>>) -> Option<Vec<Fit>> {
+    let fit_to = fit_to?;
+    Some(fit_to.iter().map(|x| match x {
+        Fit::CustomUnimplemented => {
+            //TODO: implement function,
+            Fit::CustomUnimplemented
+        },
+        f => *f
+        }).collect())
+}
+
 #[inline]
 fn sinc(x: f64) -> f64 {
     f64::sin(x) / x
