@@ -17,10 +17,10 @@
 #### Install on Ubuntu:
 [Download](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh) installer script.
 
-    curl https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh > install_ubuntu.sh 
+    curl https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/install_ubuntu.sh > install_ubuntu.sh
     chmod +x install_ubuntu.sh
     ./install_ubuntu.sh
-    
+
 #### Docker (run natively if you can)
 [Dockerfile](https://github.com/jordanosborn/CrowdAnalysisDDM/raw/master/code/docker/Dockerfile)
 
@@ -33,7 +33,7 @@ Example **docker_startup.sh** assuming repo is located at $HOME/CrowdAnalysisDDM
     # git pull && rustup self update && rustup update
     cargo run --release "$@"
 
-Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable. 
+Note: Dockerfile and docker_startup.sh file should be in the same folder. Script will pass the arguments given to the **docker run** command to the DDM executable.
 
 All results will be stored inside the container and can be extracted using
 
@@ -58,6 +58,11 @@ Inside code directory replace {arg} with path/ numerical value (positive integer
     cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path}
     cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path}
 
+    cargo run --release video-ddm {frame_buffer_capacity} {annuli_spacing} {video_path} {output_csv_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
+    cargo run --release video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {video_path} {output_directory_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
+    cargo run --release camera-ddm {frame_buffer_capacity} {outup_csv_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
+    cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
+
 ##### Example
 
     cargo run --release video-ddm 80 1 simulations/Brownian_example.avi Brownian_example_results.csv
@@ -74,7 +79,6 @@ Python run script commands
     python3 run.py video-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
     python3 run.py video-multi-ddm {frame_buffer_capacity} {annuli_spacing} {videos_directory_path}
     python3 run.py add-to-db {database_file} {folder_containing_results} {filename_"radial_Avg.csv"} {database_table_prefix}
-    python3 run.py fit {csvs folder path} 
+    python3 run.py fit {csvs folder path}
     python3 run.py fit {csv file path} custom #fit to a custom function not just brownian and ballistic.
     python3 run.py plot #Search database for video and create a plot at specific values
-
