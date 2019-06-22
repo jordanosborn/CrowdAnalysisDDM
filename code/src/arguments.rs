@@ -1,5 +1,4 @@
-
-use crate::fits::Fit;
+use crate::fits::*;
 use crate::native::opencv;
 pub struct DDMArgs<'a> {
     pub stream_id: Option<usize>,
@@ -30,18 +29,6 @@ pub enum What<'a> {
     RETRANSPOSE(String, String),
     OTHER,
 }
-
-pub fn allowed_fit_type(fit_to: &str) -> bool {
-    let split: Vec<_> = fit_to.split_ascii_whitespace().collect();
-    ["brownian-fit", "ballistic-fit", "custom-fit"]
-        .iter()
-        .any(|x| split.iter().any(|y| *y == *x))
-}
-
-pub fn map_fit_type(fit_to: &str) -> Vec<Fit<'static>> {
-
-}
-
 
 #[allow(clippy::cognitive_complexity)]
 pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {

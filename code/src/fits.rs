@@ -1,4 +1,6 @@
 use mathpack;
+//TODO: add mor fit types here!
+
 pub enum Fit<'a> {
     Brownian,
     Ballistic,
@@ -6,8 +8,27 @@ pub enum Fit<'a> {
     CustomImplemented(mathpack::fitting::Function<'a>),
 }
 
+pub fn allowed_fit_type(fit_to: &str) -> bool {
+    let split: Vec<_> = fit_to.split_ascii_whitespace().collect();
+    ["brownian-fit", "ballistic-fit", "custom-fit"]
+        .iter()
+        .any(|x| split.iter().any(|y| *y == *x))
+}
+
+pub fn map_fit_type(fit_to: &str) -> Vec<Fit<'static>> {
+    let split = fit_to.split_ascii_whitespace();
+    split
+        .filter_map(|s| match s {
+            "brownian-fit" => Some(Fit::Brownian),
+            "ballistic-fit" => Some(Fit::Ballistic),
+            "custom-fit" => Some(Fit::CustomUnimplemented),
+            _ => None,
+        })
+        .collect()
+}
+
 #[inline]
-fn sinc(x : f64) -> f64 {
+fn sinc(x: f64) -> f64 {
     f64::sin(x) / x
 }
 
