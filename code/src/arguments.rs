@@ -1,13 +1,16 @@
 use crate::native::opencv;
-pub struct DDMArgs {
+use crate::fits::Fit;
+
+pub struct DDMArgs<'a> {
     pub stream_id: Option<usize>,
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
     pub filename: Option<String>,
     pub output: Option<String>,
+    pub fit_to: Option<Vec<Fit<'a>>>
 }
 
-pub struct MultiDDMArgs {
+pub struct MultiDDMArgs<'a> {
     pub stream_id: Option<usize>,
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
@@ -15,20 +18,21 @@ pub struct MultiDDMArgs {
     pub tile_step: Option<usize>,
     pub filename: Option<String>,
     pub output_dir: Option<String>,
+    pub fit_to: Option<Vec<Fit<'a>>>
 }
 
-pub enum What {
-    DDM(DDMArgs),
-    CameraDDM(DDMArgs),
-    MultiDDM(MultiDDMArgs),
-    CameraMultiDDM(MultiDDMArgs),
+pub enum What<'a> {
+    DDM(DDMArgs<'a>),
+    CameraDDM(DDMArgs<'a>),
+    MultiDDM(MultiDDMArgs<'a>),
+    CameraMultiDDM(MultiDDMArgs<'a>),
     PROCESS(Option<String>),
     RETRANSPOSE(String, String),
     OTHER,
 }
 
 #[allow(clippy::cognitive_complexity)]
-pub fn process_arguments(args: Vec<String>) -> What {
+pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
     let args_slice = args.as_slice();
     match args_slice {
         [_, command, path, output]
@@ -48,6 +52,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 None => None,
             },
             output: None,
+            fit_to: None
         }),
         [_, command, capacity, path] if command == "video-ddm" => What::DDM(DDMArgs {
             stream_id: Some(opencv::start_capture_safe(path)),
@@ -58,6 +63,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 None => None,
             },
             output: None,
+            fit_to: None
         }),
         [_, command, capacity, path, output]
             if command == "video-ddm" =>
@@ -71,6 +77,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output: Some(output.to_string()),
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => {
@@ -83,6 +90,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output: None,
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, path, output]
@@ -97,6 +105,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output: Some(output.to_string()),
+                fit_to: None
             })
         }
         [_, command, path] if command == "video-multi-ddm" => What::MultiDDM(MultiDDMArgs {
@@ -110,6 +119,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 None => None,
             },
             output_dir: None,
+            fit_to: None
         }),
         [_, command, capacity, annuli_spacing, path] if command == "video-multi-ddm" => {
             What::MultiDDM(MultiDDMArgs {
@@ -123,6 +133,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output_dir: None,
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path, output_dir]
@@ -147,6 +158,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 } else {
                     panic!("Output directory already exists!")
                 },
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, path]
@@ -163,6 +175,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output_dir: None,
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path]
@@ -183,6 +196,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output_dir: None,
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, tile_step, path]
@@ -203,6 +217,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                     None => None,
                 },
                 output_dir: None,
+                fit_to: None
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, output_dir]
@@ -224,6 +239,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 } else {
                     panic!("Output directory already exists!")
                 },
+                fit_to: None
             })
         }
         [_, command, capacity, output] if command == "camera-ddm" => What::CameraDDM(DDMArgs {
@@ -236,6 +252,7 @@ pub fn process_arguments(args: Vec<String>) -> What {
             } else {
                 panic!("Output file already exists!")
             },
+            fit_to: None
         }),
         _ => What::OTHER,
     }

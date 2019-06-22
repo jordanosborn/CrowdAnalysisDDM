@@ -14,6 +14,7 @@ pub mod arguments;
 pub mod ddm;
 pub mod native;
 pub mod operations;
+pub mod fits;
 #[macro_use]
 pub mod utils;
 
@@ -46,6 +47,12 @@ fn set_backend() {
     }
 }
 
+//TODO:
+//Add fit functions, Brownian, Ballistic, Custom,
+//Add args processing for this,
+//Fit if fit_to != None in functions below using mathpack
+//Save results + plots
+
 fn main() {
     set_backend();
     let parsed_args = process_arguments(std::env::args().collect::<Vec<String>>());
@@ -56,6 +63,7 @@ fn main() {
             annuli_spacing,
             filename,
             output,
+            fit_to,
         })
         | What::CameraDDM(DDMArgs {
             stream_id,
@@ -63,8 +71,9 @@ fn main() {
             annuli_spacing,
             filename,
             output,
+            fit_to,
         }) => {
-            ddm::single_ddm(stream_id, capacity, annuli_spacing, filename, output);
+            let res = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename, output);
         }
         What::MultiDDM(MultiDDMArgs {
             stream_id,
@@ -74,6 +83,7 @@ fn main() {
             tile_step,
             filename,
             output_dir,
+            fit_to,
         })
         | What::CameraMultiDDM(MultiDDMArgs {
             stream_id,
@@ -83,8 +93,9 @@ fn main() {
             tile_step,
             filename,
             output_dir,
+            fit_to,
         }) => {
-            ddm::multi_ddm(
+            let res = ddm::multi_ddm(
                 stream_id,
                 capacity,
                 annuli_spacing,
