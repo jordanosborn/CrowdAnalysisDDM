@@ -68,9 +68,9 @@ fn main() {
             fit_to,
         }) => {
             let fit_to = fits::create_custom_implementations(fit_to);
-            let res = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename, output);
+            let (out_dir, res) = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename.clone(), output.clone());
             if let Some(fit_to) = fit_to {
-                let fit_data = fits::fit_single_ddm_results(res, fit_to, filename, output);
+                let _fit_data = fits::fit_ddm_results(res, fit_to, filename, out_dir);
             }
         }
         What::MultiDDM(MultiDDMArgs {
@@ -94,17 +94,17 @@ fn main() {
             fit_to,
         }) => {
             let fit_to = fits::create_custom_implementations(fit_to);
-            let res = ddm::multi_ddm(
+            let (out_dir, res) = ddm::multi_ddm(
                 stream_id,
                 capacity,
                 annuli_spacing,
                 tiling_range,
                 tile_step,
-                filename,
-                output_dir,
+                filename.clone(),
+                output_dir.clone(),
             );
             if let Some(fit_to) = fit_to {
-                let fit_data = fits::fit_ddm_results(res, fit_to, filename, output_dir);
+                let _fit_data = fits::fit_ddm_results(res, fit_to, filename, out_dir);
             }
         }
         What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),

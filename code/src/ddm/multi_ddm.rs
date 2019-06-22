@@ -70,7 +70,7 @@ pub fn multi_ddm(
     tile_step: Option<usize>,
     filename: Option<String>,
     output_dir: Option<String>,
-) -> Option<MultiDdmData> {
+) -> (Option<String>, Option<MultiDdmData>) {
     let (tx, rx) = mpsc::channel::<Option<af::Array<RawType>>>();
     let (stx, srx) = mpsc::channel::<Signal>();
     let (annuli_tx, annuli_rx) =
@@ -80,12 +80,13 @@ pub fn multi_ddm(
 
     let annuli_spacing = if let Some(v) = annuli_spacing { v } else { 1 };
     let mut data_out = None;
+    let mut out_dir = None;
 
     if let Some(id) = id {
         let (width, height) = opencv::dimension(id);
         if width != height {
             println!("Only square videos are supported!");
-            return None;
+            return (None, None);
         }
         let dimension = width;
 
@@ -99,20 +100,20 @@ pub fn multi_ddm(
                     )
                 } else {
                     println!("Invalid tiling range selected!");
-                    return None;
+                    return (None, None);
                 }
             } else if let (Some(min), Some(max), None) = tiling_range {
                 if max >= min {
                     (min, if max <= width { max } else { dimension }, None)
                 } else {
                     println!("Invalid tiling range selected!");
-                    return None;
+                    return (None, None);
                 }
             } else if let (None, None, None) = tiling_range {
                 ((dimension as f64).log2() as usize, dimension, None)
             } else {
                 println!("Invalid tiling range selected!");
-                return None;
+                return (None, None);
             };
 
         let filename = if let Some(v) = filename {
@@ -125,6 +126,8 @@ pub fn multi_ddm(
         } else {
             format!("results-multiDDM/{}", filename)
         };
+
+        out_dir = Some(output_dir.clone());
 
         println!(
             "Analysis of {} stream started! Results will be saved in {}",
@@ -420,5 +423,5 @@ pub fn multi_ddm(
     } else {
         println!("Invalid arguments supplied!");
     }
-    data_out
+    (out_dir, data_out)
 }

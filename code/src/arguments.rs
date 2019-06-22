@@ -1,15 +1,15 @@
 use crate::fits::*;
 use crate::native::opencv;
-pub struct DDMArgs<'a> {
+pub struct DDMArgs {
     pub stream_id: Option<usize>,
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
     pub filename: Option<String>,
     pub output: Option<String>,
-    pub fit_to: Option<Vec<Fit<'a>>>,
+    pub fit_to: Option<Vec<Fit>>,
 }
 
-pub struct MultiDDMArgs<'a> {
+pub struct MultiDDMArgs {
     pub stream_id: Option<usize>,
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
@@ -17,21 +17,21 @@ pub struct MultiDDMArgs<'a> {
     pub tile_step: Option<usize>,
     pub filename: Option<String>,
     pub output_dir: Option<String>,
-    pub fit_to: Option<Vec<Fit<'a>>>,
+    pub fit_to: Option<Vec<Fit>>,
 }
 
-pub enum What<'a> {
-    DDM(DDMArgs<'a>),
-    CameraDDM(DDMArgs<'a>),
-    MultiDDM(MultiDDMArgs<'a>),
-    CameraMultiDDM(MultiDDMArgs<'a>),
+pub enum What {
+    DDM(DDMArgs),
+    CameraDDM(DDMArgs),
+    MultiDDM(MultiDDMArgs),
+    CameraMultiDDM(MultiDDMArgs),
     PROCESS(Option<String>),
     RETRANSPOSE(String, String),
     OTHER,
 }
 
 #[allow(clippy::cognitive_complexity)]
-pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
+pub fn process_arguments(args: Vec<String>) -> What {
     let args_slice = args.as_slice();
     match args_slice {
         [_, command, path, output]
