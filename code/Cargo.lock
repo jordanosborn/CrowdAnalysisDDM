@@ -130,6 +130,7 @@ dependencies = [
  "num-complex 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "rayon 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
  "sqlite 0.25.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "text_io 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

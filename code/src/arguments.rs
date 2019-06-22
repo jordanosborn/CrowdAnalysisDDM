@@ -1,13 +1,13 @@
-use crate::native::opencv;
-use crate::fits::Fit;
 
+use crate::fits::Fit;
+use crate::native::opencv;
 pub struct DDMArgs<'a> {
     pub stream_id: Option<usize>,
     pub capacity: Option<usize>,
     pub annuli_spacing: Option<usize>,
     pub filename: Option<String>,
     pub output: Option<String>,
-    pub fit_to: Option<Vec<Fit<'a>>>
+    pub fit_to: Option<Vec<Fit<'a>>>,
 }
 
 pub struct MultiDDMArgs<'a> {
@@ -18,7 +18,7 @@ pub struct MultiDDMArgs<'a> {
     pub tile_step: Option<usize>,
     pub filename: Option<String>,
     pub output_dir: Option<String>,
-    pub fit_to: Option<Vec<Fit<'a>>>
+    pub fit_to: Option<Vec<Fit<'a>>>,
 }
 
 pub enum What<'a> {
@@ -30,6 +30,18 @@ pub enum What<'a> {
     RETRANSPOSE(String, String),
     OTHER,
 }
+
+pub fn allowed_fit_type(fit_to: &str) -> bool {
+    let split: Vec<_> = fit_to.split_ascii_whitespace().collect();
+    ["brownian-fit", "ballistic-fit", "custom-fit"]
+        .iter()
+        .any(|x| split.iter().any(|y| *y == *x))
+}
+
+pub fn map_fit_type(fit_to: &str) -> Vec<Fit<'static>> {
+
+}
+
 
 #[allow(clippy::cognitive_complexity)]
 pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
@@ -52,7 +64,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                 None => None,
             },
             output: None,
-            fit_to: None
+            fit_to: None,
         }),
         [_, command, capacity, path] if command == "video-ddm" => What::DDM(DDMArgs {
             stream_id: Some(opencv::start_capture_safe(path)),
@@ -63,23 +75,19 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                 None => None,
             },
             output: None,
-            fit_to: None
+            fit_to: None,
         }),
-        [_, command, capacity, path, output]
-            if command == "video-ddm" =>
-        {
-            What::DDM(DDMArgs {
-                stream_id: Some(opencv::start_capture_safe(path)),
-                capacity: capacity.parse().ok(),
-                annuli_spacing: None,
-                filename: match std::path::Path::new(path).file_stem() {
-                    Some(s) => Some(String::from(s.to_str().unwrap())),
-                    None => None,
-                },
-                output: Some(output.to_string()),
-                fit_to: None
-            })
-        }
+        [_, command, capacity, path, output] if command == "video-ddm" => What::DDM(DDMArgs {
+            stream_id: Some(opencv::start_capture_safe(path)),
+            capacity: capacity.parse().ok(),
+            annuli_spacing: None,
+            filename: match std::path::Path::new(path).file_stem() {
+                Some(s) => Some(String::from(s.to_str().unwrap())),
+                None => None,
+            },
+            output: Some(output.to_string()),
+            fit_to: None,
+        }),
         [_, command, capacity, annuli_spacing, path] if command == "video-ddm" => {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
@@ -90,12 +98,10 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output: None,
-                fit_to: None
+                fit_to: None,
             })
         }
-        [_, command, capacity, annuli_spacing, path, output]
-            if command == "video-ddm" =>
-        {
+        [_, command, capacity, annuli_spacing, path, output] if command == "video-ddm" => {
             What::DDM(DDMArgs {
                 stream_id: Some(opencv::start_capture_safe(path)),
                 capacity: capacity.parse().ok(),
@@ -105,7 +111,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output: Some(output.to_string()),
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, path] if command == "video-multi-ddm" => What::MultiDDM(MultiDDMArgs {
@@ -119,7 +125,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                 None => None,
             },
             output_dir: None,
-            fit_to: None
+            fit_to: None,
         }),
         [_, command, capacity, annuli_spacing, path] if command == "video-multi-ddm" => {
             What::MultiDDM(MultiDDMArgs {
@@ -133,7 +139,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output_dir: None,
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path, output_dir]
@@ -158,7 +164,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                 } else {
                     panic!("Output directory already exists!")
                 },
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, path]
@@ -175,7 +181,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output_dir: None,
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path]
@@ -196,7 +202,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output_dir: None,
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, tile_step, path]
@@ -217,7 +223,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                     None => None,
                 },
                 output_dir: None,
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, output_dir]
@@ -239,7 +245,7 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
                 } else {
                     panic!("Output directory already exists!")
                 },
-                fit_to: None
+                fit_to: None,
             })
         }
         [_, command, capacity, output] if command == "camera-ddm" => What::CameraDDM(DDMArgs {
@@ -252,8 +258,87 @@ pub fn process_arguments<'a>(args: Vec<String>) -> What<'a> {
             } else {
                 panic!("Output file already exists!")
             },
-            fit_to: None
+            fit_to: None,
         }),
+        //TODO: range based slice patterns - until then split at spaces to use multiple fits
+        [_, command, capacity, annuli_spacing, path, output, fit_to]
+            if command == "video-ddm" && allowed_fit_type(fit_to) =>
+        {
+            What::DDM(DDMArgs {
+                stream_id: Some(opencv::start_capture_safe(path)),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
+                filename: match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                output: Some(output.to_string()),
+                fit_to: Some(map_fit_type(fit_to)),
+            })
+        }
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, output_dir, fit_to]
+            if command == "camera-multi-ddm" && allowed_fit_type(fit_to) =>
+        {
+            What::MultiDDM(MultiDDMArgs {
+                stream_id: Some(opencv::start_camera_capture_safe()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
+                tiling_range: (
+                    tiling_min.parse().ok(),
+                    tiling_max.parse().ok(),
+                    tiling_size_count.parse().ok(),
+                ),
+                tile_step: None,
+                filename: None,
+                output_dir: if !std::path::Path::new(output_dir).exists() {
+                    Some(output_dir.to_owned())
+                } else {
+                    panic!("Output directory already exists!")
+                },
+                fit_to: Some(map_fit_type(fit_to)),
+            })
+        }
+        [_, command, capacity, output, fit_to]
+            if command == "camera-ddm" && allowed_fit_type(fit_to) =>
+        {
+            What::CameraDDM(DDMArgs {
+                stream_id: Some(opencv::start_camera_capture_safe()),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: None,
+                filename: None,
+                output: if !std::path::Path::new(output).exists() {
+                    Some(output.to_owned())
+                } else {
+                    panic!("Output file already exists!")
+                },
+                fit_to: Some(map_fit_type(fit_to)),
+            })
+        }
+        [_, command, capacity, annuli_spacing, tiling_min, tiling_max, tiling_size_count, path, output_dir, fit_to]
+            if command == "video-multi-ddm" && allowed_fit_type(fit_to) =>
+        {
+            What::MultiDDM(MultiDDMArgs {
+                stream_id: Some(opencv::start_capture_safe(path)),
+                capacity: capacity.parse().ok(),
+                annuli_spacing: annuli_spacing.parse().ok(),
+                tiling_range: (
+                    tiling_min.parse().ok(),
+                    tiling_max.parse().ok(),
+                    tiling_size_count.parse().ok(),
+                ),
+                tile_step: None,
+                filename: match std::path::Path::new(path).file_stem() {
+                    Some(s) => Some(String::from(s.to_str().unwrap())),
+                    None => None,
+                },
+                output_dir: if !std::path::Path::new(output_dir).exists() {
+                    Some(output_dir.to_owned())
+                } else {
+                    panic!("Output directory already exists!")
+                },
+                fit_to: Some(map_fit_type(fit_to)),
+            })
+        }
         _ => What::OTHER,
     }
 }

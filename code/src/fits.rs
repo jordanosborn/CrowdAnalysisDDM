@@ -2,7 +2,8 @@ use mathpack;
 pub enum Fit<'a> {
     Brownian,
     Ballistic,
-    Custom(mathpack::fitting::Function<'a>),
+    CustomUnimplemented,
+    CustomImplemented(mathpack::fitting::Function<'a>),
 }
 
 #[inline]
