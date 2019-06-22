@@ -1,5 +1,6 @@
 use mathpack;
-//TODO: add mor fit types here!
+use crate::ddm;
+//TODO: add more fit types here!
 
 pub enum Fit<'a> {
     Brownian,
@@ -40,4 +41,15 @@ pub fn brownian(vars: &[f64], params: &[f64]) -> f64 {
 pub fn ballistic(vars: &[f64], params: &[f64]) -> f64 {
     assert!(vars.len() == 1 && params.len() == 4);
     params[0] * (1.0 - sinc(params[1] * vars[0]) * f64::exp(-vars[0] * params[2])) + params[3]
+}
+
+pub type FitResults = Vec<Vec<f64>>;
+
+//TODO: implement these, save data, plot and results
+pub fn fit_single_ddm_results(data: Option<ddm::common::IndexedData>, fit_to: Vec<Fit>, filename: Option<String>, output_dir: Option<String>) -> FitResults {
+
+}
+
+pub fn fit_ddm_results(data: Option<ddm::multi_ddm::MultiDdmData>, fit_to: Vec<Fit>, filename: Option<String>, output_dir: Option<String>) -> Vec<FitResults> {
+
 }

@@ -53,7 +53,7 @@ fn get_allowed_dimension(
     }
 }
 
-type MultiDdmData = HashMap<
+pub type MultiDdmData = HashMap<
     usize,
     (
         Vec<crate::RawType>,

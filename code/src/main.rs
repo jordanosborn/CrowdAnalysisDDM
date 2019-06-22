@@ -47,12 +47,6 @@ fn set_backend() {
     }
 }
 
-//TODO:
-//Add fit functions, Brownian, Ballistic, Custom,
-//Add args processing for this,
-//Fit if fit_to != None in functions below using mathpack
-//Save results + plots
-
 fn main() {
     set_backend();
     let parsed_args = process_arguments(std::env::args().collect::<Vec<String>>());
@@ -73,7 +67,11 @@ fn main() {
             output,
             fit_to,
         }) => {
+            //TODO: if fit to contains CustomUnimplemented implement here
             let res = ddm::single_ddm(stream_id, capacity, annuli_spacing, filename, output);
+            if let Some(fit_to) = fit_to {
+                fits::fit_single_ddm_results(res, fit_to, filename, output);
+            }
         }
         What::MultiDDM(MultiDDMArgs {
             stream_id,
@@ -95,6 +93,7 @@ fn main() {
             output_dir,
             fit_to,
         }) => {
+            //TODO: if fit to contains CustomUnimplemented implement here
             let res = ddm::multi_ddm(
                 stream_id,
                 capacity,
@@ -104,6 +103,9 @@ fn main() {
                 filename,
                 output_dir,
             );
+            if let Some(fit_to) = fit_to {
+                fits::fit_ddm_results(res, fit_to, filename, output_dir);
+            }
         }
         What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),
         What::PROCESS(_) => {}
