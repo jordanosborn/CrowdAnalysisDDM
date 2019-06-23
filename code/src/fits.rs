@@ -1,6 +1,7 @@
 use crate::ddm::multi_ddm::MultiDdmData;
 #[allow(unused_imports)]
 use crate::utils::save_csv;
+use rayon::prelude::*;
 
 use mathpack;
 use mathpack::functions::basic::sinc;
@@ -80,7 +81,7 @@ fn get_fits(
     weights: Vec<f64>,
 ) -> (FitResults, FitErrors) {
     fit_to
-        .iter()
+        .par_iter()
         .filter_map(|x| {
             match x {
                 Fit::Brownian => Some((Fit::Brownian, brownian as fn(&[f64], &[f64]) -> f64)),
@@ -101,11 +102,11 @@ fn get_fits(
                 ),
                 Fit::CustomImplemented(_) | Fit::CustomUnimplemented => (vec![], vec![]),
             };
-            let (fit, err) = mathpack::fitting::fit_weighted(
+            let (fit, err) = mathpack::fitting::fit(
                 &fit_func,
                 vars,
                 intensity,
-                &weights,
+                //&weights,
                 bounds,
                 None,
                 None,
@@ -125,7 +126,7 @@ pub fn fit_ddm_results(
     println!("Producing fits to data!");
     let data = data?;
     let ret = data
-        .iter()
+        .par_iter()
         .map(|(k, v)| {
             println!("Starting fit for box size {}", k);
             let (q_vec, tau_I_vec) = v;
@@ -133,9 +134,8 @@ pub fn fit_ddm_results(
             let ret = (
                 *k,
                 q_vec
-                    .iter()
-                    .cloned()
-                    .zip(tau_I_vec.iter().cloned())
+                    .par_iter()
+                    .zip(tau_I_vec.par_iter())
                     .map(|(q, tau_I)| {
                         let weights: Vec<_> = tau_I.iter().map(|t| 1.0 / f64::from(t.0)).collect();
                         let (tau, I): (Vec<_>, Vec<_>) = tau_I
@@ -144,7 +144,7 @@ pub fn fit_ddm_results(
                             .unzip();
                         let (fits, errs) = get_fits(&fit_to, &tau, &I, weights);
                         progress.inc(1);
-                        (f64::from(q), fits, errs)
+                        (f64::from(*q), fits, errs)
                     })
                     .collect::<Vec<_>>(),
             );
@@ -154,9 +154,9 @@ pub fn fit_ddm_results(
         .collect::<HashMap<_, _>>();
     println!("Completed fits, now saving results!");
     let csv_format = ret
-        .iter()
+        .par_iter()
         .map(|(box_size, data)| {
-            data.iter()
+            data.par_iter()
                 .map(|(q, fits, errs)| {
                     fits.keys()
                         .map(move |fit_type| {
