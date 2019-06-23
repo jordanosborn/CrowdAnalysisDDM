@@ -76,7 +76,7 @@ fn main() {
                 output.clone(),
             );
             if let Some(fit_to) = fit_to {
-                let _fit_data = fits::fit_ddm_results(res, fit_to, filename, out_dir);
+                let _fit_data = fits::fit_ddm_results(res, fit_to, out_dir);
             }
         }
         What::MultiDDM(MultiDDMArgs {
@@ -110,7 +110,7 @@ fn main() {
                 output_dir.clone(),
             );
             if let Some(fit_to) = fit_to {
-                let _fit_data = fits::fit_ddm_results(res, fit_to, filename, out_dir);
+                let _fit_data = fits::fit_ddm_results(res, fit_to, out_dir);
             }
         }
         What::RETRANSPOSE(filename, output) => process::retranspose(&filename, &output),

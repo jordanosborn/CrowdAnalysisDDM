@@ -1,7 +1,7 @@
 use crate::ddm::multi_ddm::MultiDdmData;
 #[allow(unused_imports)]
 use crate::utils::save_csv;
-
+use std::io::Write;
 use mathpack;
 use mathpack::functions::basic::sinc;
 use std::collections::HashMap;
@@ -120,7 +120,6 @@ fn get_fits(
 pub fn fit_ddm_results(
     data: Option<MultiDdmData>,
     fit_to: Vec<Fit>,
-    filename: Option<String>,
     output_dir: Option<String>,
 ) -> Option<HashMap<usize, Vec<(f64, FitResults, FitErrors)>>> {
     let data = data?;
@@ -148,5 +147,47 @@ pub fn fit_ddm_results(
         })
         .collect::<HashMap<_, _>>();
     //TODO: save data to folder, plot and results
+    let csv_format = ret
+        .iter()
+        .map(|(box_size, data)| {
+            data
+                .iter()
+                .map(|(q, fits, _)| {
+                    fits.iter().map(move |(fit_type, vals)| {
+                        let vals_string = vals.iter().map(f64::to_string).collect::<Vec<_>>();
+                        let vals_string = vals_string.join(", ");
+                        format!(
+                            "{}, {}, {}, {}",
+                            box_size,
+                            q,
+                            match fit_type {
+                                Fit::Brownian => "brownian",
+                                Fit::Ballistic => "ballistic",
+                                Fit::CustomUnimplemented => "",
+                                Fit::CustomImplemented(s) => s,
+                            },
+                            vals_string
+                        )
+                    }).collect::<Vec<_>>().join("\n")
+                })
+                .collect::<Vec<_>>().join("\n")
+        })
+        .collect::<Vec<_>>().join("\n");
+    let output_dir = output_dir.unwrap_or_else(|| String::from("fit_data"));
+    if !std::path::Path::new(&output_dir).is_dir() {
+        std::fs::create_dir(&output_dir).expect("Can't create output directory!");
+    }
+    let output = format!("{}/fit_data.csv", output_dir);
+    let file = std::fs::File::create(std::path::Path::new(&output));
+    match file {
+        Ok(mut file) =>  {
+            let r = file.write_all(csv_format.as_bytes());
+            match r {
+                Ok(_) => println!("Saved fit data to {}", output),
+                Err(e) => println!("{} - Could not write fit data to file {}", e , output)
+            }
+        }
+        Err(e) => println!("{} - Data could not be saved", e)
+    }
     Some(ret)
 }
