@@ -192,7 +192,7 @@ pub fn fit_ddm_results(
     let file = std::fs::File::create(std::path::Path::new(&output));
     match file {
         Ok(mut file) => {
-            let header = file.write(b"q, box_size, fit_type, err, parameters...");
+            let header = file.write(b"q, box_size, fit_type, err, parameters...\n");
             let r = file.write_all(csv_format.as_bytes());
             match (r, header) {
                 (Ok(_), Ok(_)) => println!("Saved fit data to {}", output),
