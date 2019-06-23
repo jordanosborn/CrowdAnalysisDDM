@@ -63,6 +63,8 @@ Inside code directory replace {arg} with path/ numerical value (positive integer
     cargo run --release camera-ddm {frame_buffer_capacity} {outup_csv_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
     cargo run --release camera-multi-ddm {frame_buffer_capacity} {annuli_spacing} {tile_min_size} {tile_max_size} {number_tiles} {output_directory_path} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
 
+
+    cargo run --release fit-data {data file / directory datafile_boxsize_800.csv etc.} {fit_types in space separated string "brownian-fit ballistic-fit custom-fit" etc}
 ##### Example
 
     cargo run --release video-ddm 80 1 simulations/Brownian_example.avi Brownian_example_results.csv
