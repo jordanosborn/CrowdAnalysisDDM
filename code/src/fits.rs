@@ -1,11 +1,11 @@
 use crate::ddm::multi_ddm::MultiDdmData;
 #[allow(unused_imports)]
 use crate::utils::save_csv;
-use std::io::Write;
+
 use mathpack;
 use mathpack::functions::basic::sinc;
 use std::collections::HashMap;
-
+use std::io::Write;
 #[derive(Clone, Hash, PartialEq, Eq)]
 pub enum Fit {
     Brownian,
@@ -122,11 +122,14 @@ pub fn fit_ddm_results(
     fit_to: Vec<Fit>,
     output_dir: Option<String>,
 ) -> Option<HashMap<usize, Vec<(f64, FitResults, FitErrors)>>> {
+    println!("Producing fits to data!");
     let data = data?;
     let ret = data
         .iter()
         .map(|(k, v)| {
+            println!("Starting fit for box size {}", k);
             let (q_vec, tau_I_vec) = v;
+            let progress = indicatif::ProgressBar::new(q_vec.len() as u64);
             (
                 *k,
                 q_vec
@@ -140,39 +143,47 @@ pub fn fit_ddm_results(
                             .map(|t| (vec![f64::from(t.0)], f64::from(t.1)))
                             .unzip();
                         let (fits, errs) = get_fits(&fit_to, &tau, &I, weights);
+                        progress.inc(1);
                         (f64::from(q), fits, errs)
                     })
                     .collect::<Vec<_>>(),
             )
         })
         .collect::<HashMap<_, _>>();
-    //TODO: save data to folder, plot and results
+    println!("Completed fits, now saving results!");
     let csv_format = ret
         .iter()
         .map(|(box_size, data)| {
-            data
-                .iter()
-                .map(|(q, fits, _)| {
-                    fits.iter().map(move |(fit_type, vals)| {
-                        let vals_string = vals.iter().map(f64::to_string).collect::<Vec<_>>();
-                        let vals_string = vals_string.join(", ");
-                        format!(
-                            "{}, {}, {}, {}",
-                            box_size,
-                            q,
-                            match fit_type {
-                                Fit::Brownian => "brownian",
-                                Fit::Ballistic => "ballistic",
-                                Fit::CustomUnimplemented => "",
-                                Fit::CustomImplemented(s) => s,
-                            },
-                            vals_string
-                        )
-                    }).collect::<Vec<_>>().join("\n")
+            data.iter()
+                .map(|(q, fits, errs)| {
+                    fits.keys()
+                        .map(move |fit_type| {
+                            let vals = &fits[fit_type];
+                            let err = errs[fit_type];
+                            let vals_string = vals.iter().map(f64::to_string).collect::<Vec<_>>();
+                            let vals_string = vals_string.join(", ");
+                            format!(
+                                "{}, {}, {}, {}, {}",
+                                box_size,
+                                q,
+                                match fit_type {
+                                    Fit::Brownian => "a1 * (1 - exp(-t / a2)) + a3",
+                                    Fit::Ballistic => "a1 * (1 - sinc(a2 * t) * exp(-t / a3)) + a4",
+                                    Fit::CustomUnimplemented => "",
+                                    Fit::CustomImplemented(s) => s,
+                                },
+                                err,
+                                vals_string,
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
                 })
-                .collect::<Vec<_>>().join("\n")
+                .collect::<Vec<_>>()
+                .join("\n")
         })
-        .collect::<Vec<_>>().join("\n");
+        .collect::<Vec<_>>()
+        .join("\n");
     let output_dir = output_dir.unwrap_or_else(|| String::from("fit_data"));
     if !std::path::Path::new(&output_dir).is_dir() {
         std::fs::create_dir(&output_dir).expect("Can't create output directory!");
@@ -180,14 +191,17 @@ pub fn fit_ddm_results(
     let output = format!("{}/fit_data.csv", output_dir);
     let file = std::fs::File::create(std::path::Path::new(&output));
     match file {
-        Ok(mut file) =>  {
+        Ok(mut file) => {
+            let header = file.write(b"q, box_size, fit_type, err, parameters...");
             let r = file.write_all(csv_format.as_bytes());
-            match r {
-                Ok(_) => println!("Saved fit data to {}", output),
-                Err(e) => println!("{} - Could not write fit data to file {}", e , output)
+            match (r, header) {
+                (Ok(_), Ok(_)) => println!("Saved fit data to {}", output),
+                (Err(e), _) | (_, Err(e)) => {
+                    println!("{} - Could not write fit data to file {}", e, output)
+                }
             }
         }
-        Err(e) => println!("{} - Data could not be saved", e)
+        Err(e) => println!("{} - Data could not be saved", e),
     }
     Some(ret)
 }
