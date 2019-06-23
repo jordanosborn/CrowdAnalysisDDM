@@ -72,7 +72,7 @@ mod tests {
     use super::boxsize_from_string;
     #[test]
     fn boxsize_from_string_test() {
-        let res = boxsize_from_string("hfellofaboxsize_8243.csv");
+        let res = boxsize_from_string("hello_boxsize_8243.csv");
         println!("{}", res);
         assert_eq!(res, 8243);
     }
@@ -164,7 +164,7 @@ fn main() {
                     let s = match entry {
                         Ok(v) => {
                             let path = format!("{:?}", v.path());
-                            //Path quotes string 
+                            //Path quotes string
                             let s = path.replace("\"", "");
                             if s.find(".csv") == None {
                                 break;

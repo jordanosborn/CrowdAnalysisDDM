@@ -78,7 +78,7 @@ fn get_fits(
     fit_to: &[Fit],
     vars: &[Vec<f64>],
     intensity: &[f64],
-    weights: Vec<f64>,
+    _weights: Vec<f64>,
 ) -> (FitResults, FitErrors) {
     fit_to
         .par_iter()
