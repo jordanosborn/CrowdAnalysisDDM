@@ -130,7 +130,7 @@ pub fn fit_ddm_results(
             println!("Starting fit for box size {}", k);
             let (q_vec, tau_I_vec) = v;
             let progress = indicatif::ProgressBar::new(q_vec.len() as u64);
-            (
+            let ret = (
                 *k,
                 q_vec
                     .iter()
@@ -147,7 +147,9 @@ pub fn fit_ddm_results(
                         (f64::from(q), fits, errs)
                     })
                     .collect::<Vec<_>>(),
-            )
+            );
+            progress.finish();
+            ret
         })
         .collect::<HashMap<_, _>>();
     println!("Completed fits, now saving results!");
