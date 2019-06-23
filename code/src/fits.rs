@@ -7,7 +7,7 @@ use mathpack;
 use mathpack::functions::basic::sinc;
 use std::collections::HashMap;
 use std::io::Write;
-#[derive(Clone, Hash, PartialEq, Eq)]
+#[derive(Clone, Hash, PartialEq, Eq, Debug)]
 pub enum Fit {
     Brownian,
     Ballistic,
@@ -36,12 +36,12 @@ pub fn map_fit_type(fit_to: &str) -> Vec<Fit> {
 
 pub fn brownian(vars: &[f64], params: &[f64]) -> f64 {
     assert!(vars.len() == 1 && params.len() == 3);
-    params[0] * (1.0 - f64::exp(-vars[0] / params[1])) + params[2]
+    params[0] * (1.0 - f64::exp(-vars[0] * params[1])) + params[2]
 }
 
 pub fn ballistic(vars: &[f64], params: &[f64]) -> f64 {
     assert!(vars.len() == 1 && params.len() == 4);
-    params[0] * (1.0 - sinc(params[1] * vars[0]) * f64::exp(-vars[0] / params[2])) + params[3]
+    params[0] * (1.0 - sinc(params[1] * vars[0]) * f64::exp(-vars[0] * params[2])) + params[3]
 }
 
 pub type FitResults = HashMap<Fit, Vec<f64>>;
@@ -143,6 +143,7 @@ pub fn fit_ddm_results(
                             .map(|t| (vec![f64::from(t.0)], f64::from(t.1)))
                             .unzip();
                         let (fits, errs) = get_fits(&fit_to, &tau, &I, weights);
+                        //TODO: fits are terrible?
                         progress.inc(1);
                         (f64::from(*q), fits, errs)
                     })
@@ -169,8 +170,8 @@ pub fn fit_ddm_results(
                                 box_size,
                                 q,
                                 match fit_type {
-                                    Fit::Brownian => "a1 * (1 - exp(-t / a2)) + a3",
-                                    Fit::Ballistic => "a1 * (1 - sinc(a2 * t) * exp(-t / a3)) + a4",
+                                    Fit::Brownian => "a1 * (1 - exp(-t * a2)) + a3",
+                                    Fit::Ballistic => "a1 * (1 - sinc(a2 * t) * exp(-t * a3)) + a4",
                                     Fit::CustomUnimplemented => "",
                                     Fit::CustomImplemented(s) => s,
                                 },
@@ -186,11 +187,12 @@ pub fn fit_ddm_results(
         })
         .collect::<Vec<_>>()
         .join("\n");
-    let output_dir = output_dir.unwrap_or_else(|| String::from("fit_data"));
-    if !std::path::Path::new(&output_dir).is_dir() {
-        std::fs::create_dir(&output_dir).expect("Can't create output directory!");
+    let output = output_dir.unwrap_or_else(|| String::from("fit_data.csv"));
+    if let Some(path) = std::path::Path::new(&output).parent() {
+        if !path.is_dir() {
+            std::fs::create_dir(&output).expect("Can't create output directory!");
+        }
     }
-    let output = format!("{}/fit_data.csv", output_dir);
     let file = std::fs::File::create(std::path::Path::new(&output));
     match file {
         Ok(mut file) => {
@@ -206,4 +208,21 @@ pub fn fit_ddm_results(
         Err(e) => println!("{} - Data could not be saved", e),
     }
     Some(ret)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_brownian() {
+        let data = crate::utils::read_csv("out/data_boxsize_800.csv", true).unwrap();
+        let q = (1..data.len()).map(|x| x as f32 + 0.5).collect::<Vec<_>>();
+        let mut map = HashMap::new();
+        map.insert(800_usize, (q, data));
+        fit_ddm_results(
+            Some(map),
+            vec![Fit::Brownian],
+            Some(String::from("test1.csv")),
+        );
+    }
 }

@@ -12,7 +12,9 @@ cc = { version = "1.0.37", features = ["parallel"] }
 overflow-checks = false
 
 [dependencies]
-mathpack = "0.1.8"
+mathpack = "0.1.4"
+regex = "1.1.7"
+lazy_static = "1.3.0"
 serde = "1.0.92"
 rayon = "1.1.0"
 arrayfire = "3.6.1"

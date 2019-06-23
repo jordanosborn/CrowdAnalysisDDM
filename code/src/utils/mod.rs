@@ -230,7 +230,10 @@ pub fn read_csv(
                 None
             }
         }
-        Err(_) => None,
+        Err(e) => {
+            println!("{}", e);
+            None
+        }
     }
 }
 

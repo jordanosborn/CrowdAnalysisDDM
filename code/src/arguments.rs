@@ -27,6 +27,7 @@ pub enum What {
     CameraMultiDDM(MultiDDMArgs),
     PROCESS(Option<String>),
     RETRANSPOSE(String, String),
+    Fit(bool, String, String),
     OTHER,
 }
 
@@ -326,6 +327,8 @@ pub fn process_arguments(args: Vec<String>) -> What {
                 fit_to: Some(map_fit_type(fit_to)),
             })
         }
+        [_, command, file, fit_to] if command == "fit-data" && std::path::Path::new(file).is_file() && allowed_fit_type(fit_to)=> What::Fit(false, file.to_string(), fit_to.to_string()),
+        [_, command, folder, fit_to] if command == "fit-data" && std::path::Path::new(folder).is_dir() && allowed_fit_type(fit_to)=> What::Fit(true, folder.to_string(), fit_to.to_string()),
         _ => What::OTHER,
     }
 }
