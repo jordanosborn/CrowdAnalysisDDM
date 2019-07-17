@@ -9,8 +9,6 @@ extern crate lazy_static;
 use arguments::{process_arguments, DDMArgs, MultiDDMArgs, What};
 use arrayfire as af;
 
-#[allow(unused_imports)]
-use rayon::prelude::*;
 use regex::Regex;
 use std::collections::HashMap;
 pub mod arguments;
@@ -23,12 +21,18 @@ pub mod utils;
 
 pub mod process;
 
-type RawType = f32;
-#[inline]
-pub fn raw_nan() -> RawType {
-    std::f32::NAN
+macro_rules! RawType {
+    ($x: ident) => {
+        type RawType = $x;
+        type RawFtType = num_complex::Complex<RawType>;
+        #[inline]
+        pub fn raw_nan() -> RawType {
+            std::$x::NAN
+        }
+    };
 }
-type RawFtType = num_complex::Complex32;
+
+RawType!(f32);
 
 fn set_backend() {
     let backends = af::get_available_backends();
