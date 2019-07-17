@@ -9,7 +9,6 @@ extern crate lazy_static;
 use arguments::{process_arguments, DDMArgs, MultiDDMArgs, What};
 use arrayfire as af;
 
-
 #[allow(unused_imports)]
 use rayon::prelude::*;
 use regex::Regex;
@@ -159,7 +158,7 @@ fn main() {
             if is_dir {
                 for entry in std::path::Path::new(&path)
                     .read_dir()
-                    .expect(&format!("Read of directory {} failed", path))
+                    .unwrap_or_else(|_| panic!("Read of directory {} failed", path))
                 {
                     let s = match entry {
                         Ok(v) => {
