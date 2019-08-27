@@ -5,7 +5,8 @@
     "python.testing.nosetestsEnabled": false,
     "C_Cpp.default.includePath": [
         "/usr/local/Cellar/opencv/4.0.1/include/opencv4",
-        "/usr/local/include"
+        "/usr/local/include",
+        "/usr/local/include/opencv4"
     ],
     "cSpell.words": [
         "boxsize",
