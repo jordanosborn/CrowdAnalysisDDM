@@ -193,7 +193,7 @@ pub mod opencv {
                     ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
                         as u32,
                     (index as f64 / (self.cols as f64)) as u32,
-                    image::Rgb { data: arr },
+                    image::Rgb(arr),
                 );
             });
             image::DynamicImage::ImageRgb8(buffer)
