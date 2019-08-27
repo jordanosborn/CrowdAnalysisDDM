@@ -1,43 +1,6 @@
-#[allow(dead_code, unused_variables)]
 pub mod opencv {
     use image;
     use libc::{c_char, c_int, size_t};
-
-    #[repr(C)]
-    #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
-    #[allow(clippy::enum_variant_names)]
-    enum CvType {
-        /// 8 bit unsigned, single channel (grey image)
-        Cv8UC1 = 0,
-        /// 8 bit signed, single channel (grey image)
-        Cv8SC1 = 1,
-        /// 16 bit unsigned, single channel (grey image)
-        Cv16UC1 = 2,
-        /// 16 bit signed, single channel (grey image)
-        Cv16SC1 = 3,
-        /// 32 bit signed, single channel (grey image)
-        Cv32SC1 = 4,
-        /// 32 bit float, single channel (grey image)
-        Cv32FC1 = 5,
-        /// 32 bit float, single channel (grey image)
-        Cv64FC1 = 6,
-        /// 8 bit, two channel (rarely seen)
-        Cv8UC2 = 8,
-        /// 8 bit unsigned, three channels (RGB image)
-        Cv8UC3 = 16,
-        /// 8 bit signed, three channels (RGB image)
-        Cv8SC3 = 17,
-        /// 16 bit unsigned, three channels (RGB image)
-        Cv16UC3 = 18,
-        /// 16 bit signed, three channels (RGB image)
-        Cv16SC3 = 19,
-        /// 32 bit signed, three channels (RGB image)
-        Cv32SC3 = 20,
-        /// 32 bit float, three channels (RGB image)
-        Cv32FC3 = 21,
-        /// 32 bit float, three channels (RGB image)
-        Cv64FC3 = 22,
-    }
 
     extern "C" {
         fn start_capture(s: *const c_char) -> size_t;
@@ -54,7 +17,6 @@ pub mod opencv {
         fn mat_step1(cmat: *const CMat, i: c_int) -> usize;
         fn mat_elem_size(cmat: *const CMat) -> usize;
         fn mat_elem_size1(cmat: *const CMat) -> usize;
-        fn mat_type(cmat: *const CMat) -> CvType;
         fn close_stream(stream_id: usize);
         fn get_fps(stream_id: usize) -> usize;
         fn get_frame_count(stream_id: usize) -> usize;
@@ -85,6 +47,7 @@ pub mod opencv {
     #[derive(Clone, Debug)]
     pub enum CMat {}
 
+    #[allow(dead_code)]
     impl CMat {
         pub(crate) fn new() -> *mut CMat {
             unsafe { mat_new() }
@@ -256,21 +219,6 @@ pub mod opencv {
                 depth: 0,
             }
         }
-
-        // pub fn to_buffer(&self) -> image::DynamicImage {
-        //     let mut data: Vec<crate::RawType> = vec![0 as crate::RawType; (self.rows * self.cols) as usize];
-        //     self.data.host(data.as_mut_slice());
-        //     let mut buffer = image::ImageBuffer::new(self.cols as u32, self.rows as u32);
-        //     data.iter().enumerate().for_each(|(index, &v)| {
-        //         buffer.put_pixel(
-        //             ((index as u64) - ((index as f64 / (self.cols as f64)) as u64) * self.cols)
-        //                 as u32,
-        //             (index as f64 / (self.cols as f64)) as u32,
-        //             image::Luma { data: [v as crate::RawType] },
-        //         );
-        //     });
-        //     image::DynamicImage::ImageLuma8(buffer)
-        // }
     }
 
     impl Mat {
