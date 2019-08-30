@@ -14,7 +14,7 @@ mod unix {
         if cfg!(target_os = "linux") {
             println!("cargo:rustc-link-search=native=/usr/local/lib");
         } else {
-            println!("cargo:rustc-link-search=native=/usr/local/Cellar/opencv/4.0.1/lib");
+            println!("cargo:rustc-link-search=native=/usr/local/Cellar/opencv/4.1.1/lib");
         }
 
         println!("cargo:rustc-link-lib=opencv_core");
